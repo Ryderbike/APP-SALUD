@@ -56,7 +56,7 @@ La app se publica como un Worker que solo sirve archivos estáticos, igual que o
 1. En el panel de Cloudflare entra a **Workers & Pages → Create → Workers → Import a repository**.
 2. Elige este repositorio y la rama `main`.
 3. Deja el build command vacío y el deploy command en `npx wrangler deploy`.
-4. **Create and deploy.** Queda en `https://calma-nocturna.<tu-subdominio>.workers.dev`.
+4. **Create and deploy.** Queda en `https://app-salud.<tu-subdominio>.workers.dev`.
 
 Cada push a `main` publica una versión nueva. Los pull requests reciben su propia URL de vista previa.
 
