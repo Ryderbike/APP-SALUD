@@ -178,6 +178,62 @@ p { margin: 0; }
   animation: toast 3.2s ease forwards; pointer-events: none; max-width: calc(100% - 32px);
 }
 @keyframes toast { 0% { opacity: 0; transform: translate(-50%, -8px); } 10%, 80% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; } }
+.duo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.cta span { display: block; font-family: var(--body); font-weight: 500; font-size: 0.8rem; opacity: 0.75; }
+.routines { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.routine {
+  background: rgba(0,0,0,0.25); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+}
+.r-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.r-info b { font-family: var(--display); font-size: 1.05rem; font-weight: 600; }
+.r-info em { font-style: normal; font-size: 0.7rem; font-weight: 600; color: var(--ember); border: 1px solid currentColor; border-radius: 999px; padding: 1px 6px; vertical-align: 2px; }
+.r-info small { color: var(--mist); font-size: 0.8rem; }
+.r-ex { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.r-act { display: flex; flex-direction: column; gap: 6px; flex: 0 0 auto; }
+.btn.small { padding: 8px 12px; font-size: 0.85rem; flex: 0 0 auto; }
+.plan { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.pd { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.7rem; color: var(--mist); font-weight: 600; min-width: 0; }
+.pd b { width: 100%; box-sizing: border-box; text-align: center; font-size: 0.66rem; font-weight: 600; color: var(--moon); background: rgba(127,224,192,0.16); border-radius: 8px; padding: 6px 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pd b.off { background: rgba(0,0,0,0.2); color: var(--mist); }
+.pd.today span { color: var(--moon); }
+.pd.today b { outline: 1px solid var(--sage); }
+.hist { display: flex; flex-direction: column; gap: 6px; }
+.hist div { display: flex; justify-content: space-between; gap: 8px; font-size: 0.85rem; color: var(--mist); }
+.hist b { color: var(--moon); font-weight: 600; }
+.text {
+  font: inherit; color: var(--moon); background: rgba(0,0,0,0.25); border: 1px solid var(--line);
+  border-radius: 12px; padding: 10px 12px; width: 100%; box-sizing: border-box; user-select: text; -webkit-user-select: text;
+}
+.items { display: flex; flex-direction: column; gap: 8px; }
+.item { background: rgba(0,0,0,0.22); border: 1px solid var(--line); border-radius: 16px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.item-top { display: flex; align-items: center; gap: 8px; }
+.item-top .num { font-family: var(--display); font-weight: 700; color: var(--sage); width: 1.4em; text-align: center; }
+.item select {
+  flex: 1; min-width: 0; font: inherit; font-weight: 600; color: var(--moon); background: var(--glass-2);
+  border: 1px solid var(--line); border-radius: 10px; padding: 8px;
+}
+.x { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--mist); font-size: 1.2rem; cursor: pointer; flex: 0 0 auto; }
+.adjust { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.adjust.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.adjust.one { grid-template-columns: minmax(0, 1fr); }
+.stepper { display: flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.25); border-radius: 12px; padding: 5px 6px; min-width: 0; }
+.stepper span { font-size: 0.7rem; color: var(--mist); font-weight: 600; flex: 1; min-width: 0; }
+.stepper button { width: 30px; height: 30px; border-radius: 9px; border: 1px solid var(--line); background: var(--glass-2); color: var(--moon); font: inherit; font-size: 1.05rem; cursor: pointer; flex: 0 0 auto; padding: 0; }
+.stepper b { min-width: 2.4ch; text-align: center; font-family: var(--display); font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.adjust.three .stepper span { display: none; }
+.adjust.three .stepper { flex-direction: column; padding: 6px 4px; }
+.adjust.three .stepper::before { content: attr(data-l); font-size: 0.7rem; color: var(--mist); font-weight: 600; }
+.adjust.three .stepper .pm { display: flex; align-items: center; gap: 4px; }
+.summary { display: flex; flex-direction: column; gap: 6px; font-size: 0.9rem; color: var(--mist); }
+.summary b { color: var(--moon); font-weight: 600; }
+.segbar { display: flex; gap: 3px; }
+.segbar i { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
+.segbar i.on { background: var(--sage); }
+.segbar i.now { background: var(--ember); }
+.soft { color: var(--mist); text-transform: none; letter-spacing: 0; font-weight: 600; }
+.day b { width: 5px; height: 5px; border-radius: 50%; background: transparent; margin-top: -2px; }
+.day.trained b { background: var(--ember); }
 .link { font: inherit; background: none; border: 0; color: var(--mist); cursor: pointer; padding: 8px; text-decoration: underline; text-underline-offset: 3px; }
 
 button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
@@ -202,6 +258,9 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     <button class="icon-btn" id="pause" aria-label="Pausar" hidden>
       <svg viewBox="0 0 24 24" fill="currentColor" id="pause-ico"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
     </button>
+    <button class="icon-btn" id="quit" aria-label="Terminar" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
   </header>
 
   <main class="stage" id="stage">
@@ -218,10 +277,13 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     <div class="week" id="week" aria-label="Tus últimas 7 noches"></div>
     <div class="pills">
       <span class="pill"><b id="t-wins">0</b>noches</span>
-      <span class="pill"><b id="t-orders">0</b>evitados</span>
+      <span class="pill"><b id="t-trains">0</b>entrenos</span>
       <span class="pill"><b id="t-saved">$0</b>ahorrado</span>
     </div>
-    <button class="cta" id="open-setup">Tengo ganas ahora</button>
+    <div class="duo">
+      <button class="cta" id="open-setup">Tengo ganas<span>de comer algo</span></button>
+      <button class="cta sage" id="open-train">Entrenar<span id="train-sub">tus rutinas</span></button>
+    </div>
   </footer>
 
   <!-- dock sesión -->
@@ -233,6 +295,24 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
       <div class="row">
         <button class="btn" id="other">Otra idea</button>
         <button class="btn go" id="done">Listo</button>
+      </div>
+    </article>
+  </footer>
+
+  <!-- dock entrenar -->
+  <footer class="dock" id="dock-train" hidden>
+    <article class="card" id="tcard" aria-live="polite">
+      <div class="eyebrow"><span id="t-label"></span><span class="soft" id="t-next"></span></div>
+      <h3 id="t-title"></h3>
+      <p class="why" id="t-plan"></p>
+      <div class="adjust" id="t-adjust">
+        <div class="stepper"><span>Reps</span><button data-adj="reps" data-d="-1" aria-label="Menos repeticiones">−</button><b id="t-reps">10</b><button data-adj="reps" data-d="1" aria-label="Más repeticiones">+</button></div>
+        <div class="stepper"><span>Kg</span><button data-adj="kg" data-d="-2.5" aria-label="Menos peso">−</button><b id="t-kg">0</b><button data-adj="kg" data-d="2.5" aria-label="Más peso">+</button></div>
+      </div>
+      <div class="segbar" id="t-bar"></div>
+      <div class="row">
+        <button class="btn" id="t-alt">Saltar ejercicio</button>
+        <button class="btn go" id="t-main">Serie hecha</button>
       </div>
     </article>
   </footer>
@@ -280,6 +360,66 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
   </div>
 
   <button class="cta sage" id="start">Empezar</button>
+</section>
+
+<!-- hoja: mis rutinas -->
+<section class="sheet" id="tsetup" hidden aria-label="Mis rutinas">
+  <div class="grab"></div>
+  <h2>Mis rutinas</h2>
+  <div class="plan" id="plan" aria-label="Tu semana"></div>
+  <div class="routines" id="routines"></div>
+  <button class="btn" id="r-new">+ Nueva rutina</button>
+  <div class="q" id="hist-wrap" hidden>
+    <span>Últimos entrenamientos</span>
+    <div class="hist" id="hist"></div>
+  </div>
+</section>
+
+<!-- hoja: editar rutina -->
+<section class="sheet" id="tedit" hidden aria-label="Editar rutina">
+  <div class="grab"></div>
+  <h2 id="e-head">Nueva rutina</h2>
+  <div class="q">
+    <label for="e-name">Nombre</label>
+    <input class="text" id="e-name" maxlength="30" placeholder="Ej: Pecho y hombros" autocomplete="off">
+  </div>
+  <div class="q">
+    <span id="lbl-days">Qué días toca</span>
+    <div class="seg" id="e-days" role="group" aria-labelledby="lbl-days"></div>
+  </div>
+  <div class="q">
+    <span id="lbl-rest">Descanso entre series</span>
+    <div class="seg" id="e-rest" role="group" aria-labelledby="lbl-rest">
+      <button data-rest="45" aria-pressed="false">45 s</button>
+      <button data-rest="60" aria-pressed="false">1 min</button>
+      <button data-rest="90" aria-pressed="true">1:30</button>
+      <button data-rest="120" aria-pressed="false">2 min</button>
+    </div>
+  </div>
+  <div class="q">
+    <span>Ejercicios</span>
+    <div class="items" id="e-items"></div>
+    <button class="btn" id="e-add">+ Agregar ejercicio</button>
+    <p class="muted" id="e-msg"></p>
+  </div>
+  <div class="row">
+    <button class="btn" id="e-del">Borrar rutina</button>
+    <button class="btn go" id="e-save">Guardar</button>
+  </div>
+</section>
+
+<!-- hoja: fin del entrenamiento -->
+<section class="sheet" id="tend" hidden aria-label="Entrenamiento terminado">
+  <div class="grab"></div>
+  <div class="stack">
+    <span class="muted" id="te-label"></span>
+    <h2 id="te-title"></h2>
+  </div>
+  <div class="summary" id="te-sub"></div>
+  <div class="stack">
+    <button class="cta sage" id="te-done">Guardar entrenamiento</button>
+    <button class="link" id="te-again">Salir sin guardar</button>
+  </div>
 </section>
 
 <!-- hoja: cierre -->
@@ -392,15 +532,15 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
   function nightKey(d = new Date()) { const x = new Date(d); if (x.getHours() < 6) x.setDate(x.getDate() - 1); return ymd(x); }
   function markNight(v) { const n = store.get("nights", {}); const k = nightKey(); if (n[k] !== "win") n[k] = v; store.set("nights", n); }
   function renderWeek() {
-    const n = store.get("nights", {}), el = $("week"); el.innerHTML = "";
+    const n = store.get("nights", {}), tr = store.get("trains", {}), el = $("week"); el.innerHTML = "";
     const names = ["do", "lu", "ma", "mi", "ju", "vi", "sá"];
     const base = new Date(); if (base.getHours() < 6) base.setDate(base.getDate() - 1);
     for (let i = 6; i >= 0; i--) {
       const d = new Date(base); d.setDate(d.getDate() - i);
       const k = ymd(d), st = n[k];
       const day = document.createElement("div");
-      day.className = "day" + (st ? " " + st : "") + (i === 0 ? " today" : "");
-      day.innerHTML = "<span>" + names[d.getDay()] + "</span><i></i>";
+      day.className = "day" + (st ? " " + st : "") + (tr[k] ? " trained" : "") + (i === 0 ? " today" : "");
+      day.innerHTML = "<span>" + names[d.getDay()] + "</span><i></i><b></b>";
       day.title = st === "win" ? "Noche ganada" : st === "try" ? "Lo intentaste" : "";
       el.appendChild(day);
     }
@@ -409,26 +549,28 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
   function greeting() { const h = new Date().getHours(); return h >= 20 || h < 5 ? "Buenas noches" : h < 12 ? "Buenos días" : "Buenas tardes"; }
   function renderTally() {
     const s = stats();
-    $("t-wins").textContent = s.wins; $("t-orders").textContent = s.orders; $("t-saved").textContent = fmtMoney(s.saved);
+    $("t-wins").textContent = s.wins; $("t-trains").textContent = s.trains || 0; $("t-saved").textContent = fmtMoney(s.saved);
     if (mode === "home") $("big").textContent = Math.round(s.minutes || 0) + " min";
     renderWeek();
   }
 
   // ---------- pantallas ----------
-  function openSheet(id) { $("scrim").hidden = false; ["setup", "end"].forEach((s) => $(s).hidden = s !== id); }
-  function closeSheets() { $("scrim").hidden = true; $("setup").hidden = true; $("end").hidden = true; }
-  $("scrim").addEventListener("click", () => { if (!$("setup").hidden) closeSheets(); });
+  const SHEETS = ["setup", "end", "tsetup", "tedit", "tend"];
+  function openSheet(id) { $("scrim").hidden = false; SHEETS.forEach((s) => $(s).hidden = s !== id); }
+  function closeSheets() { $("scrim").hidden = true; SHEETS.forEach((s) => $(s).hidden = true); }
+  $("scrim").addEventListener("click", () => { if (!$("setup").hidden || !$("tsetup").hidden) closeSheets(); });
 
   function setMode(m) {
     mode = m;
-    const inSession = m === "session" || m === "end";
-    $("dock-home").hidden = inSession; $("dock-session").hidden = m !== "session";
-    ["music", "rain", "pause"].forEach((id) => $(id).hidden = !inSession);
+    const inSession = m !== "home";
+    $("dock-home").hidden = inSession; $("dock-session").hidden = m !== "session"; $("dock-train").hidden = m !== "train";
+    ["music", "rain", "pause", "quit"].forEach((id) => $(id).hidden = !inSession);
+    $("big").style.color = "";
     $("clock").hidden = inSession;
     if (m === "home") {
-      $("cap-top").textContent = greeting(); $("breath").textContent = "de calma juntados";
+      $("cap-top").textContent = greeting(); $("breath").textContent = "juntados para ti";
       $("hint").textContent = "Toca la esfera. Atrapa las estrellas fugaces."; $("hint").style.opacity = 1;
-      renderTally();
+      renderTally(); renderToday();
     }
   }
 
@@ -440,7 +582,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     total = left = mins * 60;
     queue = shuffle(TASKS[kind]).concat(shuffle(TASKS.general));
     if (!extended) { taskIdx = 0; doneCount = 0; orb.level = 0; }
-    orb.base = extended ? orb.level : 0;
+    orb.base = extended ? orb.level : 0; orb.ring = null;
     renderTask(false);
     setMode("session");
     $("cap-top").textContent = "Juntando calma";
@@ -473,7 +615,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     $("pause").setAttribute("aria-label", running ? "Pausar" : "Seguir");
     $("pause-ico").innerHTML = running ? '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>' : '<path d="M8 5l11 7-11 7z"/>';
   }
-  $("pause").addEventListener("click", () => { if (mode !== "session") return; running = !running; setPauseIcon(); });
+  $("pause").addEventListener("click", () => { if (mode !== "session" && mode !== "train") return; running = !running; setPauseIcon(); });
 
   function finish(early) {
     running = false;
@@ -503,7 +645,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     store.set("stats", s);
     markNight(win ? "win" : "try");
   }
-  function goHome() { closeSheets(); toggleMusic(false); releaseWake(); orb.level = 0; setMode("home"); }
+  function goHome() { closeSheets(); toggleMusic(false); releaseWake(); orb.level = 0; orb.ring = null; setMode("home"); }
   $("sleep").addEventListener("click", () => { addWin(true); goHome(); });
   $("more").addEventListener("click", () => { extended = true; startSession(5); });
   $("ate").addEventListener("click", () => {
@@ -511,6 +653,252 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     $("end-note").textContent = "Está bien. No se trata de ser perfecto. Mañana es otra noche.";
     setTimeout(goHome, 3000);
   });
+
+  // ---------- entrenar: planificador de rutinas ----------
+  const LIB = [
+    ["Mancuernas", ["Press de hombros", "Remo con mancuerna", "Curl de bíceps", "Curl martillo", "Elevaciones laterales", "Pájaros (deltoide posterior)", "Sentadilla goblet", "Peso muerto rumano", "Zancadas con mancuernas", "Extensión de tríceps sobre la cabeza", "Encogimientos de hombros"]],
+    ["Banca", ["Press banca con mancuernas", "Press inclinado con mancuernas", "Aperturas en banca", "Pullover", "Remo apoyado en banca inclinada", "Patada de tríceps en banca", "Fondos de tríceps en banca", "Hip thrust en banca", "Step-up a la banca", "Sentadilla búlgara"]],
+    ["Cardio", ["Bici estática", "Bicicleta de calle"]],
+    ["Peso corporal", ["Flexiones", "Plancha", "Abdominales", "Elevación de piernas"]]
+  ];
+  const CARDIO = new Set(LIB[2][1]);
+  const ALL_EX = new Set(LIB.flatMap((g) => g[1]));
+  const DAYS = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"];
+  const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
+  const uid = () => Math.random().toString(36).slice(2, 9);
+  const F = (ex, sets, reps, kg) => ({ ex, type: "fuerza", sets, reps, kg, min: 0 });
+  const C = (ex, min) => ({ ex, type: "cardio", sets: 1, reps: 0, kg: 0, min });
+  // rutinas de ejemplo con lo que hay en casa: mancuernas hasta 25 kg, banca y bicis
+  const SEED = () => [
+    { id: uid(), name: "Empuje", example: true, days: [1, 4], rest: 90, items: [F("Press banca con mancuernas", 4, 10, 20), F("Press inclinado con mancuernas", 3, 10, 16), F("Press de hombros", 3, 10, 14), F("Elevaciones laterales", 3, 12, 8), F("Fondos de tríceps en banca", 3, 12, 0)] },
+    { id: uid(), name: "Tirón", example: true, days: [2, 5], rest: 90, items: [F("Remo con mancuerna", 4, 10, 22.5), F("Pullover", 3, 12, 16), F("Pájaros (deltoide posterior)", 3, 12, 6), F("Curl de bíceps", 3, 10, 12), F("Curl martillo", 3, 10, 12)] },
+    { id: uid(), name: "Pierna y bici", example: true, days: [3, 6], rest: 90, items: [F("Sentadilla goblet", 4, 10, 25), F("Peso muerto rumano", 4, 10, 22.5), F("Sentadilla búlgara", 3, 8, 12), F("Hip thrust en banca", 3, 12, 25), C("Bici estática", 15)] }
+  ];
+  let routines = store.get("routines", null) || SEED();
+  const saveRoutines = () => store.set("routines", routines);
+  const kgNum = (k) => (Math.round(k * 10) / 10).toLocaleString("es-CL");
+  const itemPlan = (it) => it.type === "cardio" ? it.min + " min" : it.sets + " × " + it.reps + (it.kg ? " · " + kgNum(it.kg) + " kg" : "");
+  const estMin = (r) => Math.round(r.items.reduce((a, it) => a + (it.type === "cardio" ? it.min * 60 : it.sets * (40 + r.rest)), 0) / 60);
+  const daysText = (d) => DAY_ORDER.filter((x) => d.includes(x)).map((x) => DAYS[x]).join(" · ");
+  const todayDow = () => { const d = new Date(); if (d.getHours() < 4) d.setDate(d.getDate() - 1); return d.getDay(); };
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  function renderToday() {
+    const r = routines.find((x) => x.days.includes(todayDow()));
+    $("train-sub").textContent = r ? "hoy toca " + r.name : "tus rutinas";
+  }
+  function renderPlanner() {
+    $("plan").innerHTML = DAY_ORDER.map((d) => {
+      const rs = routines.filter((r) => r.days.includes(d));
+      return '<div class="pd' + (d === todayDow() ? " today" : "") + '"><span>' + DAYS[d] + "</span><b" + (rs.length ? "" : ' class="off"') + ">" + (rs.length ? esc(rs.map((r) => r.name).join(" + ")) : "libre") + "</b></div>";
+    }).join("");
+  }
+  function renderRoutines() {
+    renderPlanner(); renderToday();
+    $("routines").innerHTML = routines.length ? routines.map((r) =>
+      '<div class="routine"><div class="r-info"><b>' + esc(r.name) + (r.example ? " <em>ejemplo</em>" : "") + "</b><small>" + (r.days.length ? daysText(r.days) + " · " : "") + r.items.length + " ejercicios · ~" + estMin(r) + ' min</small><small class="r-ex">' + esc(r.items.map((i) => i.ex).join(", ")) + '</small></div><div class="r-act"><button class="btn go small" data-go="' + r.id + '">Empezar</button><button class="btn small" data-edit="' + r.id + '">Editar</button></div></div>'
+    ).join("") : '<p class="muted">Todavía no tienes rutinas. Crea la primera con 4 o 5 ejercicios.</p>';
+    const h = store.get("workouts", []).slice(-3).reverse();
+    $("hist-wrap").hidden = !h.length;
+    $("hist").innerHTML = h.map((w) => "<div><b>" + esc(w.name) + "</b><span>" + new Date(w.date).toLocaleDateString("es-CL", { weekday: "short", day: "numeric", month: "short" }) + " · " + Math.max(1, Math.round(w.secs / 60)) + " min · " + w.sets + " series</span></div>").join("");
+  }
+  $("routines").addEventListener("click", (e) => {
+    const g = e.target.closest("[data-go]"), ed = e.target.closest("[data-edit]");
+    if (g) startWorkout(routines.find((r) => r.id === g.dataset.go));
+    if (ed) openEditor(routines.find((r) => r.id === ed.dataset.edit));
+  });
+  $("open-train").addEventListener("click", () => { renderRoutines(); openSheet("tsetup"); audio.init(); });
+  $("r-new").addEventListener("click", () => openEditor(null));
+
+  // editor de rutinas
+  let draft = null, delArmed = false;
+  function exOptions(sel) {
+    let h = "";
+    for (const [g, list] of LIB) h += '<optgroup label="' + g + '">' + list.map((x) => "<option" + (x === sel ? " selected" : "") + ">" + x + "</option>").join("") + "</optgroup>";
+    return h + '<option value="__otro"' + (sel === "__otro" ? " selected" : "") + ">Otro ejercicio…</option>";
+  }
+  const stepper = (label, k, v, i) => '<div class="stepper" data-l="' + label + '"><span>' + label + '</span><div class="pm"><button data-i="' + i + '" data-k="' + k + '" data-d="-1" aria-label="Menos ' + label.toLowerCase() + '">−</button><b>' + (k === "kg" ? kgNum(v) : v) + '</b><button data-i="' + i + '" data-k="' + k + '" data-d="1" aria-label="Más ' + label.toLowerCase() + '">+</button></div></div>';
+  function renderItems() {
+    $("e-items").innerHTML = draft.items.map((it, i) => {
+      const custom = !ALL_EX.has(it.ex);
+      return '<div class="item"><div class="item-top"><span class="num">' + (i + 1) + '</span><select data-i="' + i + '" aria-label="Ejercicio ' + (i + 1) + '">' + exOptions(custom ? "__otro" : it.ex) + '</select><button class="x" data-del="' + i + '" aria-label="Quitar ejercicio">×</button></div>' +
+        (custom ? '<input class="text" data-i="' + i + '" data-custom="1" value="' + esc(it.ex) + '" placeholder="Nombre del ejercicio" maxlength="40">' : "") +
+        (it.type === "cardio" ? '<div class="adjust one">' + stepper("Minutos", "min", it.min, i) + "</div>"
+          : '<div class="adjust three">' + stepper("Series", "sets", it.sets, i) + stepper("Reps", "reps", it.reps, i) + stepper("Kg", "kg", it.kg, i) + "</div>") + "</div>";
+    }).join("");
+    $("e-msg").textContent = draft.items.length > 6 ? "Llevas " + draft.items.length + " ejercicios. Con 4 o 5 la rutina queda más corta y fácil de cumplir." : "";
+  }
+  function openEditor(r) {
+    draft = r ? JSON.parse(JSON.stringify(r)) : { id: uid(), name: "", days: [], rest: 90, items: [F("Press banca con mancuernas", 4, 10, 20), F("Remo con mancuerna", 4, 10, 20), F("Sentadilla goblet", 3, 10, 20), F("Press de hombros", 3, 10, 12)] };
+    $("e-head").textContent = r ? "Editar rutina" : "Nueva rutina";
+    $("e-name").value = draft.name;
+    $("e-days").innerHTML = DAY_ORDER.map((d) => '<button data-day="' + d + '" aria-pressed="' + draft.days.includes(d) + '">' + DAYS[d] + "</button>").join("");
+    $("e-rest").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", +b.dataset.rest === draft.rest ? "true" : "false"));
+    $("e-del").hidden = !r; delArmed = false; $("e-del").textContent = "Borrar rutina";
+    renderItems(); openSheet("tedit"); $("tedit").scrollTop = 0;
+  }
+  $("e-days").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    const d = +b.dataset.day;
+    draft.days = draft.days.includes(d) ? draft.days.filter((x) => x !== d) : draft.days.concat(d);
+    b.setAttribute("aria-pressed", draft.days.includes(d) ? "true" : "false");
+  });
+  seg("e-rest", "rest", (v) => draft.rest = +v);
+  $("e-items").addEventListener("click", (e) => {
+    const del = e.target.closest("[data-del]");
+    if (del) { draft.items.splice(+del.dataset.del, 1); renderItems(); return; }
+    const b = e.target.closest("[data-k]"); if (!b) return;
+    const it = draft.items[+b.dataset.i], k = b.dataset.k;
+    const by = { sets: 1, reps: 1, kg: 2.5, min: 5 }[k], lo = { sets: 1, reps: 1, kg: 0, min: 5 }[k];
+    it[k] = Math.max(lo, Math.round((it[k] + +b.dataset.d * by) * 10) / 10);
+    renderItems();
+  });
+  $("e-items").addEventListener("change", (e) => {
+    const s = e.target.closest("select"); if (!s) return;
+    const it = draft.items[+s.dataset.i];
+    if (s.value === "__otro") { it.ex = ""; if (it.type === "cardio") Object.assign(it, F("", 3, 10, 0)); }
+    else if (CARDIO.has(s.value)) Object.assign(it, it.type === "cardio" ? { ex: s.value } : C(s.value, 20));
+    else Object.assign(it, it.type === "cardio" ? F(s.value, 3, 10, 10) : { ex: s.value });
+    renderItems();
+  });
+  $("e-items").addEventListener("input", (e) => { if (e.target.dataset.custom) draft.items[+e.target.dataset.i].ex = e.target.value; });
+  $("e-add").addEventListener("click", () => { draft.items.push(F("Curl de bíceps", 3, 10, 10)); renderItems(); });
+  $("e-save").addEventListener("click", () => {
+    draft.items = draft.items.filter((i) => i.ex.trim());
+    if (!draft.items.length) { renderItems(); $("e-msg").textContent = "Agrega al menos un ejercicio para guardar la rutina."; return; }
+    draft.name = $("e-name").value.trim() || "Rutina " + (routines.length + 1);
+    delete draft.example;
+    const i = routines.findIndex((r) => r.id === draft.id);
+    if (i >= 0) routines[i] = draft; else routines.push(draft);
+    saveRoutines(); renderRoutines(); openSheet("tsetup");
+  });
+  $("e-del").addEventListener("click", () => {
+    if (!delArmed) { delArmed = true; $("e-del").textContent = "Toca otra vez para borrar"; return; }
+    routines = routines.filter((r) => r.id !== draft.id); saveRoutines(); renderRoutines(); openSheet("tsetup");
+  });
+
+  // entrenamiento guiado: serie por serie, con descanso que llena la esfera
+  let wk = null, lastTick = 0, lastWorkout = null;
+  function startWorkout(r) {
+    if (!r || !r.items.length) return;
+    closeSheets();
+    const lastKg = store.get("lastkg", {});
+    wk = { r, i: 0, s: 0, phase: "work", left: 0, span: 1, start: Date.now(), doneSets: 0,
+      totalSets: r.items.reduce((a, it) => a + (it.type === "cardio" ? 1 : it.sets), 0),
+      log: r.items.map((it) => ({ ex: it.ex, type: it.type, sets: [], reps: it.reps, kg: lastKg[it.ex] ?? it.kg })) };
+    orb.level = 0; orb.base = 0; orb.ring = 0;
+    setMode("train"); enterItem();
+    $("hint").textContent = "Ajusta reps y kg si hiciste otra cosa. La esfera se llena en cada descanso.";
+    $("hint").style.opacity = 1; setTimeout(() => $("hint").style.opacity = 0, 7000);
+    running = true; setPauseIcon();
+    if (!audio.on) toggleMusic(true);
+    requestWake();
+  }
+  function enterItem() {
+    const it = wk.r.items[wk.i];
+    if (it.type === "cardio") { wk.phase = "cardio"; wk.span = wk.left = it.min * 60; lastTick = Math.ceil(wk.left); }
+    else wk.phase = "work";
+    renderWk(true);
+  }
+  function renderWk(anim) {
+    const it = wk.r.items[wk.i], lg = wk.log[wk.i], next = wk.r.items[wk.i + 1];
+    $("t-adjust").hidden = wk.phase !== "work";
+    $("big").style.color = wk.phase === "rest" ? "var(--sage)" : "";
+    $("t-label").textContent = "Ejercicio " + (wk.i + 1) + " de " + wk.r.items.length;
+    $("t-next").textContent = next ? "Sigue: " + next.ex : "Último";
+    if (wk.phase === "work") {
+      orb.level = orb.ring;
+      $("cap-top").textContent = "Serie"; $("big").textContent = (wk.s + 1) + "/" + it.sets;
+      $("breath").textContent = lg.reps + " reps" + (lg.kg ? " · " + kgNum(lg.kg) + " kg" : "");
+      $("t-title").textContent = it.ex;
+      $("t-plan").textContent = "Plan: " + itemPlan(it) + (lg.sets.length ? ". Hechas: " + lg.sets.map((x) => x.reps + "×" + kgNum(x.kg)).join(", ") : "");
+      $("t-reps").textContent = lg.reps; $("t-kg").textContent = kgNum(lg.kg);
+      $("t-main").textContent = "Serie hecha"; $("t-alt").textContent = "Saltar ejercicio";
+    } else if (wk.phase === "rest") {
+      const same = wk.s < it.sets, nIt = same ? it : next, nLg = same ? lg : wk.log[wk.i + 1];
+      $("cap-top").textContent = "Descanso"; $("big").textContent = mmss(wk.left); $("breath").textContent = "Respira lento";
+      $("t-label").textContent = "Viene";
+      $("t-title").textContent = nIt.ex + (same ? ", serie " + (wk.s + 1) : "");
+      $("t-plan").textContent = nIt.type === "cardio" ? nIt.min + " min" : nLg.reps + " reps" + (nLg.kg ? " · " + kgNum(nLg.kg) + " kg" : "");
+      $("t-main").textContent = "Saltar descanso"; $("t-alt").textContent = "+30 s";
+    } else {
+      $("cap-top").textContent = it.ex; $("big").textContent = mmss(wk.left); $("breath").textContent = "A tu ritmo";
+      $("t-title").textContent = it.ex; $("t-plan").textContent = it.min + " minutos a un ritmo en que puedas hablar.";
+      $("t-main").textContent = "Terminé"; $("t-alt").textContent = "+5 min";
+    }
+    $("t-bar").innerHTML = wk.r.items.map((_, j) => "<i" + (j < wk.i ? ' class="on"' : j === wk.i ? ' class="now"' : "") + "></i>").join("");
+    if (anim) { const c = $("tcard"); c.classList.remove("swap"); void c.offsetWidth; c.classList.add("swap"); }
+  }
+  function countSet() { wk.doneSets++; orb.ring = Math.min(1, wk.doneSets / wk.totalSets); }
+  $("t-main").addEventListener("click", () => {
+    if (!wk || mode !== "train") return;
+    const it = wk.r.items[wk.i], lg = wk.log[wk.i];
+    if (wk.phase === "work") {
+      lg.sets.push({ reps: lg.reps, kg: lg.kg }); wk.s++; countSet();
+      buzz(25); audio.chime(1.2);
+      const r = $("t-main").getBoundingClientRect(); burst(r.left + r.width / 2, r.top, 14);
+      if (wk.s >= it.sets && wk.i === wk.r.items.length - 1) { workoutFinish(false); return; }
+      wk.phase = "rest"; wk.span = wk.left = wk.r.rest; lastTick = Math.ceil(wk.left); orb.level = 0;
+      renderWk(true);
+    } else if (wk.phase === "rest") endRest();
+    else { lg.sets.push({ min: Math.max(1, Math.round((wk.span - Math.max(0, wk.left)) / 60)) }); countSet(); nextItem(); }
+  });
+  $("t-alt").addEventListener("click", () => {
+    if (!wk || mode !== "train") return;
+    if (wk.phase === "work") nextItem();
+    else { const add = wk.phase === "rest" ? 30 : 300; wk.left += add; wk.span += add; renderWk(false); }
+  });
+  $("t-adjust").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-adj]"); if (!b || !wk) return;
+    const lg = wk.log[wk.i], k = b.dataset.adj;
+    lg[k] = Math.max(k === "kg" ? 0 : 1, Math.round((lg[k] + +b.dataset.d) * 10) / 10);
+    renderWk(false);
+  });
+  function endRest() {
+    audio.note(1046.5, 0.08); buzz(40);
+    if (wk.s >= wk.r.items[wk.i].sets) nextItem(); else { wk.phase = "work"; renderWk(true); }
+  }
+  function nextItem() {
+    wk.i++; wk.s = 0; orb.level = 0;
+    if (wk.i >= wk.r.items.length) { workoutFinish(false); return; }
+    enterItem();
+  }
+  function trainTick(dt) {
+    if (!wk || wk.phase === "work") return;
+    wk.left -= dt; secAcc += dt;
+    if (secAcc >= 1) { secAcc = 0; const edge = Math.random() * Math.PI * 2; addFly(orb.x + Math.cos(edge) * Math.max(W, H) * 0.6, orb.y + Math.sin(edge) * Math.max(W, H) * 0.6, true); }
+    orb.level = Math.min(1, 1 - wk.left / wk.span);
+    const c = Math.ceil(wk.left);
+    if (c !== lastTick) { lastTick = c; $("big").textContent = mmss(wk.left); if (c <= 3 && c > 0) { audio.note(659.3, 0.06); buzz(10); } }
+    if (wk.left <= 0) { if (wk.phase === "rest") endRest(); else $("t-main").click(); }
+  }
+  function workoutFinish(early) {
+    running = false;
+    const secs = Math.round((Date.now() - wk.start) / 1000);
+    const sets = wk.log.reduce((a, l) => a + l.sets.length, 0);
+    lastWorkout = { date: Date.now(), rid: wk.r.id, name: wk.r.name, secs, sets, items: wk.log.filter((l) => l.sets.length).map((l) => ({ ex: l.ex, type: l.type, sets: l.sets })) };
+    setMode("tend");
+    $("cap-top").textContent = "Entrenaste"; $("big").textContent = mmss(secs); $("breath").textContent = sets + (sets === 1 ? " serie" : " series");
+    $("te-label").textContent = wk.r.name + " · " + Math.max(1, Math.round(secs / 60)) + " min";
+    $("te-title").textContent = early ? "Bien, cada serie suma." : "Rutina completa.";
+    $("te-sub").innerHTML = lastWorkout.items.map((l) => "<div><b>" + esc(l.ex) + "</b> · " + (l.type === "cardio" ? l.sets[0].min + " min" : l.sets.map((x) => x.reps + "×" + kgNum(x.kg)).join(", ") + " kg") + "</div>").join("") || "<div>Esta vez no alcanzaste a registrar series.</div>";
+    openSheet("tend");
+    if (!early) { orb.level = 1; orb.ring = 1; for (let i = 0; i < 4; i++) setTimeout(() => burst(orb.x, orb.y - orb.r, 20), i * 250); }
+    audio.chime(1); setTimeout(() => audio.chime(1.5), 500);
+  }
+  $("te-done").addEventListener("click", () => {
+    if (lastWorkout && lastWorkout.sets) {
+      const w = store.get("workouts", []); w.push(lastWorkout); store.set("workouts", w.slice(-200));
+      const lk = store.get("lastkg", {});
+      for (const it of lastWorkout.items) { const s = it.sets.filter((x) => x.kg != null); if (s.length) lk[it.ex] = s[s.length - 1].kg; }
+      store.set("lastkg", lk);
+      const s = stats(); s.trains = (s.trains || 0) + 1; s.minutes = (s.minutes || 0) + lastWorkout.secs / 60; store.set("stats", s);
+      const t = store.get("trains", {}); t[nightKey()] = true; store.set("trains", t);
+    }
+    wk = null; lastWorkout = null; goHome();
+  });
+  $("te-again").addEventListener("click", () => { wk = null; lastWorkout = null; goHome(); });
+  $("quit").addEventListener("click", () => { if (mode === "session") finish(true); else if (mode === "train") workoutFinish(true); else goHome(); });
 
   // ---------- respiración ----------
   const IN = 4, HOLD = 2, OUT = 6, CYCLE = IN + HOLD + OUT;
@@ -665,6 +1053,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
       orb.level = orb.base + (1 - orb.base) * (1 - left / total);
       if (left <= 0) { left = 0; finish(false); } else renderTime();
     }
+    if (mode === "train" && running) trainTick(dt);
 
     const b = mode === "session" ? breathAt((now - sessionStart) / 1000) : { phase: "", v: 0.5 + 0.5 * Math.sin(t * 0.5) };
     if (mode === "session" && b.phase !== lastPhase) { $("breath").textContent = running ? b.phase : "En pausa"; lastPhase = b.phase; }
@@ -722,7 +1111,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     // anillo de progreso
     if (mode !== "home") {
       ctx.lineWidth = 3; ctx.lineCap = "round"; ctx.strokeStyle = "#ffbe76";
-      ctx.beginPath(); ctx.arc(orb.x, orb.y, R + 12, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * orb.level); ctx.stroke();
+      ctx.beginPath(); ctx.arc(orb.x, orb.y, R + 12, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (orb.ring ?? orb.level)); ctx.stroke();
     }
 
     // luciérnagas

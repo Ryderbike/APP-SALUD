@@ -1,6 +1,6 @@
 # Calma Nocturna
 
-Una app web para dejar pasar las ganas de comer dulce, picotear o pedir delivery de noche.
+Una app web para dejar pasar las ganas de comer dulce, picotear o pedir delivery de noche, y para planificar y seguir tus rutinas de gimnasio en casa.
 
 La idea es simple: las ganas suben y bajan como una ola. Si les das unos minutos y haces otra cosa mientras tanto, casi siempre pasan. La app te acompaña en ese rato.
 
@@ -12,7 +12,8 @@ La idea es simple: las ganas suben y bajan como una ola. Si les das unos minutos
 - **Tareas "ve y haz esto".** Ideas concretas una por una: lavarte los dientes, tomar un té, salir de la cocina, cerrar la app de delivery, lavarte la cara con agua fría.
 - **Música de calma y lluvia.** Se generan en vivo con la Web Audio API, sin archivos de audio.
 - **Cierre sin culpa.** Al final te pregunta cómo están las ganas ahora y te muestra cuánto bajaron. Puedes irte a dormir, pedir 5 minutos más o marcar que comiste igual.
-- **Tus noches.** Calendario de los últimos 7 días, noches ganadas, antojos evitados y plata ahorrada.
+- **Entrenar: planificador de rutinas.** Armas tus rutinas (lo ideal, 4 o 5 ejercicios) con series, repeticiones y kilos, y les asignas días de la semana. La app te dice qué toca hoy y te guía serie por serie: anotas lo que hiciste de verdad, descansas mientras la esfera se llena y pasas al siguiente ejercicio. Recuerda el último peso que usaste en cada ejercicio. Trae una lista de ejercicios con mancuernas, banca, bici estática, bicicleta y peso corporal, y puedes escribir los tuyos. No cuenta calorías.
+- **Tus noches.** Calendario de los últimos 7 días (noches ganadas y días entrenados), noches ganadas, entrenamientos y plata ahorrada.
 
 Todo se guarda solo en tu teléfono (`localStorage`). No hay cuentas ni servidor, y nada sale del dispositivo.
 
@@ -72,6 +73,10 @@ Las sugerencias están en `index.html`, en el objeto `TASKS`. Cada una tiene un 
 ```
 
 Hay listas para `dulce`, `delivery`, `bajon` y una `general` que se mezcla con todas.
+
+## Cambiar la lista de ejercicios
+
+Los ejercicios que aparecen al armar una rutina están en `index.html`, en `LIB`, agrupados por equipo. Los que están en el grupo "Cardio" se miden en minutos en vez de series. Las rutinas de ejemplo están en `SEED`.
 
 ## Aviso
 
