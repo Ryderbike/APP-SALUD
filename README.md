@@ -31,7 +31,7 @@ Queda como una app con su ícono y funciona sin conexión.
 index.html            la app completa (HTML, CSS y JS en un solo archivo)
 manifest.webmanifest  nombre, colores e íconos para instalarla
 sw.js                 service worker: la guarda para usarla sin conexión
-_headers              cabeceras para Cloudflare Pages
+_headers              cabeceras HTTP (las respeta Cloudflare)
 icons/                íconos de la app
 ```
 
@@ -49,15 +49,14 @@ npx serve .
 
 Luego abre http://localhost:8080.
 
-## Publicarla en Cloudflare Pages
+## Publicarla en Cloudflare (Worker con assets estáticos)
 
-1. En el panel de Cloudflare entra a **Workers & Pages → Create → Pages → Connect to Git**.
-2. Elige este repositorio.
-3. Configuración del build:
-   - Framework preset: **None**
-   - Build command: *(vacío)*
-   - Build output directory: `/`
-4. **Save and Deploy.**
+La app se publica como un Worker que solo sirve archivos estáticos, igual que otras apps de la cuenta. La configuración está en `wrangler.jsonc` y `.assetsignore` deja fuera los archivos que no son de la app.
+
+1. En el panel de Cloudflare entra a **Workers & Pages → Create → Workers → Import a repository**.
+2. Elige este repositorio y la rama `main`.
+3. Deja el build command vacío y el deploy command en `npx wrangler deploy`.
+4. **Create and deploy.** Queda en `https://calma-nocturna.<tu-subdominio>.workers.dev`.
 
 Cada push a `main` publica una versión nueva. Los pull requests reciben su propia URL de vista previa.
 
