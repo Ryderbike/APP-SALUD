@@ -170,6 +170,14 @@ p { margin: 0; }
 .result { font-family: var(--display); font-size: 1.1rem; font-weight: 600; color: var(--sage); }
 .muted { color: var(--mist); font-size: 0.92rem; }
 .stack { display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  position: fixed; left: 50%; top: calc(70px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 4;
+  background: var(--glass); border: 1px solid rgba(255,210,150,0.4); color: var(--moon);
+  padding: 10px 16px; border-radius: 999px; font-weight: 600; font-size: 0.9rem; white-space: nowrap;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 0 24px rgba(255,190,118,0.25);
+  animation: toast 3.2s ease forwards; pointer-events: none; max-width: calc(100% - 32px);
+}
+@keyframes toast { 0% { opacity: 0; transform: translate(-50%, -8px); } 10%, 80% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; } }
 .link { font: inherit; background: none; border: 0; color: var(--mist); cursor: pointer; padding: 8px; text-decoration: underline; text-underline-offset: 3px; }
 
 button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
@@ -179,6 +187,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
 <body>
 
 <canvas id="sky" aria-hidden="true"></canvas>
+<div class="toast" id="toast" role="status" hidden></div>
 
 <div class="app">
   <header class="bar">
@@ -201,7 +210,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
       <div class="big" id="big">0 min</div>
       <div class="breath" id="breath"></div>
     </div>
-    <p class="hint" id="hint">Toca la esfera. Arrastra el dedo por el cielo.</p>
+    <p class="hint" id="hint">Toca la esfera. Atrapa las estrellas fugaces.</p>
   </main>
 
   <!-- dock inicio -->
@@ -418,7 +427,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     $("clock").hidden = inSession;
     if (m === "home") {
       $("cap-top").textContent = greeting(); $("breath").textContent = "de calma juntados";
-      $("hint").textContent = "Toca la esfera. Arrastra el dedo por el cielo."; $("hint").style.opacity = 1;
+      $("hint").textContent = "Toca la esfera. Atrapa las estrellas fugaces."; $("hint").style.opacity = 1;
       renderTally();
     }
   }
@@ -523,11 +532,93 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     const s = $("stage").getBoundingClientRect();
     orb.x = s.left + s.width / 2; orb.y = s.top + s.height / 2;
     orb.r = Math.max(70, Math.min(s.width * 0.42, s.height * 0.42, 170));
+    paintSkyLayers();
   }
   addEventListener("resize", layout);
   new ResizeObserver(layout).observe($("stage"));
 
-  const stars = Array.from({ length: 90 }, () => ({ x: Math.random(), y: Math.random(), s: Math.random() * 1.3 + 0.2, tw: Math.random() * 6 }));
+  // cielo: estrellas de tres colores, vía láctea, luna, estrellas fugaces y satélites
+  const stars = Array.from({ length: 230 }, () => {
+    const h = Math.random();
+    return { x: Math.random(), y: Math.random(), s: Math.pow(Math.random(), 3) * 2.2 + 0.35, tw: Math.random() * 6, sp: 0.6 + Math.random() * 2.4,
+      c: h < 0.12 ? "255,214,180" : h > 0.86 ? "190,212,255" : "238,240,246" };
+  });
+  let milky = null, moonImg = null;
+  function paintSkyLayers() {
+    milky = document.createElement("canvas"); milky.width = W; milky.height = H;
+    const m = milky.getContext("2d");
+    m.translate(W / 2, H / 2); m.rotate(-0.55);
+    const band = Math.max(W, H) * 0.16, L = Math.hypot(W, H);
+    const g = m.createLinearGradient(0, -band, 0, band);
+    g.addColorStop(0, "rgba(120,140,200,0)"); g.addColorStop(0.5, "rgba(150,165,220,0.10)"); g.addColorStop(1, "rgba(120,140,200,0)");
+    m.fillStyle = g; m.fillRect(-L / 2, -band, L, band * 2);
+    for (let i = 0; i < 900; i++) {
+      const x = (Math.random() - 0.5) * L, y = (Math.random() + Math.random() + Math.random() - 1.5) * band * 0.7;
+      m.fillStyle = "rgba(230,235,255," + (Math.random() * 0.35).toFixed(2) + ")"; m.fillRect(x, y, 1, 1);
+    }
+    const r = Math.max(14, Math.min(W, H) * 0.045);
+    moonImg = document.createElement("canvas"); moonImg.width = moonImg.height = r * 6;
+    const mc = moonImg.getContext("2d"), c = r * 3;
+    const mg = mc.createRadialGradient(c, c, r * 0.8, c, c, r * 3); mg.addColorStop(0, "rgba(255,240,210,0.22)"); mg.addColorStop(1, "rgba(255,240,210,0)");
+    mc.fillStyle = mg; mc.fillRect(0, 0, r * 6, r * 6);
+    mc.fillStyle = "#f6ecd2"; mc.beginPath(); mc.arc(c, c, r, 0, Math.PI * 2); mc.fill();
+    mc.globalCompositeOperation = "destination-out"; mc.beginPath(); mc.arc(c + r * 0.55, c - r * 0.3, r * 0.95, 0, Math.PI * 2); mc.fill();
+  }
+  const meteors = [], sats = [];
+  let nextMeteor = performance.now() / 1000 + 3, nextSat = performance.now() / 1000 + 20;
+  function spawnMeteor(fast) {
+    const dir = Math.random() < 0.5 ? -1 : 1, sp = (fast ? 9 : 6) + Math.random() * 3;
+    const ang = (0.35 + Math.random() * 0.35);
+    meteors.push({ x: dir > 0 ? Math.random() * W * 0.6 : W * 0.4 + Math.random() * W * 0.6, y: Math.random() * H * 0.35,
+      vx: Math.cos(ang) * sp * dir, vy: Math.sin(ang) * sp, life: 1, len: 70 + Math.random() * 80, w: 1.2 + Math.random() * 1.4 });
+  }
+  function shower() { for (let i = 0; i < 7; i++) setTimeout(() => spawnMeteor(true), i * 260 + Math.random() * 200); toast("Lluvia de estrellas. Atrapa una con el dedo."); }
+  let toastT = null;
+  function toast(msg) { const el = $("toast"); el.hidden = true; void el.offsetWidth; el.textContent = msg; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => el.hidden = true, 3200); }
+  const WISHES = ["Atrapaste una estrella fugaz. Pide un deseo.", "Otra más. Ese deseo se cumple.", "Buena mano. Las estrellas están de tu lado.", "Estrella atrapada. Esta noche vas ganando."];
+  function catchMeteor(m) {
+    m.life = 0; burst(m.x, m.y, 26);
+    const n = store.get("wishes", 0) + 1; store.set("wishes", n);
+    toast(WISHES[(n - 1) % WISHES.length] + " (" + n + ")");
+    audio.init(); [0, 120, 240, 360].forEach((d, i) => setTimeout(() => audio.note(audio.scale[5 + i], 0.05), d));
+    buzz(20);
+  }
+  function drawSky(t, dt) {
+    if (milky) { ctx.globalAlpha = 0.9; ctx.drawImage(milky, 0, 0); ctx.globalAlpha = 1; }
+    for (const s of stars) {
+      const x = ((s.x + t * 0.0012 * s.s) % 1) * W, y = s.y * H;
+      const a = 0.25 + 0.6 * (0.5 + 0.5 * Math.sin(t * s.sp + s.tw));
+      ctx.fillStyle = "rgba(" + s.c + "," + a.toFixed(3) + ")";
+      if (s.s > 1.8) {
+        ctx.beginPath(); ctx.arc(x, y, s.s * 0.6, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "rgba(" + s.c + "," + (a * 0.35).toFixed(3) + ")";
+        ctx.fillRect(x - s.s * 2, y - 0.4, s.s * 4, 0.8); ctx.fillRect(x - 0.4, y - s.s * 2, 0.8, s.s * 4);
+      } else ctx.fillRect(x, y, s.s, s.s);
+    }
+    if (moonImg) ctx.drawImage(moonImg, W - moonImg.width * 0.75 - 8, 40);
+    // satélite
+    if (t > nextSat) { sats.push({ x: -10, y: H * (0.1 + Math.random() * 0.25), v: 0.35 + Math.random() * 0.2 }); nextSat = t + 35 + Math.random() * 40; }
+    for (let i = sats.length - 1; i >= 0; i--) {
+      const s = sats[i]; s.x += s.v; if (s.x > W + 10) { sats.splice(i, 1); continue; }
+      const blink = Math.sin(t * 6) > 0.6 ? 0.95 : 0.35;
+      ctx.fillStyle = "rgba(255,255,255," + blink + ")"; ctx.fillRect(s.x, s.y, 2, 2);
+    }
+    // estrellas fugaces
+    if (t > nextMeteor) {
+      if (Math.random() < (reduced ? 0 : 0.12)) shower(); else spawnMeteor(false);
+      nextMeteor = t + (reduced ? 20 : 5) + Math.random() * 9;
+    }
+    for (let i = meteors.length - 1; i >= 0; i--) {
+      const m = meteors[i]; m.x += m.vx; m.y += m.vy; m.life -= 0.011;
+      if (m.life <= 0 || m.y > H || m.x < -200 || m.x > W + 200) { meteors.splice(i, 1); continue; }
+      const sp = Math.hypot(m.vx, m.vy), tx = m.x - (m.vx / sp) * m.len, ty = m.y - (m.vy / sp) * m.len;
+      const g = ctx.createLinearGradient(m.x, m.y, tx, ty);
+      g.addColorStop(0, "rgba(255,245,225," + (0.95 * m.life).toFixed(3) + ")"); g.addColorStop(1, "rgba(255,200,150,0)");
+      ctx.strokeStyle = g; ctx.lineWidth = m.w; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(tx, ty); ctx.stroke();
+      ctx.fillStyle = "rgba(255,250,235," + m.life.toFixed(3) + ")"; ctx.beginPath(); ctx.arc(m.x, m.y, m.w * 1.3, 0, Math.PI * 2); ctx.fill();
+    }
+  }
   // luciérnagas: cada una es un trozo de tiempo
   const flies = [];
   function addFly(x, y, homing) {
@@ -546,6 +637,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
   cv.addEventListener("pointerdown", (e) => {
     pointer = { x: e.clientX, y: e.clientY, down: true, id: e.pointerId };
     audio.init();
+    const hit = meteors.find((m) => m.life > 0.1 && Math.hypot(e.clientX - (m.x - m.vx * 4), e.clientY - (m.y - m.vy * 4)) < 64);
+    if (hit) { catchMeteor(hit); return; }
     if (onOrb(e.clientX, e.clientY)) {
       orb.held = true; orb.wobble = Math.min(1.6, orb.wobble + 0.8);
       const hgt = 1 - (e.clientY - (orb.y - orb.r)) / (2 * orb.r);
@@ -582,10 +675,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     const bg = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, Math.max(W, H) * 0.8);
     bg.addColorStop(0, "#14223d"); bg.addColorStop(1, "#0b1220");
     ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-    for (const s of stars) {
-      ctx.fillStyle = "rgba(238,240,246," + (0.2 + 0.4 * (0.5 + 0.5 * Math.sin(t + s.tw))).toFixed(3) + ")";
-      ctx.fillRect(s.x * W, s.y * H, s.s, s.s);
-    }
+    drawSky(t, dt);
 
     // esfera
     orb.press += ((orb.held ? 1 : 0) - orb.press) * 0.08;
