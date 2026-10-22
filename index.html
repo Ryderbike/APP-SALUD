@@ -35,6 +35,7 @@
   color-scheme: dark;
 }
 html { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { height: 100%; overflow: hidden; }
 body { margin: 0; }
 body {
@@ -84,9 +85,9 @@ p { margin: 0; }
 
 /* dock */
 .dock { display: flex; flex-direction: column; gap: 12px; }
-.pills { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.pills { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .pill {
-  display: flex; align-items: baseline; gap: 6px; padding: 8px 12px; border-radius: 999px;
+  display: flex; align-items: baseline; justify-content: center; gap: 5px; padding: 8px 6px; border-radius: 999px; white-space: nowrap;
   background: var(--glass); border: 1px solid var(--line); font-size: 0.8rem; color: var(--mist);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
@@ -187,7 +188,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
     </button>
     <button class="icon-btn" id="rain" aria-pressed="false" aria-label="Lluvia" hidden>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 4v4M12 7v5M17 4v4M7 13v4M12 16v4M17 13v4"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 15.5A4.5 4.5 0 0 0 17.5 7h-1.3A7 7 0 1 0 4 13.3"/><path d="M8 19v2M8 13v2M12 21v2M12 15v2M16 19v2M16 13v2"/></svg>
     </button>
     <button class="icon-btn" id="pause" aria-label="Pausar" hidden>
       <svg viewBox="0 0 24 24" fill="currentColor" id="pause-ico"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
@@ -207,8 +208,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
   <footer class="dock" id="dock-home">
     <div class="week" id="week" aria-label="Tus últimas 7 noches"></div>
     <div class="pills">
-      <span class="pill"><b id="t-wins">0</b>noches ganadas</span>
-      <span class="pill"><b id="t-orders">0</b>antojos evitados</span>
+      <span class="pill"><b id="t-wins">0</b>noches</span>
+      <span class="pill"><b id="t-orders">0</b>evitados</span>
       <span class="pill"><b id="t-saved">$0</b>ahorrado</span>
     </div>
     <button class="cta" id="open-setup">Tengo ganas ahora</button>
