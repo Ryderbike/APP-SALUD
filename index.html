@@ -129,6 +129,7 @@ p { margin: 0; }
   border: 1px solid var(--line); background: var(--glass-2); color: var(--moon); flex: 1;
 }
 .btn.go { background: var(--sage); border-color: var(--sage); color: var(--sage-ink); flex: 2; }
+.btn:disabled, .cta:disabled, .link:disabled { opacity: 0.45; cursor: default; }
 .dots { display: flex; gap: 4px; }
 .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
 .dots i.on { background: var(--sage); }
@@ -155,7 +156,7 @@ p { margin: 0; }
   border: 0; border-radius: 12px; padding: 10px 4px; cursor: pointer; font-variant-numeric: tabular-nums;
 }
 .seg button[aria-pressed="true"] { background: var(--moon); color: var(--night); }
-.scale { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
+.scale { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; }
 .scale button {
   font: inherit; font-weight: 700; font-size: 0.85rem; height: 38px; border-radius: 10px; cursor: pointer;
   border: 1px solid var(--line); background: transparent; color: var(--mist); font-variant-numeric: tabular-nums;
@@ -236,7 +237,7 @@ p { margin: 0; }
 .day.trained b { background: var(--ember); }
 .link { font: inherit; background: none; border: 0; color: var(--mist); cursor: pointer; padding: 8px; text-decoration: underline; text-underline-offset: 3px; }
 
-button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .card.swap, .sheet { animation: none; } }
 </style>
 </head>
@@ -406,6 +407,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     <button class="btn" id="e-del">Borrar rutina</button>
     <button class="btn go" id="e-save">Guardar</button>
   </div>
+  <button class="link" id="e-cancel">Volver sin guardar</button>
 </section>
 
 <!-- hoja: fin del entrenamiento -->
@@ -490,7 +492,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
   // ---------- estado ----------
   let mode = "home";
   let kind = "dulce", minutes = 10, intensity = 7, after = 3;
-  let total = 600, left = 600, running = false, lastT = performance.now(), sessionStart = 0;
+  // el tiempo se mide con la hora real (endAt), no sumando cuadros: así sigue corriendo con la app cerrada o el teléfono bloqueado
+  let total = 600, left = 600, running = false, endAt = 0, lastT = performance.now(), sessionStart = 0;
   let queue = [], taskIdx = 0, doneCount = 0, extended = false;
   const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
@@ -522,7 +525,11 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
   seg("kinds", "kind", (v) => { kind = v; setPrice(store.get("price:" + v, DEFAULT_PRICE[v])); });
   seg("prices", "price", (v) => { $("cost").value = v; store.set("price:" + kind, +v); });
   seg("mins", "min", (v) => minutes = +v);
-  $("cost").addEventListener("input", (e) => { const v = Math.max(0, +e.target.value || 0); setPrice(v); store.set("price:" + kind, v); });
+  $("cost").addEventListener("input", (e) => {
+    const v = Math.max(0, +e.target.value || 0);
+    $("prices").querySelectorAll("button").forEach((c) => c.setAttribute("aria-pressed", +c.dataset.price === v ? "true" : "false"));
+    store.set("price:" + kind, v);
+  });
   setPrice(store.get("price:dulce", DEFAULT_PRICE.dulce));
   const price = () => Math.max(0, +$("cost").value || 0);
 
@@ -558,13 +565,20 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
   const SHEETS = ["setup", "end", "tsetup", "tedit", "tend"];
   function openSheet(id) { $("scrim").hidden = false; SHEETS.forEach((s) => $(s).hidden = s !== id); }
   function closeSheets() { $("scrim").hidden = true; SHEETS.forEach((s) => $(s).hidden = true); }
-  $("scrim").addEventListener("click", () => { if (!$("setup").hidden || !$("tsetup").hidden) closeSheets(); });
+  // las hojas de elegir se cierran tocando afuera, con Escape o deslizando; las de resultado piden una respuesta
+  function dismissSheet() {
+    if (!$("setup").hidden || !$("tsetup").hidden) closeSheets();
+    else if (!$("tedit").hidden) openSheet("tsetup");
+  }
+  $("scrim").addEventListener("click", dismissSheet);
+  addEventListener("keydown", (e) => { if (e.key === "Escape") dismissSheet(); });
 
   function setMode(m) {
     mode = m;
     const inSession = m !== "home";
     $("dock-home").hidden = inSession; $("dock-session").hidden = m !== "session"; $("dock-train").hidden = m !== "train";
-    ["music", "rain", "pause", "quit"].forEach((id) => $(id).hidden = !inSession);
+    ["music", "rain", "quit"].forEach((id) => $(id).hidden = !inSession);
+    $("pause").hidden = m !== "session" && m !== "train";
     $("big").style.color = "";
     $("clock").hidden = inSession;
     if (m === "home") {
@@ -582,17 +596,18 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     total = left = mins * 60;
     queue = shuffle(TASKS[kind]).concat(shuffle(TASKS.general));
     if (!extended) { taskIdx = 0; doneCount = 0; orb.level = 0; }
-    orb.base = extended ? orb.level : 0; orb.ring = null;
+    orb.base = extended ? Math.max(orb.level, 0.6) : 0; orb.ring = null;
     renderTask(false);
     setMode("session");
     $("cap-top").textContent = "Juntando calma";
     $("hint").textContent = "Mantén el dedo en la esfera al inhalar. Suelta al exhalar.";
     $("hint").style.opacity = 1; setTimeout(() => $("hint").style.opacity = 0, 9000);
-    running = true; sessionStart = performance.now();
+    running = true; sessionStart = performance.now(); endAt = Date.now() + total * 1000;
     setPauseIcon();
     renderTime();
     if (!audio.on) toggleMusic(true);
     requestWake();
+    saveActive();
   }
 
   function renderTask(animate = true) {
@@ -604,10 +619,10 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     if (animate) { const c = $("task"); c.classList.remove("swap"); void c.offsetWidth; c.classList.add("swap"); }
   }
   $("done").addEventListener("click", () => {
-    doneCount++; taskIdx++; renderTask(); buzz(15);
+    doneCount++; taskIdx++; renderTask(); buzz(15); saveActive();
     const r = $("done").getBoundingClientRect(); burst(r.left + r.width / 2, r.top, 14); audio.chime(1.2);
   });
-  $("other").addEventListener("click", () => { taskIdx++; renderTask(); });
+  $("other").addEventListener("click", () => { taskIdx++; renderTask(); saveActive(); });
 
   const mmss = (s) => { s = Math.max(0, Math.ceil(s)); return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); };
   function renderTime() { $("big").textContent = mmss(left); }
@@ -615,15 +630,33 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     $("pause").setAttribute("aria-label", running ? "Pausar" : "Seguir");
     $("pause-ico").innerHTML = running ? '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>' : '<path d="M8 5l11 7-11 7z"/>';
   }
-  $("pause").addEventListener("click", () => { if (mode !== "session" && mode !== "train") return; running = !running; setPauseIcon(); });
+  const sessionLeft = () => running ? Math.max(0, (endAt - Date.now()) / 1000) : left;
+  const wkLeft = () => running ? Math.max(0, (wk.endAt - Date.now()) / 1000) : wk.left;
+  function setRunning(v) {
+    if (v === running) return;
+    if (mode === "session") { if (v) endAt = Date.now() + left * 1000; else left = sessionLeft(); }
+    if (mode === "train" && wk && wk.phase !== "work") { if (v) wk.endAt = Date.now() + wk.left * 1000; else wk.left = wkLeft(); }
+    running = v; lastPhase = ""; setPauseIcon(); saveActive();
+    if (mode === "session") { renderTime(); $("breath").textContent = running ? "" : "En pausa"; }
+  }
+  $("pause").addEventListener("click", () => { if (mode === "session" || mode === "train") setRunning(!running); });
 
+  let endEarly = false, endChosen = false;
   function finish(early) {
-    running = false;
-    const used = (total - left) / 60;
-    const s = stats(); s.minutes = (s.minutes || 0) + used; store.set("stats", s);
+    if (mode !== "session") return;
+    left = sessionLeft(); running = false;
+    const s = stats(); s.minutes = (s.minutes || 0) + (total - left) / 60; store.set("stats", s);
+    endEarly = early;
+    showEnd();
+    if (!early) { orb.level = 1; for (let i = 0; i < 4; i++) setTimeout(() => burst(orb.x, orb.y - orb.r, 20), i * 250); }
+    audio.chime(1); setTimeout(() => audio.chime(1.5), 500);
+  }
+  function showEnd() {
+    const early = endEarly, used = (total - left) / 60;
+    endChosen = false; ["sleep", "more", "ate"].forEach((id) => $(id).disabled = false);
     setMode("end");
     $("cap-top").textContent = "Juntaste"; $("big").textContent = mmss(total - left); $("breath").textContent = "";
-    $("end-label").textContent = early ? "Paraste a los " + Math.max(1, Math.round(used)) + " min" : "Juntaste " + Math.round(total / 60) + " minutos de calma";
+    $("end-label").textContent = early ? "Paraste a los " + Math.max(1, Math.round(used)) + " min" : extended ? "Aguantaste " + Math.round(total / 60) + " minutos más" : "Juntaste " + Math.round(total / 60) + " minutos de calma";
     $("end-title").textContent = early ? "Bien que te diste este rato." : "La ola pasó.";
     $("end-sub").textContent = doneCount ? "Hiciste " + (doneCount === 1 ? "1 cosa" : doneCount + " cosas") + " en vez de comer o pedir." : "Respiraste y esperaste. Eso ya cambia cómo se sienten las ganas.";
     after = Math.max(0, intensity - 4);
@@ -632,8 +665,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     $("end-note").textContent = "";
     showDelta();
     openSheet("end");
-    if (!early) { orb.level = 1; for (let i = 0; i < 4; i++) setTimeout(() => burst(orb.x, orb.y - orb.r, 20), i * 250); }
-    audio.chime(1); setTimeout(() => audio.chime(1.5), 500);
+    saveActive();
   }
   function showDelta() {
     const d = intensity - after;
@@ -645,11 +677,14 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     store.set("stats", s);
     markNight(win ? "win" : "try");
   }
-  function goHome() { closeSheets(); toggleMusic(false); releaseWake(); orb.level = 0; orb.ring = null; setMode("home"); }
-  $("sleep").addEventListener("click", () => { addWin(true); goHome(); });
-  $("more").addEventListener("click", () => { extended = true; startSession(5); });
+  function goHome() { closeSheets(); toggleMusic(false); releaseWake(); orb.level = 0; orb.ring = null; running = false; setMode("home"); saveActive(); updateTitle(); }
+  // un solo toque cuenta: evita sumar dos veces la misma noche
+  function choose() { if (endChosen) return false; endChosen = true; ["sleep", "more", "ate"].forEach((id) => $(id).disabled = true); return true; }
+  $("sleep").addEventListener("click", () => { if (!choose()) return; addWin(true); goHome(); });
+  $("more").addEventListener("click", () => { if (!choose()) return; extended = true; startSession(5); });
   $("ate").addEventListener("click", () => {
-    addWin(false);
+    if (!choose()) return;
+    addWin(false); store.set("active", null);
     $("end-note").textContent = "Está bien. No se trata de ser perfecto. Mañana es otra noche.";
     setTimeout(goHome, 3000);
   });
@@ -783,22 +818,28 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     if (!r || !r.items.length) return;
     closeSheets();
     const lastKg = store.get("lastkg", {});
-    wk = { r, i: 0, s: 0, phase: "work", left: 0, span: 1, start: Date.now(), doneSets: 0,
+    wk = { r: JSON.parse(JSON.stringify(r)), i: 0, s: 0, phase: "work", left: 0, span: 1, endAt: 0, start: Date.now(), doneSets: 0,
       totalSets: r.items.reduce((a, it) => a + (it.type === "cardio" ? 1 : it.sets), 0),
       log: r.items.map((it) => ({ ex: it.ex, type: it.type, sets: [], reps: it.reps, kg: lastKg[it.ex] ?? it.kg })) };
     orb.level = 0; orb.base = 0; orb.ring = 0;
     setMode("train"); enterItem();
-    $("hint").textContent = "Ajusta reps y kg si hiciste otra cosa. La esfera se llena en cada descanso.";
+    $("hint").textContent = "Ajusta reps y kg si cambió algo. La esfera se llena al descansar.";
     $("hint").style.opacity = 1; setTimeout(() => $("hint").style.opacity = 0, 7000);
     running = true; setPauseIcon();
     if (!audio.on) toggleMusic(true);
     requestWake();
+    saveActive();
+  }
+  // descanso y cardio cuentan contra la hora real; al empezar un conteo, se quita la pausa
+  function countdown(secs) {
+    wk.span = wk.left = secs; wk.endAt = Date.now() + secs * 1000; lastTick = Math.ceil(secs);
+    running = true; setPauseIcon();
   }
   function enterItem() {
     const it = wk.r.items[wk.i];
-    if (it.type === "cardio") { wk.phase = "cardio"; wk.span = wk.left = it.min * 60; lastTick = Math.ceil(wk.left); }
+    if (it.type === "cardio") { wk.phase = "cardio"; countdown(it.min * 60); }
     else wk.phase = "work";
-    renderWk(true);
+    renderWk(true); saveActive();
   }
   function renderWk(anim) {
     const it = wk.r.items[wk.i], lg = wk.log[wk.i], next = wk.r.items[wk.i + 1];
@@ -838,53 +879,64 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
       buzz(25); audio.chime(1.2);
       const r = $("t-main").getBoundingClientRect(); burst(r.left + r.width / 2, r.top, 14);
       if (wk.s >= it.sets && wk.i === wk.r.items.length - 1) { workoutFinish(false); return; }
-      wk.phase = "rest"; wk.span = wk.left = wk.r.rest; lastTick = Math.ceil(wk.left); orb.level = 0;
-      renderWk(true);
+      wk.phase = "rest"; countdown(wk.r.rest); orb.level = 0;
+      renderWk(true); saveActive();
     } else if (wk.phase === "rest") endRest();
-    else { lg.sets.push({ min: Math.max(1, Math.round((wk.span - Math.max(0, wk.left)) / 60)) }); countSet(); nextItem(); }
+    else { wk.left = wkLeft(); lg.sets.push({ min: Math.max(1, Math.round((wk.span - wk.left) / 60)) }); countSet(); nextItem(); }
   });
   $("t-alt").addEventListener("click", () => {
     if (!wk || mode !== "train") return;
     if (wk.phase === "work") nextItem();
-    else { const add = wk.phase === "rest" ? 30 : 300; wk.left += add; wk.span += add; renderWk(false); }
+    else {
+      const add = wk.phase === "rest" ? 30 : 300;
+      wk.left = wkLeft() + add; wk.span += add; if (running) wk.endAt += add * 1000;
+      renderWk(false); saveActive();
+    }
   });
   $("t-adjust").addEventListener("click", (e) => {
     const b = e.target.closest("[data-adj]"); if (!b || !wk) return;
     const lg = wk.log[wk.i], k = b.dataset.adj;
     lg[k] = Math.max(k === "kg" ? 0 : 1, Math.round((lg[k] + +b.dataset.d) * 10) / 10);
-    renderWk(false);
+    renderWk(false); saveActive();
   });
   function endRest() {
     audio.note(1046.5, 0.08); buzz(40);
-    if (wk.s >= wk.r.items[wk.i].sets) nextItem(); else { wk.phase = "work"; renderWk(true); }
+    if (wk.s >= wk.r.items[wk.i].sets) nextItem(); else { wk.phase = "work"; renderWk(true); saveActive(); }
   }
   function nextItem() {
     wk.i++; wk.s = 0; orb.level = 0;
     if (wk.i >= wk.r.items.length) { workoutFinish(false); return; }
     enterItem();
   }
-  function trainTick(dt) {
-    if (!wk || wk.phase === "work") return;
-    wk.left -= dt; secAcc += dt;
-    if (secAcc >= 1) { secAcc = 0; const edge = Math.random() * Math.PI * 2; addFly(orb.x + Math.cos(edge) * Math.max(W, H) * 0.6, orb.y + Math.sin(edge) * Math.max(W, H) * 0.6, true); }
-    orb.level = Math.min(1, 1 - wk.left / wk.span);
+  function trainTick() {
+    if (!wk || wk.phase === "work" || !running) return;
+    wk.left = wkLeft();
     const c = Math.ceil(wk.left);
-    if (c !== lastTick) { lastTick = c; $("big").textContent = mmss(wk.left); if (c <= 3 && c > 0) { audio.note(659.3, 0.06); buzz(10); } }
+    if (c !== lastTick) { lastTick = c; $("big").textContent = mmss(wk.left); if (c <= 3 && c > 0 && !document.hidden) { audio.note(659.3, 0.06); buzz(10); } }
     if (wk.left <= 0) { if (wk.phase === "rest") endRest(); else $("t-main").click(); }
   }
+  let tendEarly = false;
   function workoutFinish(early) {
+    if (mode !== "train") return;
     running = false;
     const secs = Math.round((Date.now() - wk.start) / 1000);
     const sets = wk.log.reduce((a, l) => a + l.sets.length, 0);
     lastWorkout = { date: Date.now(), rid: wk.r.id, name: wk.r.name, secs, sets, items: wk.log.filter((l) => l.sets.length).map((l) => ({ ex: l.ex, type: l.type, sets: l.sets })) };
-    setMode("tend");
-    $("cap-top").textContent = "Entrenaste"; $("big").textContent = mmss(secs); $("breath").textContent = sets + (sets === 1 ? " serie" : " series");
-    $("te-label").textContent = wk.r.name + " · " + Math.max(1, Math.round(secs / 60)) + " min";
-    $("te-title").textContent = early ? "Bien, cada serie suma." : "Rutina completa.";
-    $("te-sub").innerHTML = lastWorkout.items.map((l) => "<div><b>" + esc(l.ex) + "</b> · " + (l.type === "cardio" ? l.sets[0].min + " min" : l.sets.map((x) => x.reps + "×" + kgNum(x.kg)).join(", ") + " kg") + "</div>").join("") || "<div>Esta vez no alcanzaste a registrar series.</div>";
-    openSheet("tend");
+    tendEarly = early;
+    showTend();
     if (!early) { orb.level = 1; orb.ring = 1; for (let i = 0; i < 4; i++) setTimeout(() => burst(orb.x, orb.y - orb.r, 20), i * 250); }
     audio.chime(1); setTimeout(() => audio.chime(1.5), 500);
+  }
+  function showTend() {
+    const early = tendEarly, { secs, sets } = lastWorkout;
+    setMode("tend");
+    $("cap-top").textContent = "Entrenaste"; $("big").textContent = mmss(secs); $("breath").textContent = sets + (sets === 1 ? " serie" : " series");
+    $("te-label").textContent = lastWorkout.name + " · " + Math.max(1, Math.round(secs / 60)) + " min";
+    $("te-title").textContent = early ? "Bien, cada serie suma." : "Rutina completa.";
+    $("te-sub").innerHTML = lastWorkout.items.map((l) => "<div><b>" + esc(l.ex) + "</b> · " + (l.type === "cardio" ? l.sets[0].min + " min" : l.sets.map((x) => x.reps + "×" + kgNum(x.kg)).join(", ") + " kg") + "</div>").join("") || "<div>Esta vez no alcanzaste a registrar series.</div>";
+    $("te-done").hidden = !sets;
+    openSheet("tend");
+    saveActive();
   }
   $("te-done").addEventListener("click", () => {
     if (lastWorkout && lastWorkout.sets) {
@@ -898,7 +950,53 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     wk = null; lastWorkout = null; goHome();
   });
   $("te-again").addEventListener("click", () => { wk = null; lastWorkout = null; goHome(); });
-  $("quit").addEventListener("click", () => { if (mode === "session") finish(true); else if (mode === "train") workoutFinish(true); else goHome(); });
+
+  // ---------- sesión en curso: se guarda para retomarla al volver ----------
+  function saveActive() {
+    let a = null;
+    if (mode === "session") a = { m: "session", kind, intensity, cost: price(), total, left: sessionLeft(), endAt: running ? endAt : 0, running, queue, taskIdx, doneCount, extended, base: orb.base };
+    else if (mode === "end") a = { m: "end", kind, intensity, cost: price(), total, left, doneCount, extended, early: endEarly };
+    else if (mode === "train" && wk) a = { m: "train", wk: Object.assign({}, wk, { left: wk.phase === "work" ? 0 : wkLeft() }), running, ring: orb.ring };
+    else if (mode === "tend" && lastWorkout) a = { m: "tend", lastWorkout, early: tendEarly };
+    if (a) a.at = Date.now();
+    store.set("active", a);
+  }
+  function restoreActive() {
+    const a = store.get("active", null);
+    if (!a || !a.m) return;
+    // algo de hace más de 12 horas ya no tiene sentido retomarlo
+    if (Date.now() - Math.max(a.at || 0, a.endAt || 0, a.wk?.endAt || 0) > 12 * 3600e3) { store.set("active", null); return; }
+    if (a.m === "session" || a.m === "end") {
+      kind = a.kind; intensity = a.intensity; total = a.total; doneCount = a.doneCount; extended = a.extended;
+      $("kinds").querySelectorAll("button").forEach((c) => c.setAttribute("aria-pressed", c.dataset.kind === kind ? "true" : "false"));
+      scale("intensity", 1, intensity, (v) => intensity = v);
+      setPrice(a.cost);
+    }
+    if (a.m === "session") {
+      queue = a.queue; taskIdx = a.taskIdx; orb.base = a.base || 0; orb.ring = null;
+      left = a.left; running = a.running; endAt = a.endAt || 0; sessionStart = performance.now();
+      renderTask(false); setMode("session"); setPauseIcon();
+      $("cap-top").textContent = "Juntando calma";
+      if (running && Date.now() >= endAt) { left = 0; finish(false); return; }
+      left = sessionLeft(); renderTime(); requestWake();
+      toast(running ? "Tu tiempo siguió corriendo mientras no estabas." : "Tu sesión está en pausa.");
+    } else if (a.m === "end") {
+      left = a.left; endEarly = a.early; showEnd();
+    } else if (a.m === "train") {
+      wk = a.wk; running = a.running; orb.ring = a.ring ?? 0; orb.base = 0;
+      lastTick = Math.ceil(wkLeft());
+      setMode("train"); setPauseIcon(); renderWk(false); requestWake();
+      trainTick();
+      if (mode === "train") toast("Seguimos con tu entrenamiento.");
+    } else if (a.m === "tend") {
+      lastWorkout = a.lastWorkout; tendEarly = a.early; showTend();
+    }
+  }
+  $("quit").addEventListener("click", () => {
+    if (mode === "session") finish(true);
+    else if (mode === "train") workoutFinish(true);
+    else { endChosen = true; wk = null; lastWorkout = null; goHome(); }
+  });
 
   // ---------- respiración ----------
   const IN = 4, HOLD = 2, OUT = 6, CYCLE = IN + HOLD + OUT;
@@ -1047,13 +1145,19 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
     const dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
     const t = now / 1000;
 
-    if (mode === "session" && running) {
-      left -= dt; secAcc += dt;
+    tick();
+    const counting = running && (mode === "session" || (mode === "train" && wk && wk.phase !== "work"));
+    if (counting) {
+      // cada segundo llega una luciérnaga a la esfera
+      secAcc += dt;
       if (secAcc >= 1) { secAcc = 0; const edge = Math.random() * Math.PI * 2; addFly(orb.x + Math.cos(edge) * Math.max(W, H) * 0.6, orb.y + Math.sin(edge) * Math.max(W, H) * 0.6, true); }
-      orb.level = orb.base + (1 - orb.base) * (1 - left / total);
-      if (left <= 0) { left = 0; finish(false); } else renderTime();
     }
-    if (mode === "train" && running) trainTick(dt);
+    if (mode === "session") {
+      const p = 1 - left / total;
+      orb.level = orb.base + (1 - orb.base) * p;
+      orb.ring = extended ? p : null;
+    }
+    if (mode === "train" && wk && wk.phase !== "work") orb.level = Math.min(1, 1 - wk.left / wk.span);
 
     const b = mode === "session" ? breathAt((now - sessionStart) / 1000) : { phase: "", v: 0.5 + 0.5 * Math.sin(t * 0.5) };
     if (mode === "session" && b.phase !== lastPhase) { $("breath").textContent = running ? b.phase : "En pausa"; lastPhase = b.phase; }
@@ -1143,7 +1247,30 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
       ctx.fillStyle = "rgba(255,225,180," + s.life.toFixed(3) + ")"; ctx.beginPath(); ctx.arc(s.x, s.y, 1.8, 0, Math.PI * 2); ctx.fill();
     }
   }
-  layout(); setMode("home"); requestAnimationFrame(frame);
+  // un solo lugar avanza los relojes; lo llaman los cuadros y también un intervalo, que sigue andando con la pestaña oculta
+  function tick() {
+    if (mode === "session" && running) {
+      left = sessionLeft();
+      if (left <= 0) finish(false); else renderTime();
+    } else if (mode === "train") trainTick();
+  }
+  const TITLE = document.title;
+  function updateTitle() {
+    let t = "";
+    if (mode === "session") t = mmss(left);
+    else if (mode === "train" && wk && wk.phase !== "work") t = mmss(wk.left);
+    document.title = t ? t + (running ? "" : " (pausa)") + " · " + TITLE : TITLE;
+  }
+  setInterval(() => { tick(); updateTitle(); }, 1000);
+  function onReturn() {
+    tickClock(); tick(); updateTitle();
+    if (mode === "session" || mode === "train") { requestWake(); if (audio.ctx && audio.on) audio.ctx.resume(); }
+    if (mode === "home") renderTally();
+  }
+  document.addEventListener("visibilitychange", () => { if (document.hidden) saveActive(); else onReturn(); });
+  addEventListener("pagehide", saveActive);
+  addEventListener("pageshow", (e) => { if (e.persisted) onReturn(); });
+
 
   // ---------- música (Web Audio, generada en vivo) ----------
   const audio = {
@@ -1219,16 +1346,18 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
   $("music").addEventListener("click", () => toggleMusic());
   $("rain").addEventListener("click", () => toggleRain());
 
-  // deslizar hacia abajo para cerrar la hoja de preparar
-  (() => {
-    const sh = $("setup"); let y0 = null, dy = 0;
-    sh.addEventListener("pointerdown", (e) => { if (sh.scrollTop > 0 || e.target.closest("button,input")) return; y0 = e.clientY; dy = 0; sh.style.transition = "none"; });
+  // deslizar hacia abajo para cerrar las hojas de elegir
+  ["setup", "tsetup", "tedit"].forEach((id) => {
+    const sh = $(id); let y0 = null, dy = 0;
+    sh.addEventListener("pointerdown", (e) => { if (sh.scrollTop > 0 || e.target.closest("button,input,select")) return; y0 = e.clientY; dy = 0; sh.style.transition = "none"; });
     addEventListener("pointermove", (e) => { if (y0 == null) return; dy = Math.max(0, e.clientY - y0); sh.style.transform = "translateY(" + dy + "px)"; });
-    addEventListener("pointerup", () => {
+    const end = () => {
       if (y0 == null) return; y0 = null; sh.style.transition = "transform 0.25s";
-      if (dy > 110) { closeSheets(); } sh.style.transform = "";
-    });
-  })();
+      if (dy > 110) dismissSheet(); sh.style.transform = "";
+    };
+    addEventListener("pointerup", end); addEventListener("pointercancel", end);
+  });
+  $("e-cancel").addEventListener("click", () => openSheet("tsetup"));
 
   // app instalable y sin conexión (solo cuando corre en su propio dominio)
   if ("serviceWorker" in navigator && location.protocol === "https:" && !/claude\.ai|claudeusercontent/.test(location.hostname)) {
@@ -1238,6 +1367,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--sage); outl
   let wake = null;
   async function requestWake() { try { wake = await navigator.wakeLock?.request("screen"); } catch {} }
   function releaseWake() { try { wake?.release(); } catch {} wake = null; }
+
+  layout(); setMode("home"); restoreActive(); updateTitle(); requestAnimationFrame(frame);
 })();
 </script>
 </body>
