@@ -449,9 +449,28 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 <script>
 (() => {
   const $ = (id) => document.getElementById(id);
+  // todo se guarda en memoria y en localStorage; dentro de Claude, además, en la base del artifact (ver "nube"),
+  // porque ahí la vista previa puede recargarse al volver a la app y perder el localStorage
+  const mem = {};
+  try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith("calma:")) mem[k.slice(6)] = localStorage.getItem(k); } } catch {}
+  const keep = (k, raw) => { mem[k] = raw; try { localStorage.setItem("calma:" + k, raw); } catch {} };
   const store = {
-    get(k, d) { try { const v = localStorage.getItem("calma:" + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
-    set(k, v) { try { localStorage.setItem("calma:" + k, JSON.stringify(v)); } catch {} }
+    get(k, d) { try { const v = mem[k]; return v == null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { keep(k, JSON.stringify(v)); keep("_at", String(Date.now())); cloud.dirty(); }
+  };
+  const cloud = {
+    ref: null, timer: 0, busy: false, again: false,
+    dirty() { if (!this.ref) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.flush(), 1200); },
+    async flush() {
+      clearTimeout(this.timer);
+      if (!this.ref) return;
+      if (this.busy) { this.again = true; return; }
+      this.busy = true;
+      const keys = {}; for (const k in mem) if (k !== "_at") keys[k] = mem[k];
+      try { await this.ref.set({ at: +mem._at || 0, keys }); } catch {}
+      this.busy = false;
+      if (this.again) { this.again = false; this.flush(); }
+    }
   };
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const fmtMoney = (n) => "$" + Math.round(n).toLocaleString("es-CL");
@@ -1267,8 +1286,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
     if (mode === "session" || mode === "train") { requestWake(); if (audio.ctx && audio.on) audio.ctx.resume(); }
     if (mode === "home") renderTally();
   }
-  document.addEventListener("visibilitychange", () => { if (document.hidden) saveActive(); else onReturn(); });
-  addEventListener("pagehide", saveActive);
+  document.addEventListener("visibilitychange", () => { if (document.hidden) { saveActive(); cloud.flush(); } else onReturn(); });
+  addEventListener("pagehide", () => { saveActive(); cloud.flush(); });
   addEventListener("pageshow", (e) => { if (e.persisted) onReturn(); });
 
 
@@ -1369,6 +1388,28 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   function releaseWake() { try { wake?.release(); } catch {} wake = null; }
 
   layout(); setMode("home"); restoreActive(); updateTitle(); requestAnimationFrame(frame);
+
+  // nube: si la app corre dentro de Claude, trae lo guardado allá (sesión en curso incluida) y sigue respaldando
+  (async () => {
+    const use = window.claude?.use; if (!use) return;
+    try {
+      const [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+      const id = db && user && await user.id(); if (!id) return;
+      const ref = db.doc("data/users/" + id + "/calma");
+      const snap = await ref.get(), d = snap.exists ? snap.data() : null;
+      if (d && d.keys && (d.at || 0) > (+mem._at || 0)) {
+        for (const k in d.keys) keep(k, d.keys[k]);
+        keep("_at", String(d.at));
+        if (mode === "home") {
+          routines = store.get("routines", null) || routines;
+          setPrice(store.get("price:" + kind, DEFAULT_PRICE[kind]));
+          setMode("home"); restoreActive(); updateTitle();
+        }
+      }
+      cloud.ref = ref;
+      if (!d || (+mem._at || 0) > (d.at || 0)) cloud.dirty();
+    } catch {}
+  })();
 })();
 </script>
 </body>
