@@ -13,6 +13,7 @@ La idea es simple: las ganas suben y bajan como una ola. Si les das unos minutos
 - **Música de calma y lluvia.** Se generan en vivo con la Web Audio API, sin archivos de audio.
 - **Cierre sin culpa.** Al final te pregunta cómo están las ganas ahora y te muestra cuánto bajaron. Puedes irte a dormir, pedir 5 minutos más o marcar que comiste igual.
 - **Entrenar: planificador de rutinas.** Armas tus rutinas (lo ideal, 4 o 5 ejercicios) con series, repeticiones y kilos, y les asignas días de la semana. La app te dice qué toca hoy y te guía serie por serie: anotas lo que hiciste de verdad, descansas mientras la esfera se llena y pasas al siguiente ejercicio. Recuerda el último peso que usaste en cada ejercicio. Trae una lista de ejercicios con mancuernas, banca, bici estática, bicicleta y peso corporal, y puedes escribir los tuyos. No cuenta calorías.
+- **El tiempo sigue aunque salgas.** El contador usa la hora real: si bloqueas el teléfono, cambias de app o cierras la app, al volver el tiempo siguió corriendo (o ya terminó y te muestra el cierre). Lo mismo con los descansos y el cardio del modo Entrenar.
 - **Tus noches.** Calendario de los últimos 7 días (noches ganadas y días entrenados), noches ganadas, entrenamientos y plata ahorrada.
 
 Todo se guarda solo en tu teléfono (`localStorage`). No hay cuentas ni servidor, y nada sale del dispositivo.
