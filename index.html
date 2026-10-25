@@ -1374,6 +1374,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     lk[lg.ex] = lg.kg; lr[lg.ex] = lg.reps; store.set("lastkg", lk); store.set("lastreps", lr);
     const r = routines.find((x) => x.id === wk.r.id), it = r && r.items.find((x) => x.ex === lg.ex && x.type !== "cardio");
     if (it && (it.kg !== lg.kg || it.reps !== lg.reps)) { it.kg = lg.kg; it.reps = lg.reps; saveRoutines(); }
+    const cur = wk.r.items.find((x) => x.ex === lg.ex && x.type !== "cardio"); if (cur) { cur.kg = lg.kg; cur.reps = lg.reps; }
   }
   function endRest() {
     audio.note(1046.5, 0.08); buzz(40);
