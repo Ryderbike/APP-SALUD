@@ -1,7 +1,7 @@
 {
-  "name": "Calma Nocturna",
+  "name": "Calma",
   "short_name": "Calma",
-  "description": "Deja pasar las ganas de comer dulce o pedir delivery de noche.",
+  "description": "Deja pasar las ganas de comer dulce o pedir delivery a cualquier hora del día.",
   "lang": "es",
   "start_url": "./",
   "scope": "./",

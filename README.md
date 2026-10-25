@@ -1,6 +1,6 @@
-# Calma Nocturna
+# Calma
 
-Una app web para dejar pasar las ganas de comer dulce, picotear o pedir delivery de noche, y para planificar y seguir tus rutinas de gimnasio en casa.
+Una app web para dejar pasar las ganas de comer dulce, picotear o pedir delivery a cualquier hora del día, y para planificar y seguir tus rutinas de gimnasio en casa.
 
 La idea es simple: las ganas suben y bajan como una ola. Si les das unos minutos y haces otra cosa mientras tanto, casi siempre pasan. La app te acompaña en ese rato.
 
@@ -11,10 +11,11 @@ La idea es simple: las ganas suben y bajan como una ola. Si les das unos minutos
 - **Respiración guiada.** Ritmo 4-2-6: inhalas 4 segundos, sostienes 2 y exhalas 6.
 - **Tareas "ve y haz esto".** Ideas concretas una por una: lavarte los dientes, tomar un té, salir de la cocina, cerrar la app de delivery, lavarte la cara con agua fría.
 - **Música de calma y lluvia.** Se generan en vivo con la Web Audio API, sin archivos de audio.
-- **Cierre sin culpa.** Al final te pregunta cómo están las ganas ahora y te muestra cuánto bajaron. Puedes irte a dormir, pedir 5 minutos más o marcar que comiste igual.
+- **Cierre sin culpa.** Al final te pregunta cómo están las ganas ahora y te muestra cuánto bajaron. Puedes marcar que se te pasó, pedir 5 minutos más o marcar que comiste igual.
 - **Entrenar: planificador de rutinas.** Armas tus rutinas (lo ideal, 4 o 5 ejercicios) con series, repeticiones y kilos, y les asignas días de la semana. La app te dice qué toca hoy y te guía serie por serie: anotas lo que hiciste de verdad, descansas mientras la esfera se llena y pasas al siguiente ejercicio. Recuerda el último peso que usaste en cada ejercicio. Trae una lista de ejercicios con mancuernas, banca, bici estática, bicicleta y peso corporal, y puedes escribir los tuyos. No cuenta calorías.
 - **El tiempo sigue aunque salgas.** El contador usa la hora real: si bloqueas el teléfono, cambias de app o cierras la app, al volver el tiempo siguió corriendo (o ya terminó y te muestra el cierre). Lo mismo con los descansos y el cardio del modo Entrenar.
-- **Tus noches.** Calendario de los últimos 7 días (noches ganadas y días entrenados), noches ganadas, entrenamientos y plata ahorrada.
+- **Un cielo que sigue la hora.** La app calcula a qué hora sale y se pone el sol (para Santiago si el teléfono está en hora de Chile) y el cielo va pasando de madrugada a amanecer, mañana, tarde, atardecer, anochecer y noche, con transiciones suaves. De día hay sol que recorre su arco, nubes, pájaros y pompas de jabón para reventar; de noche, estrellas fugaces para atrapar y la luna con su fase real. La esfera, las luciérnagas, las ideas que te propone y la música también cambian con la hora. Tocando la hora arriba puedes dejar el cielo fijo en amanecer, día, atardecer o noche.
+- **Tu registro.** Calendario de los últimos 7 días (días ganados y días entrenados), antojos evitados, entrenamientos y plata ahorrada.
 
 Todo se guarda solo en tu teléfono (`localStorage`). No hay cuentas ni servidor, y nada sale del dispositivo.
 

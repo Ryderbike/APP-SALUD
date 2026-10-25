@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Calma Nocturna</title>
+<title>Calma</title>
 <meta name="theme-color" content="#0b1220">
-<meta name="description" content="Una app para dejar pasar las ganas de comer dulce o pedir delivery de noche.">
+<meta name="description" content="Una app para dejar pasar las ganas de comer dulce o pedir delivery, a cualquier hora del día.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Calma">
@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: a full-screen phone app. A canvas sky fills the screen; the time orb sits in the middle; a dock at the bottom holds the action; setup and results open as bottom sheets. Deliberately dark: it is used with the lights off. */
+/* Layout: a full-screen phone app. A canvas sky fills the screen and follows the local hour (dawn, day, sunset, night); the time orb sits in the middle; a dock at the bottom holds the action; setup and results open as bottom sheets. The UI glass stays dark so it reads over any sky. */
 :root {
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -70,7 +70,14 @@ p { margin: 0; }
 }
 .icon-btn svg { width: 20px; height: 20px; }
 .icon-btn[aria-pressed="true"] { color: var(--sage-ink); background: var(--sage); border-color: var(--sage); }
-.clock { color: var(--mist); font-variant-numeric: tabular-nums; font-size: 0.9rem; padding-inline: 4px; }
+.clock {
+  font: inherit; font-size: 0.9rem; font-variant-numeric: tabular-nums; color: var(--moon); cursor: pointer;
+  background: var(--glass); border: 1px solid var(--line); border-radius: 999px; padding: 0 12px; height: 36px;
+  display: flex; align-items: center; gap: 6px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.clock span + span { color: var(--mist); font-weight: 600; font-size: 0.8rem; }
+.clock span + span::before { content: "· "; }
+.bar .brand, .hint { text-shadow: 0 1px 10px rgba(0,0,0,0.45); }
 
 /* center */
 .stage { flex: 1; position: relative; display: grid; place-items: center; min-height: 0; }
@@ -80,7 +87,7 @@ p { margin: 0; }
 .breath { font-family: var(--display); font-size: 1.15rem; font-weight: 600; color: var(--moon); min-height: 1.5em; }
 .hint {
   position: absolute; bottom: 4px; left: 0; right: 0; text-align: center;
-  font-size: 0.8rem; color: var(--mist); transition: opacity 0.6s;
+  font-size: 0.8rem; color: var(--moon); opacity: 0.85; transition: opacity 0.6s;
 }
 
 /* dock */
@@ -155,6 +162,8 @@ p { margin: 0; }
   border: 0; border-radius: 12px; padding: 10px 4px; cursor: pointer; font-variant-numeric: tabular-nums;
 }
 .seg button[aria-pressed="true"] { background: var(--moon); color: var(--night); }
+.sky-seg { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.sky-seg button:first-child { grid-column: 1 / -1; }
 .scale { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; }
 .scale button {
   font: inherit; font-weight: 700; font-size: 0.85rem; height: 38px; border-radius: 10px; cursor: pointer;
@@ -315,8 +324,8 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 
 <div class="app">
   <header class="bar">
-    <div class="brand"><i></i>Calma Nocturna</div>
-    <span class="clock" id="clock"></span>
+    <div class="brand"><i></i>Calma</div>
+    <button class="clock" id="clock" aria-label="Elegir el cielo"><span id="clock-t"></span><span id="clock-p"></span></button>
     <button class="icon-btn" id="open-stats" aria-label="Tu registro">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 20v-8M12 20V4M19 20v-5"/></svg>
     </button>
@@ -510,17 +519,37 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 <section class="sheet" id="stats" hidden aria-label="Tu registro">
   <div class="grab"></div>
   <h2>Tu registro</h2>
-  <div class="week" id="week" aria-label="Tus últimas 7 noches"></div>
-  <p class="muted">Verde: noche ganada. Punteado: lo intentaste. Punto naranjo: entrenaste.</p>
+  <div class="week" id="week" aria-label="Tus últimos 7 días"></div>
+  <p class="muted">Verde: día ganado. Punteado: lo intentaste. Punto naranjo: entrenaste.</p>
   <div class="tiles">
     <div class="tile good"><b id="t-wins">0</b><span>antojos evitados</span></div>
     <div class="tile warn"><b id="t-falls">0</b><span>caídas</span></div>
     <div class="tile good"><b id="t-saved">$0</b><span>dinero ahorrado</span></div>
     <div class="tile warn"><b id="t-spent">$0</b><span>dinero gastado</span></div>
-    <div class="tile"><b id="t-nights">0</b><span>noches ganadas</span></div>
+    <div class="tile"><b id="t-nights">0</b><span>días ganados</span></div>
     <div class="tile"><b id="t-rate">–</b><span>de las veces lo lograste</span></div>
     <div class="tile"><b id="t-trains">0</b><span>entrenos</span></div>
     <div class="tile"><b id="t-mins">0 min</b><span>de calma juntados</span></div>
+  </div>
+</section>
+
+<!-- hoja: el cielo -->
+<section class="sheet" id="skysheet" hidden aria-label="El cielo">
+  <div class="grab"></div>
+  <div class="stack">
+    <h2>El cielo</h2>
+    <p class="muted" id="sky-sun"></p>
+  </div>
+  <div class="q">
+    <span id="lbl-sky">Cómo se ve la app</span>
+    <div class="seg sky-seg" id="sky-mode" role="group" aria-labelledby="lbl-sky">
+      <button data-sky="auto" aria-pressed="true">Según la hora</button>
+      <button data-sky="amanecer" aria-pressed="false">Amanecer</button>
+      <button data-sky="dia" aria-pressed="false">Día</button>
+      <button data-sky="atardecer" aria-pressed="false">Atardecer</button>
+      <button data-sky="noche" aria-pressed="false">Noche</button>
+    </div>
+    <p class="muted" id="sky-note"></p>
   </div>
 </section>
 
@@ -539,7 +568,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     <p class="muted" id="saved-now"></p>
   </div>
   <div class="stack">
-    <button class="cta sage" id="sleep">Me voy a dormir</button>
+    <button class="cta sage" id="won">Listo, se me pasó</button>
     <button class="btn" id="more">Todavía tengo ganas, 5 minutos más</button>
     <button class="link" id="ate">Comí algo igual</button>
   </div>
@@ -575,7 +604,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const fmtMoney = (n) => "$" + Math.round(n).toLocaleString("es-CL");
 
-  const tickClock = () => { $("clock").textContent = new Date().toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" }); };
+  const tickClock = () => { $("clock-t").textContent = new Date().toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", hour12: false }); };
   tickClock(); setInterval(tickClock, 15000);
 
   // ---------- sugerencias ----------
@@ -602,9 +631,26 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       ["Mira 5 cosas a tu alrededor.", "Nómbralas en voz baja. Después 4 que puedas tocar y 3 que escuches."],
       ["Ordena una sola cosa pequeña.", "Un cajón o el velador. Algo que termines en dos minutos."],
       ["Mándale un mensaje a alguien.", "No tiene que ser de esto. Un \"¿cómo estás?\" basta."],
-      ["Ponte el pijama y baja las luces.", "Las ganas de noche muchas veces son sueño."],
       ["Mastica un chicle sin azúcar.", "La boca ocupada ayuda a que la ola pase."],
       ["Respira con la esfera tres veces.", "Mantén el dedo sobre ella al inhalar y suelta al exhalar."]
+    ]
+  };
+  // ideas que calzan con el momento del día
+  const TIME_TASKS = {
+    manana: [
+      ["Toma un desayuno de verdad.", "Huevo, yogurt o pan con algo. Con el estómago lleno temprano, los antojos del resto del día bajan."],
+      ["Abre la cortina y toma sol dos minutos.", "La luz de la mañana despierta el cuerpo mejor que el azúcar."],
+      ["Sal a caminar a la esquina.", "Cinco minutos afuera y las ganas se ven de otro tamaño."]
+    ],
+    tarde: [
+      ["Come una fruta con algo de proteína.", "Las ganas de la tarde suelen ser bajón de energía. Una manzana con queso o un puñado de maní lo arreglan."],
+      ["Sal a caminar cinco minutos.", "Moverte a esta hora te despeja más que un café con algo dulce."],
+      ["Toma agua con hielo y limón.", "A media tarde la sed se disfraza de antojo."]
+    ],
+    noche: [
+      ["Ponte el pijama y baja las luces.", "Las ganas de noche muchas veces son sueño."],
+      ["Cierra la cocina por hoy.", "Apaga la luz de la cocina y dilo en voz alta: la cocina cerró."],
+      ["Deja lista tu ropa de mañana.", "Una tarea chica y tranquila cierra el día mejor que un snack."]
     ]
   };
 
@@ -653,7 +699,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   const price = () => Math.max(0, +$("cost").value || 0);
 
   function stats() { return store.get("stats", { wins: 0, orders: 0, saved: 0, minutes: 0 }); }
-  // una noche se cuenta desde las 6:00 hasta las 5:59 del día siguiente
+  // un día se cuenta desde las 6:00 hasta las 5:59 del día siguiente: un antojo de madrugada es del día anterior
   const ymd = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   function nightKey(d = new Date()) { const x = new Date(d); if (x.getHours() < 6) x.setDate(x.getDate() - 1); return ymd(x); }
   function markNight(v) { const n = store.get("nights", {}); const k = nightKey(); if (n[k] !== "win") n[k] = v; store.set("nights", n); }
@@ -667,12 +713,12 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       const day = document.createElement("div");
       day.className = "day" + (st ? " " + st : "") + (tr[k] ? " trained" : "") + (i === 0 ? " today" : "");
       day.innerHTML = "<span>" + names[d.getDay()] + "</span><i></i><b></b>";
-      day.title = st === "win" ? "Noche ganada" : st === "try" ? "Lo intentaste" : "";
+      day.title = st === "win" ? "Día ganado" : st === "try" ? "Lo intentaste" : "";
       el.appendChild(day);
     }
   }
   const buzz = (ms = 10) => { try { navigator.vibrate?.(ms); } catch {} };
-  function greeting() { const h = new Date().getHours(); return h >= 20 || h < 5 ? "Buenas noches" : h < 12 ? "Buenos días" : "Buenas tardes"; }
+  function greeting() { return { manana: "Buenos días", tarde: "Buenas tardes", noche: "Buenas noches" }[slot()]; }
   function renderTally() {
     const s = stats();
     $("t-wins").textContent = s.wins; $("t-falls").textContent = s.falls || 0; $("t-trains").textContent = s.trains || 0; $("t-saved").textContent = fmtMoney(s.saved);
@@ -684,12 +730,12 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   }
 
   // ---------- pantallas ----------
-  const SHEETS = ["setup", "end", "tedit", "tend", "stats"];
+  const SHEETS = ["setup", "end", "tedit", "tend", "stats", "skysheet"];
   function openSheet(id) { $("scrim").hidden = false; SHEETS.forEach((s) => $(s).hidden = s !== id); }
   function closeSheets() { $("scrim").hidden = true; SHEETS.forEach((s) => $(s).hidden = true); }
   // las hojas de elegir se cierran tocando afuera, con Escape o deslizando; las de resultado piden una respuesta
   function dismissSheet() {
-    if (!$("setup").hidden || !$("stats").hidden || !$("tedit").hidden) closeSheets();
+    if (!$("setup").hidden || !$("stats").hidden || !$("tedit").hidden || !$("skysheet").hidden) closeSheets();
   }
   $("scrim").addEventListener("click", dismissSheet);
   addEventListener("keydown", (e) => { if (e.key === "Escape") dismissSheet(); });
@@ -706,7 +752,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     $("clock").hidden = inSession;
     if (m === "home") {
       $("cap-top").textContent = greeting(); $("breath").textContent = "juntados para ti";
-      $("hint").textContent = "Toca la esfera. Atrapa las estrellas fugaces."; $("hint").style.opacity = 1;
+      $("hint").textContent = homeHint(); $("hint").style.opacity = 1;
       renderTally(); renderRoutines();
     }
   }
@@ -740,7 +786,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   function startSession(mins) {
     closeSheets();
     total = left = mins * 60;
-    queue = shuffle(TASKS[kind]).concat(shuffle(TASKS.general));
+    queue = shuffle(TASKS[kind]).concat(shuffle(TIME_TASKS[slot()].concat(TASKS.general)));
     if (!extended) { taskIdx = 0; doneCount = 0; orb.level = 0; }
     orb.base = extended ? Math.max(orb.level, 0.6) : 0; orb.ring = null;
     renderTask(false);
@@ -799,7 +845,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   }
   function showEnd() {
     const early = endEarly, used = (total - left) / 60;
-    endChosen = false; ["sleep", "more", "ate"].forEach((id) => $(id).disabled = false);
+    endChosen = false; ["won", "more", "ate"].forEach((id) => $(id).disabled = false);
     setMode("end");
     $("cap-top").textContent = "Juntaste"; $("big").textContent = mmss(total - left); $("breath").textContent = "";
     $("end-label").textContent = early ? "Paraste a los " + Math.max(1, Math.round(used)) + " min" : extended ? "Aguantaste " + Math.round(total / 60) + " minutos más" : "Juntaste " + Math.round(total / 60) + " minutos de calma";
@@ -807,7 +853,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     $("end-sub").textContent = doneCount ? "Hiciste " + (doneCount === 1 ? "1 cosa" : doneCount + " cosas") + " en vez de comer o pedir." : "Respiraste y esperaste. Eso ya cambia cómo se sienten las ganas.";
     after = Math.max(0, intensity - 4);
     scale("after", 0, after, (v) => { after = v; showDelta(); });
-    $("saved-now").textContent = price() ? "Si te vas a dormir sin comprarlo, te ahorras " + fmtMoney(price()) + "." : "";
+    $("saved-now").textContent = price() ? "Si lo dejas pasar, te ahorras " + fmtMoney(price()) + "." : "";
     $("end-note").textContent = "";
     showDelta();
     openSheet("end");
@@ -824,14 +870,14 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     markNight(win ? "win" : "try");
   }
   function goHome() { closeSheets(); toggleMusic(false); releaseWake(); orb.level = 0; orb.ring = null; running = false; setMode("home"); saveActive(); updateTitle(); }
-  // un solo toque cuenta: evita sumar dos veces la misma noche
-  function choose() { if (endChosen) return false; endChosen = true; ["sleep", "more", "ate"].forEach((id) => $(id).disabled = true); return true; }
-  $("sleep").addEventListener("click", () => { if (!choose()) return; addWin(true); goHome(); });
+  // un solo toque cuenta: evita sumar dos veces el mismo antojo
+  function choose() { if (endChosen) return false; endChosen = true; ["won", "more", "ate"].forEach((id) => $(id).disabled = true); return true; }
+  $("won").addEventListener("click", () => { if (!choose()) return; addWin(true); goHome(); });
   $("more").addEventListener("click", () => { if (!choose()) return; extended = true; startSession(5); });
   $("ate").addEventListener("click", () => {
     if (!choose()) return;
     addWin(false); store.set("active", null);
-    $("end-note").textContent = "Está bien. No se trata de ser perfecto. Mañana es otra noche.";
+    $("end-note").textContent = "Está bien. No se trata de ser perfecto. La próxima ola la pasas.";
     setTimeout(goHome, 3000);
   });
 
@@ -1178,13 +1224,101 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   addEventListener("resize", layout);
   new ResizeObserver(layout).observe($("stage"));
 
-  // cielo: estrellas de tres colores, vía láctea, luna, estrellas fugaces y satélites
+  // ---------- hora del día: el cielo, la esfera, las luciérnagas y la música siguen al sol ----------
+  // la salida y la puesta del sol se calculan para Santiago si el teléfono está en hora de Chile; si no, se estiman con la zona horaria
+  const TAU = Math.PI * 2;
+  const TZ = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch { return ""; } })();
+  const GEO = /^America\/(Santiago|Punta_Arenas)$/.test(TZ) ? { lat: -33.45, lon: -70.66 }
+    : { lat: /^(America\/(Argentina|Sao_Paulo|Montevideo|Asuncion)|Australia|Pacific\/Auckland)/.test(TZ) ? -30 : 35, lon: -new Date().getTimezoneOffset() / 4 };
+  function sunTimes(d) {
+    const rad = Math.PI / 180, n = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(d.getFullYear(), 0, 0)) / 864e5);
+    const g = TAU / 365 * (n - 1);
+    const eqt = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
+    const decl = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
+    const lat = GEO.lat * rad, cosH = (Math.cos(90.833 * rad) - Math.sin(lat) * Math.sin(decl)) / (Math.cos(lat) * Math.cos(decl));
+    const ha = Math.acos(Math.max(-1, Math.min(1, cosH))) / rad, noon = 720 - 4 * GEO.lon - eqt, tz = -d.getTimezoneOffset();
+    const local = (m) => (((m + tz) / 60) % 24 + 24) % 24;
+    return { rise: local(noon - 4 * ha), set: local(noon + 4 * ha) };
+  }
+  let sunDay = "", SUN = { rise: 7, set: 20 };
+  function sun() { const d = new Date(), k = ymd(d); if (k !== sunDay) { sunDay = k; SUN = sunTimes(d); } return SUN; }
+  const realHour = () => { const d = new Date(); return d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600; };
+  // se puede dejar el cielo fijo en un momento; "auto" sigue la hora real
+  let skyMode = store.get("sky", "auto");
+  function skyHour() {
+    const { rise, set } = sun();
+    return { amanecer: rise + 0.1, dia: (rise + set) / 2, atardecer: set + 0.1, noche: set + 2.5 }[skyMode] ?? realHour();
+  }
+  function phaseName(h) {
+    const { rise, set } = sun();
+    if (h >= rise - 1.6 && h < rise + 0.7) return "Amanecer";
+    if (h >= rise + 0.7 && h < 12) return "Mañana";
+    if (h >= 12 && h < set - 1.2) return "Tarde";
+    if (h >= set - 1.2 && h < set + 0.8) return "Atardecer";
+    if (h >= set + 0.8 && h < set + 1.8) return "Anochecer";
+    return h < rise ? "Madrugada" : "Noche";
+  }
+  // las ideas y el saludo siguen la hora real, aunque el cielo esté fijo
+  function slot() { const h = realHour(), { rise, set } = sun(); return h >= rise - 1.6 && h < 12 ? "manana" : h >= 12 && h < set + 0.8 ? "tarde" : "noche"; }
+
+  // paletas: cielo (arriba, medio, horizonte), cuánto se ven estrellas, sol, nubes y pájaros, color de luciérnagas, esfera y música
+  const PAL = {
+    noche: { top: "#050a18", mid: "#0b1630", low: "#17243f", stars: 1, sun: 0, sunC: "#ffb070", cloud: "#3c4a6e", cloudA: 0.14, fly: "#ffd296", flyA: 1, liq0: "#9ff0d4", liq1: "#4fbfa0", liq2: "#1f6f7a", halo: "#7fe0c0", glass: "#14223d", birds: 0, bright: 0 },
+    amanecer: { top: "#1b2350", mid: "#6b4a88", low: "#f3a08a", stars: 0.35, sun: 0.55, sunC: "#ff9f6e", cloud: "#ffb3b0", cloudA: 0.5, fly: "#ffd0dc", flyA: 0.85, liq0: "#ffdbe6", liq1: "#f29cb6", liq2: "#6f4a8e", halo: "#ffaac4", glass: "#2b2347", birds: 1, bright: 0.45 },
+    manana: { top: "#3a78c8", mid: "#79b0e4", low: "#f4d9b6", stars: 0, sun: 1, sunC: "#fff0c8", cloud: "#ffffff", cloudA: 0.75, fly: "#fffbe8", flyA: 0.7, liq0: "#cff7ff", liq1: "#6fd0e8", liq2: "#2a7aa6", halo: "#bff0ff", glass: "#1d3a66", birds: 0.8, bright: 1 },
+    dia: { top: "#2a69bf", mid: "#5b9fe0", low: "#b4dbf5", stars: 0, sun: 1, sunC: "#fffbe6", cloud: "#ffffff", cloudA: 0.85, fly: "#ffffff", flyA: 0.65, liq0: "#c2f8e6", liq1: "#5cd2b0", liq2: "#1c8486", halo: "#aaffe0", glass: "#1c3c68", birds: 0.2, bright: 0.9 },
+    tarde: { top: "#2c5fa8", mid: "#6c9bd0", low: "#f2d6a2", stars: 0, sun: 0.95, sunC: "#ffe2a0", cloud: "#fff4e0", cloudA: 0.75, fly: "#fff0c8", flyA: 0.7, liq0: "#fff0be", liq1: "#f4c56c", liq2: "#a86f2a", halo: "#ffe0a0", glass: "#263a60", birds: 0.3, bright: 0.75 },
+    atardecer: { top: "#262c66", mid: "#b0507a", low: "#ff9c55", stars: 0.1, sun: 0.9, sunC: "#ff8a50", cloud: "#ff9e8a", cloudA: 0.65, fly: "#ffc48a", flyA: 0.9, liq0: "#ffd6a0", liq1: "#ff946a", liq2: "#9c3f62", halo: "#ffb07a", glass: "#3a2546", birds: 1, bright: 0.5 },
+    anochecer: { top: "#0c1332", mid: "#2b2a5e", low: "#6c4a7c", stars: 0.6, sun: 0, sunC: "#ff7a50", cloud: "#7a6a9a", cloudA: 0.3, fly: "#e6c8ff", flyA: 1, liq0: "#d8ccff", liq1: "#8f80e2", liq2: "#3b3888", halo: "#b4a0ff", glass: "#1e1c44", birds: 0.2, bright: 0.2 }
+  };
+  for (const k in PAL) for (const f in PAL[k]) { const v = PAL[k][f]; if (typeof v === "string") PAL[k][f] = [1, 3, 5].map((i) => parseInt(v.slice(i, i + 2), 16)); }
+  function mix(a, b, x) {
+    const o = {};
+    for (const f in a) o[f] = Array.isArray(a[f]) ? a[f].map((v, i) => v + (b[f][i] - v) * x) : a[f] + (b[f] - a[f]) * x;
+    return o;
+  }
+  function paletteAt(h) {
+    const { rise, set } = sun();
+    const K = [[rise - 1.6, "noche"], [rise - 0.2, "amanecer"], [rise + 1.8, "manana"], [(rise + set) / 2, "dia"], [set - 2.2, "tarde"], [set + 0.05, "atardecer"], [set + 0.8, "anochecer"], [set + 1.8, "noche"]];
+    for (let i = 0; i < K.length; i++) {
+      const a = K[i][0], b = i + 1 < K.length ? K[i + 1][0] : K[0][0] + 24, x = h < a ? h + 24 : h;
+      if (x >= a && x < b) return mix(PAL[K[i][1]], PAL[K[(i + 1) % K.length][1]], ease((x - a) / (b - a)));
+    }
+    return PAL.noche;
+  }
+  const rgb = (c) => "rgb(" + Math.round(c[0]) + "," + Math.round(c[1]) + "," + Math.round(c[2]) + ")";
+  const rgba = (c, a) => "rgba(" + Math.round(c[0]) + "," + Math.round(c[1]) + "," + Math.round(c[2]) + "," + Math.max(0, a).toFixed(3) + ")";
+  // T es hacia dónde va el cielo; P es lo que se pinta y se acerca a T de a poco, así un cambio nunca es brusco
+  let T = paletteAt(skyHour()), P = T, phase = "";
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  function updateSky() {
+    const h = skyHour(), name = phaseName(h);
+    T = paletteAt(h);
+    $("clock-p").textContent = name;
+    themeMeta.content = rgb(T.top);
+    audio.bright = T.bright; audio.birds = T.birds;
+    if (name !== phase) { phase = name; if (mode === "home") $("hint").textContent = homeHint(); }
+  }
+  function homeHint() {
+    return T.stars > 0.5 ? "Toca la esfera. Atrapa las estrellas fugaces." : T.stars > 0.15 ? "Toca la esfera. Atrapa una estrella o revienta una pompa." : "Toca la esfera. Revienta las pompas de jabón que suben.";
+  }
+  const fmtHour = (h) => String(Math.floor(h)).padStart(2, "0") + ":" + String(Math.floor((h % 1) * 60)).padStart(2, "0");
+  function renderSkySheet() {
+    const { rise, set } = sun();
+    $("sky-sun").textContent = "Hoy el sol sale a las " + fmtHour(rise) + " y se pone a las " + fmtHour(set) + ". El cielo, la esfera, las luces y la música van cambiando con él.";
+    $("sky-mode").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.sky === skyMode ? "true" : "false"));
+    $("sky-note").textContent = skyMode === "auto" ? "Ahora mismo: " + phaseName(realHour()).toLowerCase() + "." : "El cielo queda fijo hasta que vuelvas a elegir «Según la hora».";
+  }
+  $("clock").addEventListener("click", () => { renderSkySheet(); openSheet("skysheet"); });
+  seg("sky-mode", "sky", (v) => { skyMode = v; store.set("sky", v); updateSky(); renderSkySheet(); buzz(8); });
+
+  // cielo de noche: estrellas de tres colores, vía láctea, luna con su fase real, estrellas fugaces y satélites
   const stars = Array.from({ length: 230 }, () => {
     const h = Math.random();
     return { x: Math.random(), y: Math.random(), s: Math.pow(Math.random(), 3) * 2.2 + 0.35, tw: Math.random() * 6, sp: 0.6 + Math.random() * 2.4,
       c: h < 0.12 ? "255,214,180" : h > 0.86 ? "190,212,255" : "238,240,246" };
   });
-  let milky = null, moonImg = null;
+  let milky = null, moonR = 16;
   function paintSkyLayers() {
     milky = document.createElement("canvas"); milky.width = W; milky.height = H;
     const m = milky.getContext("2d");
@@ -1197,13 +1331,23 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       const x = (Math.random() - 0.5) * L, y = (Math.random() + Math.random() + Math.random() - 1.5) * band * 0.7;
       m.fillStyle = "rgba(230,235,255," + (Math.random() * 0.35).toFixed(2) + ")"; m.fillRect(x, y, 1, 1);
     }
-    const r = Math.max(14, Math.min(W, H) * 0.045);
-    moonImg = document.createElement("canvas"); moonImg.width = moonImg.height = r * 6;
-    const mc = moonImg.getContext("2d"), c = r * 3;
-    const mg = mc.createRadialGradient(c, c, r * 0.8, c, c, r * 3); mg.addColorStop(0, "rgba(255,240,210,0.22)"); mg.addColorStop(1, "rgba(255,240,210,0)");
-    mc.fillStyle = mg; mc.fillRect(0, 0, r * 6, r * 6);
-    mc.fillStyle = "#f6ecd2"; mc.beginPath(); mc.arc(c, c, r, 0, Math.PI * 2); mc.fill();
-    mc.globalCompositeOperation = "destination-out"; mc.beginPath(); mc.arc(c + r * 0.55, c - r * 0.3, r * 0.95, 0, Math.PI * 2); mc.fill();
+    moonR = Math.max(14, Math.min(W, H) * 0.045);
+  }
+  // fase de la luna: días desde una luna nueva conocida, en ciclos de 29,53 días
+  const moonPhase = () => (((Date.now() - Date.UTC(2000, 0, 6, 18, 14)) / 864e5 / 29.530588) % 1 + 1) % 1;
+  function drawMoon(x, y, r) {
+    const p = moonPhase(), lit = (1 - Math.cos(p * TAU)) / 2;
+    ctx.save(); ctx.translate(x, y);
+    const g = ctx.createRadialGradient(0, 0, r * 0.8, 0, 0, r * 3);
+    g.addColorStop(0, "rgba(255,240,210," + (0.05 + 0.2 * lit).toFixed(3) + ")"); g.addColorStop(1, "rgba(255,240,210,0)");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, r * 3, 0, TAU); ctx.fill();
+    ctx.fillStyle = "rgba(246,236,210,0.07)"; ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.fill();
+    // en el hemisferio sur la luna creciente se ilumina por la izquierda
+    if ((p < 0.5) === (GEO.lat < 0)) ctx.scale(-1, 1);
+    ctx.fillStyle = "#f6ecd2"; ctx.beginPath();
+    ctx.arc(0, 0, r, -Math.PI / 2, Math.PI / 2);
+    ctx.ellipse(0, 0, r * Math.abs(Math.cos(p * TAU)), r, 0, Math.PI / 2, -Math.PI / 2, lit < 0.5);
+    ctx.fill(); ctx.restore();
   }
   const meteors = [], sats = [];
   let nextMeteor = performance.now() / 1000 + 3, nextSat = performance.now() / 1000 + 20;
@@ -1225,18 +1369,21 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     buzz(20);
   }
   function drawSky(t, dt) {
-    if (milky) { ctx.globalAlpha = 0.9; ctx.drawImage(milky, 0, 0); ctx.globalAlpha = 1; }
+    const a = P.stars;
+    if (a < 0.02) { meteors.length = 0; return; }
+    ctx.globalAlpha = a;
+    if (milky) { ctx.globalAlpha = 0.9 * a; ctx.drawImage(milky, 0, 0); ctx.globalAlpha = a; }
     for (const s of stars) {
       const x = ((s.x + t * 0.0012 * s.s) % 1) * W, y = s.y * H;
-      const a = 0.25 + 0.6 * (0.5 + 0.5 * Math.sin(t * s.sp + s.tw));
-      ctx.fillStyle = "rgba(" + s.c + "," + a.toFixed(3) + ")";
+      const tw = 0.25 + 0.6 * (0.5 + 0.5 * Math.sin(t * s.sp + s.tw));
+      ctx.fillStyle = "rgba(" + s.c + "," + tw.toFixed(3) + ")";
       if (s.s > 1.8) {
-        ctx.beginPath(); ctx.arc(x, y, s.s * 0.6, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "rgba(" + s.c + "," + (a * 0.35).toFixed(3) + ")";
+        ctx.beginPath(); ctx.arc(x, y, s.s * 0.6, 0, TAU); ctx.fill();
+        ctx.fillStyle = "rgba(" + s.c + "," + (tw * 0.35).toFixed(3) + ")";
         ctx.fillRect(x - s.s * 2, y - 0.4, s.s * 4, 0.8); ctx.fillRect(x - 0.4, y - s.s * 2, 0.8, s.s * 4);
       } else ctx.fillRect(x, y, s.s, s.s);
     }
-    if (moonImg) ctx.drawImage(moonImg, W - moonImg.width * 0.75 - 8, 40);
+    drawMoon(W - moonR * 1.5 - 8, 40 + moonR * 3, moonR);
     // satélite
     if (t > nextSat) { sats.push({ x: -10, y: H * (0.1 + Math.random() * 0.25), v: 0.35 + Math.random() * 0.2 }); nextSat = t + 35 + Math.random() * 40; }
     for (let i = sats.length - 1; i >= 0; i--) {
@@ -1244,9 +1391,9 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       const blink = Math.sin(t * 6) > 0.6 ? 0.95 : 0.35;
       ctx.fillStyle = "rgba(255,255,255," + blink + ")"; ctx.fillRect(s.x, s.y, 2, 2);
     }
-    // estrellas fugaces
+    // estrellas fugaces: solo cuando el cielo ya está oscuro
     if (t > nextMeteor) {
-      if (Math.random() < (reduced ? 0 : 0.12)) shower(); else spawnMeteor(false);
+      if (a > 0.5) { if (Math.random() < (reduced ? 0 : 0.12)) shower(); else spawnMeteor(false); }
       nextMeteor = t + (reduced ? 20 : 5) + Math.random() * 9;
     }
     for (let i = meteors.length - 1; i >= 0; i--) {
@@ -1257,8 +1404,87 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       g.addColorStop(0, "rgba(255,245,225," + (0.95 * m.life).toFixed(3) + ")"); g.addColorStop(1, "rgba(255,200,150,0)");
       ctx.strokeStyle = g; ctx.lineWidth = m.w; ctx.lineCap = "round";
       ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(tx, ty); ctx.stroke();
-      ctx.fillStyle = "rgba(255,250,235," + m.life.toFixed(3) + ")"; ctx.beginPath(); ctx.arc(m.x, m.y, m.w * 1.3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "rgba(255,250,235," + m.life.toFixed(3) + ")"; ctx.beginPath(); ctx.arc(m.x, m.y, m.w * 1.3, 0, TAU); ctx.fill();
     }
+    ctx.globalAlpha = 1;
+  }
+
+  // cielo de día: el sol recorre su arco real, nubes que pasan, pájaros al amanecer y al atardecer, y pompas de jabón para reventar
+  function drawSun(h) {
+    if (P.sun < 0.02) return;
+    const { rise, set } = sun(), k = (h - rise) / (set - rise), up = Math.sin(Math.PI * Math.max(0, Math.min(1, k)));
+    const x = W * (0.08 + 0.84 * Math.max(-0.1, Math.min(1.1, k))), y = H * (0.68 - 0.52 * up) + (k < 0 || k > 1 ? H * 0.08 : 0);
+    const r = Math.max(18, Math.min(W, H) * 0.05), c = P.sunC;
+    const g = ctx.createRadialGradient(x, y, r * 0.6, x, y, r * 8);
+    g.addColorStop(0, rgba(c, 0.45 * P.sun)); g.addColorStop(0.3, rgba(c, 0.14 * P.sun)); g.addColorStop(1, rgba(c, 0));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 8, 0, TAU); ctx.fill();
+    ctx.fillStyle = rgba(c.map((v) => v + (255 - v) * 0.5), P.sun); ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+  }
+  const clouds = Array.from({ length: 6 }, () => ({ x: Math.random() * 1.4 - 0.2, y: 0.06 + Math.random() * 0.4, s: 0.6 + Math.random() * 0.8, v: 0.004 + Math.random() * 0.006,
+    puffs: Array.from({ length: 5 }, (_, j) => [(j - 2) * 0.5 + (Math.random() - 0.5) * 0.3, (Math.random() - 0.5) * 0.35 - (j === 2 ? 0.25 : 0), 0.5 + Math.random() * 0.45]) }));
+  function drawClouds(dt) {
+    const c = P.cloud, a = P.cloudA;
+    if (a < 0.02) return;
+    const unit = Math.min(W, 480) * 0.12;
+    for (const cl of clouds) {
+      cl.x += cl.v * dt * (reduced ? 0.3 : 1); if (cl.x > 1.3) cl.x = -0.3;
+      const cx = cl.x * W, cy = cl.y * H, u = unit * cl.s;
+      for (const [dx, dy, pr] of cl.puffs) {
+        const px = cx + dx * u * 1.6, py = cy + dy * u, rr = pr * u * 1.6;
+        const g = ctx.createRadialGradient(px, py, 0, px, py, rr);
+        g.addColorStop(0, rgba(c, a * 0.5)); g.addColorStop(0.6, rgba(c, a * 0.28)); g.addColorStop(1, rgba(c, 0));
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px, py, rr, 0, TAU); ctx.fill();
+      }
+    }
+  }
+  const birds = [];
+  let nextFlock = performance.now() / 1000 + 5;
+  function drawBirds(t, dt) {
+    if (t > nextFlock) {
+      if (P.birds > 0.3 && !reduced) {
+        const n = 3 + Math.floor(Math.random() * 4), dir = Math.random() < 0.5 ? 1 : -1, y0 = H * (0.1 + Math.random() * 0.22);
+        for (let i = 0; i < n; i++) birds.push({ x: dir > 0 ? -30 - i * 24 : W + 30 + i * 24, y: y0 + Math.abs(i - (n - 1) / 2) * 12, v: dir * (36 + Math.random() * 8), ph: Math.random() * 6, s: 5 + Math.random() * 3 });
+      }
+      nextFlock = t + 16 + Math.random() * 24;
+    }
+    if (!birds.length) return;
+    ctx.strokeStyle = "rgba(24,20,40," + (0.55 * Math.min(1, P.birds + 0.3)).toFixed(3) + ")"; ctx.lineWidth = 1.6; ctx.lineCap = "round";
+    for (let i = birds.length - 1; i >= 0; i--) {
+      const b = birds[i]; b.x += b.v * dt; b.y += Math.sin(t * 1.3 + b.ph) * 0.15;
+      if (b.x < -120 - W * 0.2 || b.x > W * 1.2 + 120) { birds.splice(i, 1); continue; }
+      const f = Math.sin(t * 9 + b.ph), s = b.s;
+      ctx.beginPath(); ctx.moveTo(b.x - s, b.y - s * 0.6 * f);
+      ctx.quadraticCurveTo(b.x - s * 0.4, b.y - s * 0.25, b.x, b.y);
+      ctx.quadraticCurveTo(b.x + s * 0.4, b.y - s * 0.25, b.x + s, b.y - s * 0.6 * f); ctx.stroke();
+    }
+  }
+  const pops = [];
+  let nextPop = performance.now() / 1000 + 3;
+  function drawPops(t, dt) {
+    const day = 1 - P.stars;
+    if (t > nextPop) {
+      if (day > 0.6) pops.push({ x: W * (0.1 + Math.random() * 0.8), y: H + 30, r: 14 + Math.random() * 16, v: 24 + Math.random() * 18, ph: Math.random() * 6, life: 1 });
+      nextPop = t + (reduced ? 16 : 4) + Math.random() * 7;
+    }
+    for (let i = pops.length - 1; i >= 0; i--) {
+      const b = pops[i]; b.y -= b.v * dt; b.x += Math.sin(t * 0.9 + b.ph) * 0.4;
+      if (b.y < -40 || b.life <= 0) { pops.splice(i, 1); continue; }
+      const a = Math.min(1, day * 1.2), r = b.r * (1 + 0.04 * Math.sin(t * 3 + b.ph));
+      const g = ctx.createRadialGradient(b.x - r * 0.3, b.y - r * 0.3, r * 0.1, b.x, b.y, r);
+      g.addColorStop(0, "rgba(255,255,255," + (0.22 * a).toFixed(3) + ")"); g.addColorStop(0.7, "rgba(200,230,255," + (0.05 * a).toFixed(3) + ")");
+      g.addColorStop(0.9, "rgba(255,190,235," + (0.28 * a).toFixed(3) + ")"); g.addColorStop(1, "rgba(170,255,235," + (0.5 * a).toFixed(3) + ")");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(b.x, b.y, r, 0, TAU); ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255," + (0.6 * a).toFixed(3) + ")"; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(b.x, b.y, r * 0.72, Math.PI * 1.15, Math.PI * 1.45); ctx.stroke();
+    }
+  }
+  const POPS = ["¡Pop! Una pompa menos.", "Otra pompa. Buena puntería.", "¡Pop! Andas rápido de manos.", "Pompa reventada. Vas bien."];
+  function catchPop(b) {
+    b.life = 0; burst(b.x, b.y, 16);
+    const n = store.get("pops", 0) + 1; store.set("pops", n);
+    toast(POPS[(n - 1) % POPS.length] + " (" + n + ")");
+    audio.init(); audio.note(audio.scale[6 + Math.floor(Math.random() * 4)], 0.05);
+    buzz(15);
   }
   // luciérnagas: cada una es un trozo de tiempo
   const flies = [];
@@ -1280,6 +1506,8 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     audio.init();
     const hit = meteors.find((m) => m.life > 0.1 && Math.hypot(e.clientX - (m.x - m.vx * 4), e.clientY - (m.y - m.vy * 4)) < 64);
     if (hit) { catchMeteor(hit); return; }
+    const pop = pops.find((p) => p.life > 0 && Math.hypot(e.clientX - p.x, e.clientY - p.y) < p.r + 22);
+    if (pop) { catchPop(pop); return; }
     if (onOrb(e.clientX, e.clientY)) {
       orb.held = true; orb.wobble = Math.min(1.6, orb.wobble + 0.8);
       const hgt = 1 - (e.clientY - (orb.y - orb.r)) / (2 * orb.r);
@@ -1318,12 +1546,22 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     if (mode === "session" && b.phase !== lastPhase) { $("breath").textContent = running ? b.phase : "En pausa"; lastPhase = b.phase; }
     if (mode === "session") audio.breath(b.v);
 
-    // fondo
-    ctx.clearRect(0, 0, W, H);
-    const bg = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, Math.max(W, H) * 0.8);
-    bg.addColorStop(0, "#14223d"); bg.addColorStop(1, "#0b1220");
+    // fondo: el cielo se acerca de a poco a la paleta de esta hora
+    P = mix(P, T, 1 - Math.exp(-dt * 1.2));
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, rgb(P.top)); bg.addColorStop(0.55, rgb(P.mid)); bg.addColorStop(1, rgb(P.low));
     ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
     drawSky(t, dt);
+    drawSun(skyHour());
+    drawClouds(dt);
+    drawBirds(t, dt);
+    // luz suave alrededor de la esfera y sombra abajo, para que el texto y los botones se lean con cualquier cielo
+    const glow = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, Math.max(W, H) * 0.6);
+    glow.addColorStop(0, rgba(P.halo, 0.1)); glow.addColorStop(1, rgba(P.halo, 0));
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+    const shade = ctx.createLinearGradient(0, H * 0.55, 0, H);
+    shade.addColorStop(0, "rgba(4,8,20,0)"); shade.addColorStop(1, "rgba(4,8,20," + (0.25 + 0.25 * (1 - P.stars)).toFixed(3) + ")");
+    ctx.fillStyle = shade; ctx.fillRect(0, H * 0.55, W, H * 0.45);
 
     // esfera
     orb.press += ((orb.held ? 1 : 0) - orb.press) * 0.08;
@@ -1334,14 +1572,14 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 
     // halo
     const halo = ctx.createRadialGradient(orb.x, orb.y, R * 0.8, orb.x, orb.y, R * 1.9);
-    halo.addColorStop(0, "rgba(127,224,192," + (0.18 + 0.2 * b.v + 0.15 * orb.press).toFixed(3) + ")");
-    halo.addColorStop(1, "rgba(127,224,192,0)");
+    halo.addColorStop(0, rgba(P.halo, 0.18 + 0.2 * b.v + 0.15 * orb.press));
+    halo.addColorStop(1, rgba(P.halo, 0));
     ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(orb.x, orb.y, R * 1.9, 0, Math.PI * 2); ctx.fill();
 
     // vidrio
     ctx.save();
     ctx.beginPath(); ctx.arc(orb.x, orb.y, R, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(20,34,61,0.85)"; ctx.fill();
+    ctx.fillStyle = rgba(P.glass, 0.85); ctx.fill();
     ctx.clip();
     // líquido con ola
     const surface = orb.y + R - lvl * 2 * R;
@@ -1353,7 +1591,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     }
     ctx.lineTo(orb.x + R, orb.y + R); ctx.closePath();
     const liq = ctx.createLinearGradient(0, surface, 0, orb.y + R);
-    liq.addColorStop(0, "#9ff0d4"); liq.addColorStop(0.5, "#4fbfa0"); liq.addColorStop(1, "#1f6f7a");
+    liq.addColorStop(0, rgb(P.liq0)); liq.addColorStop(0.5, rgb(P.liq1)); liq.addColorStop(1, rgb(P.liq2));
     ctx.fillStyle = liq; ctx.fill();
     // burbujas
     for (const bb of bubbles) {
@@ -1392,7 +1630,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       f.x += f.vx; f.y += f.vy;
       const a = 0.35 + 0.5 * (0.5 + 0.5 * Math.sin(t * 2 + f.ph));
       const g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.s * 5);
-      g.addColorStop(0, "rgba(255,210,150," + a.toFixed(3) + ")"); g.addColorStop(1, "rgba(255,190,118,0)");
+      g.addColorStop(0, rgba(P.fly, a * P.flyA)); g.addColorStop(1, rgba(P.fly, 0));
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(f.x, f.y, f.s * 5, 0, Math.PI * 2); ctx.fill();
     }
     // chispas
@@ -1401,6 +1639,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       if (s.life <= 0) { sparks.splice(i, 1); continue; }
       ctx.fillStyle = "rgba(255,225,180," + s.life.toFixed(3) + ")"; ctx.beginPath(); ctx.arc(s.x, s.y, 1.8, 0, Math.PI * 2); ctx.fill();
     }
+    drawPops(t, dt);
   }
   // un solo lugar avanza los relojes; lo llaman los cuadros y también un intervalo, que sigue andando con la pestaña oculta
   function tick() {
@@ -1416,9 +1655,9 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     else if (mode === "train" && wk && wk.phase !== "work") t = mmss(wk.left);
     document.title = t ? t + (running ? "" : " (pausa)") + " · " + TITLE : TITLE;
   }
-  setInterval(() => { tick(); updateTitle(); }, 1000);
+  setInterval(() => { tick(); updateTitle(); updateSky(); }, 1000);
   function onReturn() {
-    tickClock(); tick(); updateTitle();
+    tickClock(); tick(); updateTitle(); updateSky();
     if (mode === "session" || mode === "train") { requestWake(); if (audio.ctx && audio.on) audio.ctx.resume(); }
     if (mode === "home") renderTally();
   }
@@ -1451,11 +1690,13 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       this.rainGain = c.createGain(); this.rainGain.gain.value = 0;
       ns.connect(nf); nf.connect(this.rainGain); this.rainGain.connect(this.master); ns.start();
     },
+    // de noche acordes suaves y graves; de día más abiertos y luminosos, con pájaros al amanecer y al atardecer
     chords: [[174.6, 261.6, 329.6, 392.0, 440.0], [220.0, 261.6, 329.6, 392.0, 493.9], [196.0, 246.9, 329.6, 392.0, 523.3], [146.8, 220.0, 261.6, 349.2, 440.0]],
-    ci: 0,
+    dayChords: [[261.6, 329.6, 392.0, 523.3, 659.3], [220.0, 329.6, 440.0, 523.3, 659.3], [174.6, 349.2, 440.0, 523.3, 784.0], [196.0, 293.7, 392.0, 493.9, 587.3]],
+    ci: 0, bright: 0, birds: 0,
     playChord() {
-      const c = this.ctx, now = c.currentTime, dur = 9;
-      for (const f of this.chords[this.ci++ % this.chords.length]) for (const det of [-4, 4]) {
+      const c = this.ctx, now = c.currentTime, dur = 9, set = this.bright > 0.6 ? this.dayChords : this.chords;
+      for (const f of set[this.ci++ % set.length]) for (const det of [-4, 4]) {
         const o = c.createOscillator(); o.type = "triangle"; o.frequency.value = f; o.detune.value = det;
         const g = c.createGain(); g.gain.setValueAtTime(0, now);
         g.gain.linearRampToValueAtTime(0.09, now + 3); g.gain.setValueAtTime(0.09, now + dur - 3); g.gain.linearRampToValueAtTime(0, now + dur + 1);
@@ -1472,12 +1713,25 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     scale: [261.6, 293.7, 329.6, 392.0, 440.0, 523.3, 587.3, 659.3, 784.0, 880.0],
     chime(oct = 1) { if (this.ctx) this.note(this.scale[5 + Math.floor(Math.random() * 5)] * (oct > 1.5 ? 1 : oct) , 0.04); },
     tapNote(h) { this.note(this.scale[Math.max(0, Math.min(9, Math.floor(h * 10)))], 0.07); },
-    breath(v) { if (this.ctx && this.on) this.filter.frequency.setTargetAtTime(500 + 900 * v, this.ctx.currentTime, 0.3); },
+    breath(v) { if (this.ctx && this.on) this.filter.frequency.setTargetAtTime(500 + 500 * this.bright + (900 + 500 * this.bright) * v, this.ctx.currentTime, 0.3); },
+    chirp() {
+      if (!this.ctx) return;
+      const c = this.ctx, now = c.currentTime, f = 2600 + Math.random() * 1200, n = 2 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < n; i++) {
+        const t0 = now + i * 0.13, o = c.createOscillator(), g = c.createGain(); o.type = "sine";
+        o.frequency.setValueAtTime(f, t0); o.frequency.exponentialRampToValueAtTime(f * 1.35, t0 + 0.07);
+        g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(0.018, t0 + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.1);
+        o.connect(g); g.connect(this.music); g.connect(this.verb); o.start(t0); o.stop(t0 + 0.12);
+      }
+    },
     start() {
       this.init(); if (!this.ctx) return; this.ctx.resume(); this.on = true;
       this.music.gain.setTargetAtTime(1, this.ctx.currentTime, 1);
       this.playChord(); this.chordTimer = setInterval(() => this.playChord(), 8000);
-      const loop = () => { this.chime(1); this.chimeTimer = setTimeout(loop, 3000 + Math.random() * 5000); };
+      const loop = () => {
+        if (this.birds > 0.4 && Math.random() < 0.4) this.chirp(); else this.chime(1);
+        this.chimeTimer = setTimeout(loop, (3000 + Math.random() * 5000) * (1 - 0.35 * this.bright));
+      };
       this.chimeTimer = setTimeout(loop, 3000);
     },
     stop() {
@@ -1502,7 +1756,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   $("rain").addEventListener("click", () => toggleRain());
 
   // deslizar hacia abajo para cerrar las hojas de elegir
-  ["setup", "tedit", "stats"].forEach((id) => {
+  ["setup", "tedit", "stats", "skysheet"].forEach((id) => {
     const sh = $(id); let y0 = null, dy = 0;
     sh.addEventListener("pointerdown", (e) => { if (sh.scrollTop > 0 || e.target.closest("button,input,select")) return; y0 = e.clientY; dy = 0; sh.style.transition = "none"; });
     addEventListener("pointermove", (e) => { if (y0 == null) return; dy = Math.max(0, e.clientY - y0); sh.style.transform = "translateY(" + dy + "px)"; });
@@ -1523,7 +1777,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   async function requestWake() { try { wake = await navigator.wakeLock?.request("screen"); } catch {} }
   function releaseWake() { try { wake?.release(); } catch {} wake = null; }
 
-  layout(); setMode("home"); restoreActive(); updateTitle(); requestAnimationFrame(frame);
+  layout(); updateSky(); setMode("home"); restoreActive(); updateTitle(); requestAnimationFrame(frame);
 
   // nube: si la app corre dentro de Claude, trae lo guardado allá (sesión en curso incluida) y sigue respaldando
   (async () => {
