@@ -1,6 +1,6 @@
 // Guarda la app en el teléfono para que abra sin conexión.
 // Sube VERSION cada vez que publiques cambios, así el teléfono descarga lo nuevo.
-const VERSION = "calma-v14";
+const VERSION = "calma-v15";
 const FILES = [
   "./",
   "index.html",
