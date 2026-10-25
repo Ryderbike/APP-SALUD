@@ -238,31 +238,35 @@ p { margin: 0; }
 
 button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
 
-/* pestañas: Calma y Entrenar son dos pantallas que se deslizan, como en la App Store */
+/* pestañas: Calma y Entrenar son dos pantallas; se cambia con la cápsula de abajo o deslizando de lado */
 .tabs {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 3; display: flex; justify-content: center; gap: 8px;
-  padding: 6px 16px calc(6px + env(safe-area-inset-bottom, 0px));
-  background: rgba(11, 18, 32, 0.84); border-top: 1px solid var(--line);
+  position: fixed; z-index: 3; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  display: flex; gap: 4px; padding: 4px; border-radius: 999px; width: min(250px, calc(100% - 32px)); box-sizing: border-box;
+  background: rgba(22, 32, 54, 0.86); border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
 }
 .tabs button {
-  flex: 1; max-width: 160px; font: inherit; font-size: 0.72rem; font-weight: 600; color: var(--mist);
-  background: none; border: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; cursor: pointer;
+  flex: 1; font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--mist); background: none; border: 0; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 10px; cursor: pointer; transition: background 0.2s, color 0.2s;
 }
-.tabs svg { width: 26px; height: 26px; }
-.tabs button[aria-selected="true"] { color: var(--sage); }
-body.has-tabs .app { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
-.app { transition: transform 0.45s cubic-bezier(.2,.8,.2,1), opacity 0.45s; }
-body.tab-train .app { transform: translateX(-30%); opacity: 0; }
+.tabs svg { width: 18px; height: 18px; flex: 0 0 auto; }
+.tabs button[aria-selected="true"] { color: var(--sage); background: rgba(127,224,192,0.14); }
+body.has-tabs .app { padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
+.app { transition: opacity 0.25s ease; }
+body.tab-train .app { opacity: 0; }
 .page {
   position: fixed; inset: 0; z-index: 2; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
-  background: rgba(11, 18, 32, 0.97); transform: translateX(100%); visibility: hidden;
-  transition: transform 0.45s cubic-bezier(.2,.8,.2,1), visibility 0s 0.45s;
+  background: rgba(11, 18, 32, 0.97); opacity: 0; transform: translateY(10px); visibility: hidden;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s 0.25s;
 }
-body.tab-train .page { transform: none; visibility: visible; transition: transform 0.45s cubic-bezier(.2,.8,.2,1); }
+body.tab-train .page { opacity: 1; transform: none; visibility: visible; transition: opacity 0.25s ease, transform 0.25s ease; }
+.mini { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.mini div { background: var(--glass-2); border: 1px solid var(--line); border-radius: 16px; padding: 10px 12px; display: flex; flex-direction: column; min-width: 0; }
+.mini b { font-family: var(--display); font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.mini span { font-size: 0.72rem; color: var(--mist); font-weight: 600; }
 .page-in {
   max-width: 480px; margin: 0 auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;
-  padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(100px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(84px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
 }
 .page-date { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mist); }
 .page-in h1 { font-size: 2.2rem; font-weight: 700; line-height: 1.1; }
@@ -428,11 +432,17 @@ body.tab-train .page { transform: none; visibility: visible; transition: transfo
       <h1>Entrenar</h1>
     </div>
     <article class="feature" id="tr-today"></article>
+    <span class="page-date" style="margin-bottom: -4px">Últimos 7 días</span>
+    <div class="mini" aria-label="Últimos 7 días">
+      <div><b id="m-done">0</b><span>entrenos</span></div>
+      <div><b id="m-sets">0</b><span>series</span></div>
+      <div><b id="m-mins">0</b><span>minutos</span></div>
+    </div>
     <h2 class="sec">Tu semana</h2>
     <div class="plan" id="plan" aria-label="Tu semana"></div>
     <div class="sec-row"><h2 class="sec">Tus rutinas</h2><button class="see" id="r-new">+ Nueva</button></div>
     <div class="carousel" id="routines"></div>
-    <div id="hist-wrap" hidden>
+    <div id="hist-wrap">
       <h2 class="sec">Últimos entrenamientos</h2>
       <div class="list" id="hist" style="margin-top: 10px"></div>
     </div>
@@ -873,9 +883,14 @@ body.tab-train .page { transform: none; visibility: visible; transition: transfo
     $("routines").innerHTML = routines.length ? routines.map((r) =>
       '<div class="rcard"><span class="kick" style="color: var(--sage)">' + (r.days.length ? daysText(r.days) : "Sin día fijo") + "</span><b>" + esc(r.name) + (r.example ? '<span class="tag">ejemplo</span>' : "") + "</b><small>" + r.items.length + " ejercicios · ~" + estMin(r) + ' min</small><small class="ex">' + esc(r.items.map((i) => i.ex).join(", ")) + '</small><div class="acts"><button class="get soft-get" data-go="' + r.id + '">Empezar</button><button class="see" data-edit="' + r.id + '">Editar</button></div></div>'
     ).join("") : '<p class="muted">Todavía no tienes rutinas. Crea la primera con 4 o 5 ejercicios.</p>';
-    const h = store.get("workouts", []).slice(-3).reverse();
-    $("hist-wrap").hidden = !h.length;
-    $("hist").innerHTML = h.map((w) => "<div><b>" + esc(w.name) + "</b><span>" + new Date(w.date).toLocaleDateString("es-CL", { weekday: "short", day: "numeric", month: "short" }) + " · " + Math.max(1, Math.round(w.secs / 60)) + " min · " + w.sets + " series</span></div>").join("");
+    const all = store.get("workouts", []), wk7 = all.filter((w) => Date.now() - w.date < 7 * 864e5);
+    const planned = new Set(routines.flatMap((r) => r.days)).size;
+    $("m-done").textContent = wk7.length + (planned ? "/" + planned : "");
+    $("m-sets").textContent = wk7.reduce((a, w) => a + w.sets, 0);
+    $("m-mins").textContent = Math.round(wk7.reduce((a, w) => a + w.secs, 0) / 60);
+    const h = all.slice(-5).reverse();
+    $("hist").innerHTML = h.length ? "" : "<div>Cuando guardes un entrenamiento, aparece aquí con su fecha, tiempo y series.</div>";
+    $("hist").innerHTML += h.map((w) => "<div><b>" + esc(w.name) + "</b><span>" + new Date(w.date).toLocaleDateString("es-CL", { weekday: "short", day: "numeric", month: "short" }) + " · " + Math.max(1, Math.round(w.secs / 60)) + " min · " + w.sets + " series</span></div>").join("");
   }
   $("tr-today").addEventListener("click", (e) => { const g = e.target.closest("[data-go]"); if (g) startWorkout(routines.find((r) => r.id === g.dataset.go)); });
   $("routines").addEventListener("click", (e) => {
