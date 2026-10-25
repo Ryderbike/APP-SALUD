@@ -6,6 +6,7 @@
 <title>Calma</title>
 <meta name="theme-color" content="#0b1220">
 <meta name="description" content="Una app para dejar pasar las ganas de comer dulce o pedir delivery, a cualquier hora del día.">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Calma">
@@ -37,13 +38,14 @@
 html { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { height: 100%; overflow: hidden; }
+html { background: #0b1220; }
 body { margin: 0; }
 body {
   background: var(--night); color: var(--moon);
   font-family: var(--body); font-size: 16px; line-height: 1.45;
   -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
 }
-#sky { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: 100lvh; display: block; touch-action: none; }
+#sky { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 
 .app {
   position: relative; height: 100%; max-width: 480px; margin: 0 auto;
@@ -141,9 +143,9 @@ p { margin: 0; }
 .dots i.on { background: var(--sage); }
 
 /* sheets */
-.scrim { position: fixed; inset: 0; bottom: calc(-1 * var(--vgap, 0px)); background: rgba(3, 6, 14, 0.55); z-index: 5; }
+.scrim { position: fixed; inset: 0; background: rgba(3, 6, 14, 0.55); z-index: 5; }
 .sheet {
-  position: fixed; left: 0; right: 0; bottom: calc(-1 * var(--vgap, 0px)); z-index: 6; margin: 0 auto; max-width: 480px;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; margin: 0 auto; max-width: 480px;
   background: #121b2e; border: 1px solid var(--line); border-bottom: 0; border-radius: 28px 28px 0 0;
   padding-block: 10px calc(20px + env(safe-area-inset-bottom, 0px));
   padding-left: max(20px, env(safe-area-inset-left, 0px));
@@ -276,20 +278,23 @@ p { margin: 0; }
 
 button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
 
-/* pestañas: Calma y Entrenar son dos pantallas; se cambia con la cápsula de abajo o deslizando de lado */
+/* pestañas: Calma y Entrenar son dos pantallas; barra clásica de iOS pegada abajo, ancho completo, con vidrio y espacio para la barra de inicio */
 .tabs {
-  position: fixed; z-index: 3; left: 50%; bottom: calc(max(10px, env(safe-area-inset-bottom, 0px)) - var(--vgap, 0px)); transform: translateX(-50%);
-  display: flex; gap: 4px; padding: 4px; border-radius: 999px; width: min(250px, calc(100% - 32px)); box-sizing: border-box;
-  background: rgba(22, 32, 54, 0.86); border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  position: fixed; z-index: 3; left: 0; right: 0; bottom: 0; box-sizing: border-box;
+  display: flex; justify-content: center; gap: 6px;
+  padding: 8px max(12px, calc((100% - 420px) / 2)) calc(6px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03)), rgba(12, 18, 32, 0.84);
+  border-top: 1px solid rgba(255,255,255,0.16);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 -12px 32px rgba(0,0,0,0.28);
+  backdrop-filter: blur(26px) saturate(180%); -webkit-backdrop-filter: blur(26px) saturate(180%);
 }
 .tabs button {
-  flex: 1; font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--mist); background: none; border: 0; border-radius: 999px;
-  display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 10px; cursor: pointer; transition: background 0.2s, color 0.2s;
+  flex: 1; max-width: 170px; font: inherit; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.01em; color: var(--mist); background: none; border: 0; border-radius: 16px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 4px; cursor: pointer; transition: background 0.2s, color 0.2s;
 }
-.tabs svg { width: 18px; height: 18px; flex: 0 0 auto; }
-.tabs button[aria-selected="true"] { color: var(--sage); background: rgba(255,176,102,0.14); }
-body.has-tabs .app { padding-bottom: calc(62px + max(10px, env(safe-area-inset-bottom, 0px)) - var(--vgap, 0px)); }
+.tabs svg { width: 24px; height: 24px; flex: 0 0 auto; }
+.tabs button[aria-selected="true"] { color: #ffb066; background: radial-gradient(70% 80% at 50% 30%, rgba(255,176,102,0.3), rgba(255,176,102,0) 75%); }
+body.has-tabs .app { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
 .app { transition: opacity 0.25s ease; }
 body.tab-train .app { opacity: 0; }
 .page {
@@ -304,7 +309,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 .mini span { font-size: 0.72rem; color: var(--mist); font-weight: 600; }
 .page-in {
   max-width: 480px; margin: 0 auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;
-  padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(72px + max(10px, env(safe-area-inset-bottom, 0px))) max(16px, env(safe-area-inset-left, 0px));
+  padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(92px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
 }
 .page-date { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mist); }
 .page-in h1 { font-size: 2.2rem; font-weight: 700; line-height: 1.1; }
@@ -377,7 +382,6 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 .cues { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 6px; font-size: 0.95rem; }
 .cues li::marker { color: var(--sage); font-weight: 700; }
 .x.hw { color: var(--sage); font-size: 0.85rem; }
-.page { bottom: auto; height: 100vh; height: var(--fullh, 100lvh); }
 
 /* liquid glass: vidrio claro con brillo en el borde, como en iOS; los botones principales en naranjo */
 :root {
@@ -387,16 +391,12 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   --orange: linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0) 52%), linear-gradient(180deg, #ffc58a, #ff8f45);
   --orange-edge: inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -2px 8px rgba(170,70,15,0.25), 0 12px 30px rgba(255,140,60,0.32);
 }
-.icon-btn, .clock, .tabs, .card, .btn:not(.go), .week, .toast, .mini div, .rcard, .list {
+.icon-btn, .clock, .card, .btn:not(.go), .week, .toast, .mini div, .rcard, .list {
   background: var(--lg), rgba(20, 28, 48, 0.4); border: 0; box-shadow: var(--lg-edge), var(--lg-drop);
   backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%);
 }
 .sheet .btn:not(.go), .sheet .week { box-shadow: var(--lg-edge); }
 .cta, .cta.sage, .btn.go, .icon-btn[aria-pressed="true"] { color: var(--ember-ink); background: var(--orange); border: 0; box-shadow: var(--orange-edge); }
-.tabs button[aria-selected="true"] {
-  color: #ffd2a6; background: linear-gradient(180deg, rgba(255,200,140,0.38), rgba(255,140,60,0.2));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 0 0 0 1px rgba(255,190,120,0.25);
-}
 .feature { color: var(--ember-ink); background: var(--orange); box-shadow: var(--orange-edge); }
 .feature.off { color: var(--moon); background: var(--lg), rgba(20, 28, 48, 0.55); box-shadow: var(--lg-edge), var(--lg-drop); }
 .get { background: rgba(43, 17, 0, 0.88); color: #ffe2c2; box-shadow: inset 0 1px 0 rgba(255,255,255,0.18); }
@@ -2091,14 +2091,6 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   const orb = { x: 0, y: 0, r: 100, level: 0, base: 0, wobble: 0, press: 0, held: false, glow: 0, tilt: 0 };
   function layout() {
     dpr = Math.min(2, window.devicePixelRatio || 1);
-    // iOS app de inicio: el viewport puede quedar más corto que la pantalla y deja una franja abajo; medimos la pantalla real y estiramos cielo, páginas y hojas hasta el borde
-    const iosApp = navigator.standalone === true;
-    const screenH = innerWidth < innerHeight ? Math.max(screen.width, screen.height) : Math.min(screen.width, screen.height);
-    const fullH = iosApp ? Math.max(innerHeight, screenH) : innerHeight;
-    const root = document.documentElement.style;
-    root.setProperty("--vgap", (fullH - innerHeight) + "px");
-    if (iosApp) root.setProperty("--fullh", fullH + "px"); else root.removeProperty("--fullh");
-    cv.style.height = iosApp ? fullH + "px" : "";
     W = innerWidth; H = Math.max(innerHeight, cv.clientHeight); cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const s = $("stage").getBoundingClientRect();
     orb.x = s.left + s.width / 2; orb.y = s.top + s.height / 2;
@@ -2476,7 +2468,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   const up = () => { pointer.down = false; orb.held = false; pointer.x = pointer.y = -999; };
   cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up); cv.addEventListener("pointerleave", up);
 
-  let lastPhase = "", secAcc = 0, edgeC = "";
+  let lastPhase = "", secAcc = 0;
   function frame(now) {
     requestAnimationFrame(frame);
     const dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
@@ -2510,8 +2502,6 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     const bg = ctx.createLinearGradient(0, 0, 0, H);
     bg.addColorStop(0, rgb(P.top)); bg.addColorStop(0.55, rgb(P.mid)); bg.addColorStop(1, rgb(P.low));
     ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-    // lo que quede fuera del canvas (la franja del indicador de inicio) toma el color de abajo del cielo
-    const edge = rgb(P.low); if (edge !== edgeC) { edgeC = edge; document.documentElement.style.background = document.body.style.background = edge; }
     drawSky(t, dt);
     drawSun(skyHour());
     drawClouds(dt);
