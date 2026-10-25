@@ -1157,7 +1157,8 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     for (const svg of live) {
       if (!svg.isConnected || !svg.getClientRects().length) continue;
       const m = MOVES[svg._name]; let t = ((now - svg._t0) / 1000) % CYC_T, p, ph;
-      if (t < CYC[0]) { p = mvEase(t / CYC[0]); ph = 0; }
+      if (reduced) { p = 1; ph = 0; }  // con "reducir movimiento": una sola pose, sin animar
+      else if (t < CYC[0]) { p = mvEase(t / CYC[0]); ph = 0; }
       else if ((t -= CYC[0]) < CYC[1]) { p = 1; ph = 0; }
       else if ((t -= CYC[1]) < CYC[2]) { p = 1 - mvEase(t / CYC[2]); ph = 1; }
       else { p = 0; ph = 1; }
