@@ -243,6 +243,35 @@ p { margin: 0; }
 .soft { color: var(--mist); text-transform: none; letter-spacing: 0; font-weight: 600; }
 .day b { width: 5px; height: 5px; border-radius: 50%; background: transparent; margin-top: -2px; }
 .day.trained b { background: var(--ember); }
+/* mejoras funcionales */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--mist); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; cursor: pointer; }
+.chips button[aria-pressed="true"] { background: var(--ember); border-color: var(--ember); color: var(--ember-ink); }
+.sub { font-size: 1.05rem; font-weight: 700; margin-top: 4px; }
+.bars { display: flex; flex-direction: column; gap: 8px; }
+.brow { display: grid; grid-template-columns: 7.5em minmax(0, 1fr) 2em; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--mist); font-weight: 600; }
+.brow i { display: block; height: 8px; border-radius: 4px; background: rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+.brow i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w, 0%); border-radius: 4px; background: linear-gradient(90deg, #ffd29e, var(--ember)); }
+.brow b { color: var(--moon); text-align: right; font-variant-numeric: tabular-nums; }
+.badges { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.badge { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: rgba(0,0,0,0.2); opacity: 0.5; min-width: 0; }
+.badge b { font-size: 0.85rem; font-weight: 700; }
+.badge span { font-size: 0.72rem; color: var(--mist); }
+.badge.on { opacity: 1; border-color: rgba(255,190,118,0.55); background: rgba(255,190,118,0.12); }
+.badge.on b { color: var(--ember); }
+.prog { height: 10px; border-radius: 5px; background: rgba(0,0,0,0.3); overflow: hidden; }
+.prog i { display: block; height: 100%; width: var(--w, 0%); border-radius: 5px; background: linear-gradient(90deg, #ffd29e, var(--ember)); transition: width 0.6s; }
+.goalpill { margin-top: 6px; display: flex; flex-direction: column; gap: 4px; align-items: center; font-size: 0.78rem; color: var(--moon); font-weight: 600; }
+.goalpill .prog { width: 9em; height: 6px; }
+.link.now { color: var(--moon); }
+.panel { background: var(--glass-2); border: 1px solid var(--line); border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.panel .seg { background: rgba(0,0,0,0.22); }
+.panel select { font: inherit; font-weight: 600; color: var(--moon); background: rgba(0,0,0,0.25); border: 1px solid var(--line); border-radius: 10px; padding: 8px; width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; }
+.chart text { fill: var(--mist); font: 600 10px var(--body); }
+.line2 { display: flex; justify-content: space-between; gap: 8px; font-size: 0.85rem; color: var(--mist); }
+.line2 b { color: var(--moon); font-weight: 600; }
+.btn.warnbtn { color: var(--ember); }
 .link { font: inherit; background: none; border: 0; color: var(--mist); cursor: pointer; padding: 8px; text-decoration: underline; text-underline-offset: 3px; }
 
 button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
@@ -455,6 +484,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       <div class="cap" id="cap-top">Tiempo de calma juntado</div>
       <div class="big" id="big">0 min</div>
       <div class="breath" id="breath"></div>
+      <div class="goalpill" id="goalpill" hidden><span id="gp-t"></span><div class="prog"><i id="gp-b"></i></div></div>
     </div>
     <p class="hint" id="hint">Toca la esfera. Atrapa las estrellas fugaces.</p>
   </main>
@@ -462,6 +492,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   <!-- dock inicio -->
   <footer class="dock" id="dock-home">
     <button class="cta" id="open-setup">Tengo ganas<span>de comer algo</span></button>
+    <button class="link now" id="quick">Lo necesito ya · 2 min de respiración</button>
   </footer>
 
   <!-- dock sesión -->
@@ -560,6 +591,30 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     <div class="plan" id="plan" aria-label="Tu semana"></div>
     <div class="sec-row"><h2 class="sec">Tus rutinas</h2><button class="see" id="r-new">+ Nueva</button></div>
     <div class="carousel" id="routines"></div>
+    <h2 class="sec">Bici</h2>
+    <div class="panel" id="bike">
+      <div class="seg" id="b-type" role="group" aria-label="Qué bici">
+        <button data-bt="estatica" aria-pressed="true">Estática</button>
+        <button data-bt="ruta" aria-pressed="false">De ruta</button>
+      </div>
+      <div class="adjust"><div class="stepper"><span>Minutos</span><button data-bm="-5" aria-label="Menos minutos">−</button><b id="b-min">30</b><button data-bm="5" aria-label="Más minutos">+</button></div></div>
+      <div class="seg" id="b-feel" role="group" aria-label="Cómo se sintió">
+        <button data-bf="1" aria-pressed="false">Suave</button>
+        <button data-bf="2" aria-pressed="true">Normal</button>
+        <button data-bf="3" aria-pressed="false">Duro</button>
+      </div>
+      <button class="btn go" id="b-save">Guardar paseo</button>
+      <div class="line2"><span id="b-week"></span></div>
+      <div class="list" id="b-list"></div>
+      <div class="q"><span>Días de bici</span><div class="seg" id="b-days" role="group" aria-label="Días de bici"></div></div>
+    </div>
+    <h2 class="sec">Tu progreso</h2>
+    <div class="panel chart" id="progbox">
+      <select id="p-ex" aria-label="Ejercicio"></select>
+      <div class="seg" id="p-metric" role="group" aria-label="Qué medir"></div>
+      <div id="p-chart"></div>
+      <p class="muted" id="p-note"></p>
+    </div>
     <button class="btn" id="r-how">Ver cómo se hace cada ejercicio</button>
     <div id="hist-wrap">
       <h2 class="sec">Últimos entrenamientos</h2>
@@ -655,6 +710,50 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     <div class="tile"><b id="t-rate">–</b><span>de las veces lo lograste</span></div>
     <div class="tile"><b id="t-trains">0</b><span>entrenos</span></div>
     <div class="tile"><b id="t-mins">0 min</b><span>de calma juntados</span></div>
+    <div class="tile good"><b id="t-streak">0</b><span>días sin caídas seguidos</span></div>
+    <div class="tile"><b id="t-best">0</b><span>mejor racha</span></div>
+  </div>
+
+  <h3 class="sub">Meta de ahorro</h3>
+  <div class="q" id="goal-box"></div>
+
+  <h3 class="sub">Qué te gatilla</h3>
+  <div class="q">
+    <div class="bars" id="trig-bars"></div>
+    <div class="bars" id="kind-bars"></div>
+    <div class="bars" id="hour-bars"></div>
+    <p class="muted" id="hour-note"></p>
+  </div>
+
+  <h3 class="sub">Logros</h3>
+  <div class="badges" id="ach"></div>
+
+  <h3 class="sub">Avisos</h3>
+  <div class="q">
+    <span id="lbl-rem">Aviso a tu hora difícil</span>
+    <div class="seg" id="rem" role="group" aria-labelledby="lbl-rem">
+      <button data-rem="on" aria-pressed="false">Sí</button>
+      <button data-rem="off" aria-pressed="true">No</button>
+    </div>
+    <p class="muted" id="rem-note"></p>
+  </div>
+  <div class="q">
+    <span id="lbl-vib">Vibrar al terminar el descanso</span>
+    <div class="seg" id="vib" role="group" aria-labelledby="lbl-vib">
+      <button data-vib="on" aria-pressed="true">Sí</button>
+      <button data-vib="off" aria-pressed="false">No</button>
+    </div>
+    <p class="muted">En iPhone, Safari no deja vibrar: ahí avisan el sonido y la pantalla.</p>
+  </div>
+
+  <h3 class="sub">Respaldo</h3>
+  <div class="q">
+    <div class="row">
+      <button class="btn" id="bk-out">Exportar</button>
+      <button class="btn" id="bk-in">Importar</button>
+    </div>
+    <input type="file" id="bk-file" accept="application/json,.json" hidden>
+    <p class="muted" id="bk-note">Guarda todo en un archivo para no perderlo si cambias de teléfono.</p>
   </div>
 </section>
 
@@ -707,6 +806,10 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     <div class="scale" id="after" role="group" aria-labelledby="lbl-after"></div>
     <p class="result" id="delta"></p>
     <p class="muted" id="saved-now"></p>
+  </div>
+  <div class="q">
+    <span id="lbl-trig">¿Qué lo gatilló? (opcional)</span>
+    <div class="chips" id="trig" role="group" aria-labelledby="lbl-trig"></div>
   </div>
   <div class="stack">
     <button class="cta sage" id="won">Listo, se me pasó</button>
@@ -870,7 +973,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     $("t-nights").textContent = Object.values(store.get("nights", {})).filter((v) => v === "win").length;
     const tries = s.wins + (s.falls || 0); $("t-rate").textContent = tries ? Math.round(100 * s.wins / tries) + "%" : "–";
     if (mode === "home") $("big").textContent = Math.round(s.minutes || 0) + " min";
-    renderWeek();
+    renderWeek(); renderGoalPill();
   }
 
   // ---------- pantallas ----------
@@ -925,14 +1028,15 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y; swipe = null;
     if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) setTab(dx < 0 ? "train" : "calma");
   }, true);
-  $("open-stats").addEventListener("click", () => { renderTally(); openSheet("stats"); });
+  $("open-stats").addEventListener("click", () => { renderTally(); renderInsights(); openSheet("stats"); $("stats").scrollTop = 0; });
   $("start").addEventListener("click", () => { extended = false; startSession(minutes); });
 
-  function startSession(mins) {
+  function startSession(mins, quick) {
     closeSheets();
     total = left = mins * 60;
     queue = shuffle(TASKS[kind]).concat(shuffle(TIME_TASKS[slot()].concat(TASKS.general)));
-    if (!extended) { taskIdx = 0; doneCount = 0; orb.level = 0; }
+    if (quick) queue.unshift(["Respira con la esfera.", "Mantén el dedo sobre ella al inhalar y suelta al exhalar. En dos minutos las ganas se ven más chicas."]);
+    if (!extended) { taskIdx = 0; doneCount = 0; orb.level = 0; trigger = ""; }
     orb.base = extended ? Math.max(orb.level, 0.6) : 0; orb.ring = null;
     renderTask(false);
     setMode("session");
@@ -1000,7 +1104,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     scale("after", 0, after, (v) => { after = v; showDelta(); });
     $("saved-now").textContent = price() ? "Si lo dejas pasar, te ahorras " + fmtMoney(price()) + "." : "";
     $("end-note").textContent = "";
-    showDelta();
+    renderTrig(); showDelta();
     openSheet("end");
     saveActive();
   }
@@ -1013,6 +1117,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     if (win) { s.wins++; s.orders++; s.saved += price(); } else { s.falls = (s.falls || 0) + 1; s.spent = (s.spent || 0) + price(); }
     store.set("stats", s);
     markNight(win ? "win" : "try");
+    logCraving(win); checkAch();
   }
   function goHome() { closeSheets(); toggleMusic(false); releaseWake(); orb.level = 0; orb.ring = null; running = false; setMode("home"); saveActive(); updateTitle(); }
   // un solo toque cuenta: evita sumar dos veces el mismo antojo
@@ -1237,17 +1342,17 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 
 
   function renderToday() {
-    const r = routines.find((x) => x.days.includes(todayDow()));
+    const r = routines.find((x) => x.days.includes(todayDow())), bikeToday = store.get("bikedays", []).includes(todayDow());
     $("tr-date").textContent = new Date().toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long" });
     $("tr-today").className = "feature" + (r ? "" : " off");
     $("tr-today").innerHTML = r
       ? '<span class="kick">Hoy toca</span><h3>' + esc(r.name) + "</h3><p>" + r.items.length + " ejercicios · ~" + estMin(r) + " min</p><p>" + esc(r.items.map((i) => i.ex).join(", ")) + '</p><button class="get" data-go="' + r.id + '">Empezar</button>'
-      : '<span class="kick">Hoy</span><h3>Día libre</h3><p>Descansa, o elige cualquier rutina de abajo si te dan ganas de moverte.</p>';
+      : '<span class="kick">Hoy</span><h3>' + (bikeToday ? "Día de bici" : "Día libre") + "</h3><p>" + (bikeToday ? "Sal a rodar o usa la estática y anótalo en Bici, más abajo." : "Descansa, o elige cualquier rutina de abajo si te dan ganas de moverte.") + "</p>";
   }
   function renderPlanner() {
     $("plan").innerHTML = DAY_ORDER.map((d) => {
-      const rs = routines.filter((r) => r.days.includes(d));
-      return '<div class="pd' + (d === todayDow() ? " today" : "") + '"><span>' + DAYS[d] + "</span><b" + (rs.length ? "" : ' class="off"') + ">" + (rs.length ? esc(rs.map((r) => r.name).join(" + ")) : "libre") + "</b></div>";
+      const rs = routines.filter((r) => r.days.includes(d)), bike = store.get("bikedays", []).includes(d);
+      return '<div class="pd' + (d === todayDow() ? " today" : "") + '"><span>' + DAYS[d] + "</span><b" + (rs.length || bike ? "" : ' class="off"') + ">" + (rs.length || bike ? esc(rs.map((r) => r.name).concat(bike ? ["bici"] : []).join(" + ")) : "libre") + "</b></div>";
     }).join("");
   }
   function renderRoutines() {
@@ -1262,6 +1367,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     $("m-mins").textContent = Math.round(wk7.reduce((a, w) => a + w.secs, 0) / 60);
     const h = all.slice(-5).reverse();
     $("hist").innerHTML = h.length ? "" : "<div>Cuando guardes un entrenamiento, aparece aquí con su fecha, tiempo y series.</div>";
+    renderBike(); renderProg();
     $("hist").innerHTML += h.map((w) => "<div><b>" + esc(w.name) + "</b><span>" + new Date(w.date).toLocaleDateString("es-CL", { weekday: "short", day: "numeric", month: "short" }) + " · " + Math.max(1, Math.round(w.secs / 60)) + " min · " + w.sets + " series</span></div>").join("");
   }
   $("tr-today").addEventListener("click", (e) => { const g = e.target.closest("[data-go]"); if (g) startWorkout(routines.find((r) => r.id === g.dataset.go)); });
@@ -1352,7 +1458,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     const lastKg = store.get("lastkg", {}), lastReps = store.get("lastreps", {});
     wk = { r: JSON.parse(JSON.stringify(r)), i: 0, s: 0, phase: "work", left: 0, span: 1, endAt: 0, start: Date.now(), doneSets: 0,
       totalSets: r.items.reduce((a, it) => a + (it.type === "cardio" ? 1 : it.sets), 0),
-      log: r.items.map((it) => ({ ex: it.ex, type: it.type, sets: [], reps: lastReps[it.ex] ?? it.reps, kg: lastKg[it.ex] ?? it.kg })) };
+      log: r.items.map((it) => ({ ex: it.ex, type: it.type, sets: [], reps: lastReps[it.ex] ?? it.reps, kg: lastKg[it.ex] ?? it.kg, reps0: lastReps[it.ex] ?? it.reps, kg0: lastKg[it.ex] ?? it.kg })) };
     orb.level = 0; orb.base = 0; orb.ring = 0;
     setMode("train"); enterItem();
     $("hint").textContent = "Ajusta reps y kg si cambió algo. La esfera se llena al descansar.";
@@ -1468,8 +1574,15 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     if (it && (it.kg !== lg.kg || it.reps !== lg.reps)) { it.kg = lg.kg; it.reps = lg.reps; saveRoutines(); }
     const cur = wk.r.items.find((x) => x.ex === lg.ex && x.type !== "cardio"); if (cur) { cur.kg = lg.kg; cur.reps = lg.reps; }
   }
-  function endRest() {
-    audio.note(1046.5, 0.08); buzz(40);
+  // el descanso terminó solo: vibración larga, tres notas, destello y, con la app en segundo plano, una notificación
+  function restAlarm() {
+    vibe([250, 120, 250, 120, 500]);
+    audio.note(1046.5, 0.1); setTimeout(() => audio.note(1318.5, 0.1), 180); setTimeout(() => audio.note(1568, 0.1), 360);
+    burst(orb.x, orb.y, 16);
+    if (document.hidden && wk) { const n = wk.r.items[wk.s < wk.r.items[wk.i].sets ? wk.i : wk.i + 1]; notify("Terminó el descanso", n ? "Sigue: " + n.ex : "Último ejercicio", "calma-rest"); }
+  }
+  function endRest(auto) {
+    if (auto) restAlarm(); else { audio.note(1046.5, 0.08); buzz(40); }
     if (wk.s >= wk.r.items[wk.i].sets) nextItem(); else { wk.phase = "work"; renderWk(true); saveActive(); }
   }
   function nextItem() {
@@ -1481,8 +1594,8 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     if (!wk || wk.phase === "work" || !running) return;
     wk.left = wkLeft();
     const c = Math.ceil(wk.left);
-    if (c !== lastTick) { lastTick = c; $("big").textContent = mmss(wk.left); if (c <= 3 && c > 0 && !document.hidden) { audio.note(659.3, 0.06); buzz(10); } }
-    if (wk.left <= 0) { if (wk.phase === "rest") endRest(); else $("t-main").click(); }
+    if (c !== lastTick) { lastTick = c; $("big").textContent = mmss(wk.left); if (c <= 3 && c > 0 && !document.hidden) { audio.note(659.3, 0.06); if (wk.phase === "rest") vibe(40); else buzz(10); } }
+    if (wk.left <= 0) { if (wk.phase === "rest") endRest(true); else $("t-main").click(); }
   }
   let tendEarly = false;
   function workoutFinish(early) {
@@ -1490,7 +1603,15 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     running = false;
     const secs = Math.round((Date.now() - wk.start) / 1000);
     const sets = wk.log.reduce((a, l) => a + l.sets.length, 0);
-    lastWorkout = { date: Date.now(), rid: wk.r.id, name: wk.r.name, secs, sets, items: wk.log.filter((l) => l.sets.length).map((l) => ({ ex: l.ex, type: l.type, sets: l.sets })) };
+    // progresión: si hiciste todas las series con las reps del plan, la próxima vez sube un poco
+    const prog = [];
+    wk.log.forEach((lg, i) => {
+      const it = wk.r.items[i]; if (lg.type === "cardio" || lg.sets.length < it.sets || !lg.sets.every((x) => x.reps >= lg.reps0 && x.kg >= lg.kg0)) return;
+      const top = Math.max(...lg.sets.map((x) => x.kg));
+      if (top > 0 && top < 25) prog.push({ i, ex: lg.ex, kind: "kg", from: top, to: Math.min(25, top + 2.5) });
+      else if (lg.reps0 < 15) prog.push({ i, ex: lg.ex, kind: "reps", from: lg.reps0, to: lg.reps0 + 1 });
+    });
+    lastWorkout = { date: Date.now(), rid: wk.r.id, name: wk.r.name, secs, sets, prog, items: wk.log.filter((l) => l.sets.length).map((l) => ({ ex: l.ex, type: l.type, sets: l.sets })) };
     tendEarly = early;
     showTend();
     if (!early) { orb.level = 1; orb.ring = 1; for (let i = 0; i < 4; i++) setTimeout(() => burst(orb.x, orb.y - orb.r, 20), i * 250); }
@@ -1503,6 +1624,8 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     $("te-label").textContent = lastWorkout.name + " · " + Math.max(1, Math.round(secs / 60)) + " min";
     $("te-title").textContent = early ? "Bien, cada serie suma." : "Rutina completa.";
     $("te-sub").innerHTML = lastWorkout.items.map((l) => "<div><b>" + esc(l.ex) + "</b> · " + (l.type === "cardio" ? l.sets[0].min + " min" : l.sets.map((x) => x.reps + "×" + kgNum(x.kg)).join(", ") + " kg") + "</div>").join("") || "<div>Esta vez no alcanzaste a registrar series.</div>";
+    const pg = (lastWorkout.prog || []).map((p) => "<div><b>Sube la próxima vez:</b> " + esc(p.ex) + " " + (p.kind === "kg" ? kgNum(p.from) + " → " + kgNum(p.to) + " kg" : p.from + " → " + p.to + " reps") + "</div>").join("");
+    $("te-sub").innerHTML += pg;
     $("te-done").hidden = !sets;
     openSheet("tend");
     saveActive();
@@ -1510,11 +1633,19 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   $("te-done").addEventListener("click", () => {
     if (lastWorkout && lastWorkout.sets) {
       const w = store.get("workouts", []); w.push(lastWorkout); store.set("workouts", w.slice(-200));
-      const lk = store.get("lastkg", {});
+      const lk = store.get("lastkg", {}), lr = store.get("lastreps", {});
       for (const it of lastWorkout.items) { const s = it.sets.filter((x) => x.kg != null); if (s.length) lk[it.ex] = s[s.length - 1].kg; }
-      store.set("lastkg", lk);
+      // aplica la progresión a la rutina y al peso con que parte la próxima vez
+      const rt = routines.find((x) => x.id === lastWorkout.rid);
+      for (const p of lastWorkout.prog || []) {
+        const it = rt && rt.items.find((x) => x.ex === p.ex); if (!it) continue;
+        if (p.kind === "kg") { it.kg = p.to; lk[p.ex] = p.to; } else { it.reps = p.to; lr[p.ex] = p.to; }
+      }
+      if (rt && (lastWorkout.prog || []).length) { saveRoutines(); }
+      store.set("lastkg", lk); store.set("lastreps", lr);
       const s = stats(); s.trains = (s.trains || 0) + 1; s.minutes = (s.minutes || 0) + lastWorkout.secs / 60; store.set("stats", s);
       const t = store.get("trains", {}); t[nightKey()] = true; store.set("trains", t);
+      checkAch();
     }
     wk = null; lastWorkout = null; goHome();
   });
@@ -1566,6 +1697,286 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     else if (mode === "train") workoutFinish(true);
     else { endChosen = true; wk = null; lastWorkout = null; goHome(); }
   });
+
+  // ---------- mejoras: gatillos, racha, logros, meta, avisos, bici, progreso, respaldo ----------
+  const prefs = () => store.get("prefs", { vib: true });
+  const setPref = (k, v) => { const p = prefs(); p[k] = v; store.set("prefs", p); };
+  // vibración propia de los avisos (iPhone no la permite en Safari: ahí quedan el sonido y la pantalla)
+  const vibe = (pattern) => { if (prefs().vib !== false) { try { navigator.vibrate?.(pattern); } catch {} } };
+  async function notify(title, body, tag) {
+    try {
+      if (!("Notification" in window) || Notification.permission !== "granted") return false;
+      const reg = await navigator.serviceWorker?.getRegistration();
+      if (reg) await reg.showNotification(title, { body, tag, icon: "icons/icon-192.png", renotify: true });
+      else new Notification(title, { body, tag, icon: "icons/icon-192.png" });
+      return true;
+    } catch { return false; }
+  }
+
+  // gatillos: cada antojo queda en un registro con tipo, hora y motivo
+  const TRIGGERS = ["Aburrimiento", "Estrés", "Cansancio", "Hambre real", "Social", "Costumbre"];
+  const KIND_NAME = { dulce: "Algo dulce", delivery: "Delivery", bajon: "Bajón" };
+  let trigger = "";
+  function renderTrig() {
+    $("trig").innerHTML = TRIGGERS.map((t) => '<button data-t="' + t + '" aria-pressed="' + (t === trigger) + '">' + t + "</button>").join("");
+  }
+  $("trig").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-t]"); if (!b) return;
+    trigger = trigger === b.dataset.t ? "" : b.dataset.t; renderTrig();
+  });
+  function logCraving(win) {
+    const l = store.get("log", []);
+    l.push({ t: Date.now(), kind, win, int: intensity, after, cost: price(), trig: trigger });
+    store.set("log", l.slice(-500));
+  }
+  function barRows(rows, total) {
+    const max = Math.max(1, ...rows.map((r) => r[1]));
+    return rows.map((r) => '<div class="brow"><span>' + esc(r[0]) + '</span><i style="--w:' + Math.round(100 * r[1] / max) + '%"></i><b>' + r[1] + "</b></div>").join("");
+  }
+  // la hora difícil: la ventana de 3 horas con más antojos (necesita al menos 4 registros)
+  function riskHour() {
+    const l = store.get("log", []); if (l.length < 4) return null;
+    const h = Array(24).fill(0); l.forEach((x) => h[new Date(x.t).getHours()]++);
+    let best = 0, at = 0;
+    for (let i = 0; i < 24; i++) { const v = (h[(i + 23) % 24] + h[i] + h[(i + 1) % 24]) * 100 + h[i]; if (v > best) { best = v; at = i; } }
+    return { hour: at, n: Math.floor(best / 100), of: l.length };
+  }
+  function renderInsights() {
+    const l = store.get("log", []);
+    if (!l.length) {
+      ["trig-bars", "kind-bars", "hour-bars"].forEach((id) => $(id).innerHTML = "");
+      $("hour-note").textContent = "Cuando termines un antojo y elijas qué lo gatilló, aquí verás tus patrones.";
+    } else {
+      const c = {}; l.forEach((x) => { if (x.trig) c[x.trig] = (c[x.trig] || 0) + 1; });
+      const rows = Object.entries(c).sort((a, b) => b[1] - a[1]);
+      $("trig-bars").innerHTML = rows.length ? barRows(rows) : "";
+      const k = {}; l.forEach((x) => k[x.kind] = (k[x.kind] || 0) + 1);
+      $("kind-bars").innerHTML = barRows(Object.entries(k).sort((a, b) => b[1] - a[1]).map(([a, n]) => [KIND_NAME[a] || a, n]));
+      const blocks = ["0–3 h", "3–6 h", "6–9 h", "9–12 h", "12–15 h", "15–18 h", "18–21 h", "21–24 h"], hb = Array(8).fill(0);
+      l.forEach((x) => hb[Math.floor(new Date(x.t).getHours() / 3)]++);
+      $("hour-bars").innerHTML = barRows(hb.map((n, i) => [blocks[i], n]));
+      const r = riskHour();
+      $("hour-note").textContent = r ? "Tu hora difícil: cerca de las " + String(r.hour).padStart(2, "0") + ":00 (" + r.n + " de " + r.of + " antojos)." : "Con unos pocos antojos más te digo a qué hora te pegan.";
+    }
+    renderStreak(); renderGoal(); renderAch(); renderRem();
+  }
+
+  // racha: días seguidos sin caídas, contando desde el primer día de uso
+  function firstDay() {
+    let f = store.get("first", null);
+    if (!f) {
+      const ks = Object.keys(store.get("nights", {})).concat(Object.keys(store.get("trains", {})), store.get("log", []).map((x) => ymd(new Date(x.t)))).sort();
+      f = ks[0] || ymd(new Date()); store.set("first", f);
+    }
+    return f;
+  }
+  function streaks() {
+    const n = store.get("nights", {}), first = firstDay(), end = nightKey();
+    let cur = 0, best = 0;
+    for (let d = new Date(first + "T12:00:00"); ymd(d) <= end; d.setDate(d.getDate() + 1)) {
+      if (n[ymd(d)] === "try") cur = 0; else cur++;
+      best = Math.max(best, cur);
+    }
+    return { cur, best };
+  }
+  function renderStreak() { const s = streaks(); $("t-streak").textContent = s.cur; $("t-best").textContent = s.best; }
+
+  // meta de ahorro
+  function renderGoal() {
+    const g = store.get("goal", null), box = $("goal-box"), saved = stats().saved;
+    if (!g) {
+      box.innerHTML = '<span>¿Para qué estás ahorrando?</span><input class="text" id="g-name" maxlength="30" placeholder="Ej: bici nueva" autocomplete="off"><div class="money">Monto $ <input type="number" id="g-amt" min="0" step="1000" inputmode="numeric" placeholder="150000"></div><button class="btn go" id="g-save">Guardar meta</button>';
+      return;
+    }
+    const got = Math.max(0, saved - (g.from || 0)), pct = Math.min(100, Math.round(100 * got / g.amount));
+    box.innerHTML = '<div class="line2"><b>' + esc(g.name) + "</b><span>" + fmtMoney(got) + " de " + fmtMoney(g.amount) + '</span></div><div class="prog"><i style="--w:' + pct + '%"></i></div><p class="muted">' +
+      (got >= g.amount ? "¡Meta cumplida! Ya puedes darte ese gusto." : "Te faltan " + fmtMoney(g.amount - got) + " (" + pct + "%).") + '</p><button class="link" id="g-reset">Cambiar meta</button>';
+  }
+  $("goal-box").addEventListener("click", (e) => {
+    if (e.target.id === "g-save") {
+      const name = $("g-name").value.trim() || "Mi meta", amount = Math.round(+$("g-amt").value || 0);
+      if (amount <= 0) { $("g-amt").focus(); return; }
+      store.set("goal", { name, amount, from: store.get("goalfrom", 0) }); renderGoal(); renderGoalPill(); checkAch();
+    } else if (e.target.id === "g-reset") { store.set("goalfrom", stats().saved); store.set("goal", null); renderGoal(); renderGoalPill(); }
+  });
+  function renderGoalPill() {
+    const g = store.get("goal", null), el = $("goalpill");
+    el.hidden = !g || mode !== "home";
+    if (!g) return;
+    const got = Math.max(0, stats().saved - (g.from || 0)), pct = Math.min(100, Math.round(100 * got / g.amount));
+    $("gp-t").textContent = g.name + " · " + pct + "%"; $("gp-b").style.setProperty("--w", pct + "%");
+  }
+
+  // logros
+  const ACH = [
+    ["primera", "Primera ola", "Dejaste pasar un antojo", (c) => c.s.wins >= 1],
+    ["diez", "10 antojos evitados", "Ya es un hábito", (c) => c.s.wins >= 10],
+    ["veinticinco", "25 antojos evitados", "Cada vez más fácil", (c) => c.s.wins >= 25],
+    ["racha3", "3 días sin caídas", "Tres seguidos", (c) => c.st.best >= 3],
+    ["racha7", "Primera semana", "7 días sin caídas", (c) => c.st.best >= 7],
+    ["racha30", "Un mes entero", "30 días sin caídas", (c) => c.st.best >= 30],
+    ["ahorro10", "$10.000 ahorrados", "Primer billete", (c) => c.s.saved >= 10000],
+    ["ahorro50", "$50.000 ahorrados", "Esto ya se nota", (c) => c.s.saved >= 50000],
+    ["ahorro100", "$100.000 ahorrados", "Un gran premio", (c) => c.s.saved >= 100000],
+    ["calma60", "1 hora de calma", "60 minutos juntados", (c) => (c.s.minutes || 0) >= 60],
+    ["ola", "Ola domada", "Las ganas bajaron 5 puntos o más", (c) => c.l.some((x) => x.win && x.int - x.after >= 5)],
+    ["entreno1", "Primer entreno", "Guardaste una rutina", (c) => (c.s.trains || 0) >= 1],
+    ["entreno10", "10 entrenos", "Constancia", (c) => (c.s.trains || 0) >= 10],
+    ["bici", "Rodando", "Primer paseo en bici", (c) => c.r.length >= 1],
+    ["meta", "Meta cumplida", "Llegaste a tu monto", (c) => !!(c.g && c.s.saved - (c.g.from || 0) >= c.g.amount)]
+  ];
+  const achCtx = () => ({ s: stats(), st: streaks(), l: store.get("log", []), r: store.get("rides", []), g: store.get("goal", null) });
+  function checkAch() {
+    const have = store.get("ach", null), c = achCtx(), now = {};
+    const got = ACH.filter((a) => a[3](c));
+    // la primera vez se marca todo lo que ya tenías, sin avisos
+    if (!have) { got.forEach((a) => now[a[0]] = Date.now()); store.set("ach", now); return; }
+    const fresh = got.filter((a) => !have[a[0]]);
+    if (!fresh.length) return;
+    fresh.forEach((a) => have[a[0]] = Date.now()); store.set("ach", have);
+    toast("Logro: " + fresh[0][1]); buzz(30);
+  }
+  function renderAch() {
+    const have = store.get("ach", {}) || {};
+    $("ach").innerHTML = ACH.map((a) => '<div class="badge' + (have[a[0]] ? " on" : "") + '"><b>' + a[1] + "</b><span>" + a[2] + "</span></div>").join("");
+  }
+
+  // aviso a la hora difícil: sale del registro; funciona mientras la app esté abierta o en segundo plano
+  const remTime = () => { const r = riskHour(), h = r ? r.hour : 22; return h * 60 - 20; };
+  function renderRem() {
+    const on = !!store.get("rem", { on: false }).on, r = riskHour();
+    $("rem").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String((b.dataset.rem === "on") === on)));
+    const t = (((remTime() % 1440) + 1440) % 1440), hh = String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0");
+    $("rem-note").textContent = (r ? "Según tu registro, te avisaré a las " + hh + "." : "Mientras juntas datos, te avisaré a las " + hh + ".") + " Funciona mientras la app esté abierta o en segundo plano.";
+    $("vib").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String((b.dataset.vib === "on") === (prefs().vib !== false))));
+  }
+  seg("rem", "rem", async (v) => {
+    const rem = store.get("rem", { on: false }); rem.on = v === "on";
+    if (rem.on) { try { if ("Notification" in window && Notification.permission === "default") await Notification.requestPermission(); } catch {} }
+    store.set("rem", rem); renderRem();
+  });
+  seg("vib", "vib", (v) => { setPref("vib", v === "on"); if (v === "on") vibe(60); renderRem(); });
+  let remMin = -1;
+  function checkReminder() {
+    const rem = store.get("rem", { on: false }); if (!rem.on) return;
+    const d = new Date(), m = d.getHours() * 60 + d.getMinutes(); if (m === remMin) return; remMin = m;
+    const at = (((remTime() % 1440) + 1440) % 1440), key = nightKey();
+    if (rem.last === key || m < at || m > at + 90 || mode !== "home") return;
+    rem.last = key; store.set("rem", rem);
+    toast("Se acerca tu hora difícil. Aquí estoy."); notify("Calma", "Se acerca tu hora difícil. Si te dan ganas, aquí estoy.", "calma-rem");
+    $("hint").textContent = "Se acerca tu hora difícil. Si llegan las ganas, toca \"Lo necesito ya\"."; $("hint").style.opacity = 1;
+  }
+
+  // "Lo necesito ya": 2 minutos de respiración sin pasar por la configuración
+  $("quick").addEventListener("click", () => {
+    audio.init(); extended = false; intensity = 7; scale("intensity", 1, intensity, (v) => intensity = v);
+    startSession(2, true);
+  });
+
+  // bici
+  const BIKE = { estatica: "Estática", ruta: "De ruta" }, FEEL = ["", "Suave", "Normal", "Duro"];
+  let bikeDraft = { type: "estatica", min: 30, feel: 2 };
+  function renderBike() {
+    const rides = store.get("rides", []), wk7 = rides.filter((r) => Date.now() - r.t < 7 * 864e5);
+    bikeDraft.min = bikeDraft.min || 30; $("b-min").textContent = bikeDraft.min;
+    $("b-type").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.bt === bikeDraft.type)));
+    $("b-feel").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.bf === bikeDraft.feel)));
+    $("b-week").textContent = "Últimos 7 días: " + wk7.reduce((a, r) => a + r.min, 0) + " min en " + wk7.length + (wk7.length === 1 ? " paseo" : " paseos");
+    $("b-list").innerHTML = rides.length ? rides.slice(-4).reverse().map((r) => "<div><b>" + BIKE[r.type] + " · " + r.min + " min</b><span>" + new Date(r.t).toLocaleDateString("es-CL", { weekday: "short", day: "numeric", month: "short" }) + " · " + FEEL[r.feel] + "</span></div>").join("") : "<div>Cuando guardes un paseo, aparece aquí.</div>";
+    const bd = store.get("bikedays", []);
+    $("b-days").innerHTML = DAY_ORDER.map((d) => '<button data-bd="' + d + '" aria-pressed="' + bd.includes(d) + '">' + DAYS[d] + "</button>").join("");
+  }
+  seg("b-type", "bt", (v) => bikeDraft.type = v);
+  seg("b-feel", "bf", (v) => bikeDraft.feel = +v);
+  $("bike").addEventListener("click", (e) => {
+    const m = e.target.closest("[data-bm]");
+    if (m) { bikeDraft.min = Math.max(5, bikeDraft.min + +m.dataset.bm); $("b-min").textContent = bikeDraft.min; }
+    const d = e.target.closest("[data-bd]");
+    if (d) {
+      const n = +d.dataset.bd, bd = store.get("bikedays", []);
+      store.set("bikedays", bd.includes(n) ? bd.filter((x) => x !== n) : bd.concat(n));
+      d.setAttribute("aria-pressed", String(!bd.includes(n))); renderPlanner(); renderToday();
+    }
+  });
+  $("b-save").addEventListener("click", () => {
+    const r = store.get("rides", []); r.push({ t: Date.now(), type: bikeDraft.type, min: bikeDraft.min, feel: bikeDraft.feel }); store.set("rides", r.slice(-300));
+    const t = store.get("trains", {}); t[nightKey()] = true; store.set("trains", t);
+    buzz(25); toast("Paseo guardado. " + bikeDraft.min + " min en bici."); renderBike(); renderRoutines(); checkAch();
+  });
+
+  // progreso por ejercicio, sacado de los entrenamientos guardados
+  let progEx = "", progMetric = "kg";
+  function exSeries(ex) {
+    return store.get("workouts", []).map((w) => {
+      const it = w.items.find((i) => i.ex === ex); if (!it) return null;
+      const cardio = it.type === "cardio";
+      return { t: w.date, cardio, kg: Math.max(0, ...it.sets.map((s) => s.kg || 0)), reps: Math.max(0, ...it.sets.map((s) => s.reps || 0)), min: cardio ? it.sets.reduce((a, s) => a + (s.min || 0), 0) : 0 };
+    }).filter(Boolean);
+  }
+  function renderProg() {
+    const ws = store.get("workouts", []), cnt = {};
+    ws.forEach((w) => w.items.forEach((i) => cnt[i.ex] = (cnt[i.ex] || 0) + 1));
+    const names = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]);
+    if (!names.length) { $("p-ex").hidden = true; $("p-metric").hidden = true; $("p-chart").innerHTML = ""; $("p-note").textContent = "Cuando guardes entrenamientos, aquí verás cómo suben tu peso y tus reps."; return; }
+    $("p-ex").hidden = false;
+    if (!cnt[progEx]) progEx = names[0];
+    $("p-ex").innerHTML = names.map((n) => "<option" + (n === progEx ? " selected" : "") + ">" + esc(n) + "</option>").join("");
+    const data = exSeries(progEx).slice(-12), cardio = data[0] && data[0].cardio;
+    const metrics = cardio ? [["min", "Minutos"]] : [["kg", "Peso"], ["reps", "Reps"]];
+    if (!metrics.some((m) => m[0] === progMetric)) progMetric = metrics[0][0];
+    if (!cardio && progMetric === "kg" && !data.some((d) => d.kg)) progMetric = "reps";
+    $("p-metric").hidden = metrics.length < 2;
+    $("p-metric").innerHTML = metrics.map((m) => '<button data-pm="' + m[0] + '" aria-pressed="' + (m[0] === progMetric) + '">' + m[1] + "</button>").join("");
+    const unit = { kg: " kg", reps: " reps", min: " min" }[progMetric], vals = data.map((d) => d[progMetric]);
+    if (data.length < 2) {
+      $("p-chart").innerHTML = ""; $("p-note").textContent = "Un entrenamiento guardado: " + kgNum(vals[0]) + unit + ". Con dos o más aparece la línea."; return;
+    }
+    const Wd = 300, Hd = 120, pl = 8, pr = 8, pt = 14, pb = 22, lo = Math.min(...vals), hi = Math.max(...vals), span = hi - lo || 1;
+    const X = (i) => pl + (Wd - pl - pr) * i / (data.length - 1), Y = (v) => pt + (Hd - pt - pb) * (1 - (v - lo) / span);
+    const pts = vals.map((v, i) => X(i).toFixed(1) + "," + Y(v).toFixed(1)).join(" ");
+    const fd = (t) => new Date(t).toLocaleDateString("es-CL", { day: "numeric", month: "short" });
+    $("p-chart").innerHTML = '<svg viewBox="0 0 ' + Wd + " " + Hd + '" role="img" aria-label="Progreso de ' + esc(progEx) + '"><line x1="' + pl + '" x2="' + (Wd - pr) + '" y1="' + (Hd - pb) + '" y2="' + (Hd - pb) + '" stroke="rgba(255,255,255,0.12)"/><polyline points="' + pts + '" fill="none" stroke="#ffbe76" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>' +
+      vals.map((v, i) => '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(v).toFixed(1) + '" r="' + (i === vals.length - 1 ? 4.5 : 3) + '" fill="#ffbe76"/>').join("") +
+      '<text x="' + pl + '" y="' + (Hd - 6) + '">' + fd(data[0].t) + '</text><text x="' + (Wd - pr) + '" y="' + (Hd - 6) + '" text-anchor="end">' + fd(data[data.length - 1].t) + '</text><text x="' + (Wd - pr) + '" y="10" text-anchor="end">máx ' + kgNum(hi) + unit + "</text></svg>";
+    const d = vals[vals.length - 1] - vals[0];
+    $("p-note").textContent = d > 0 ? "Subiste de " + kgNum(vals[0]) + " a " + kgNum(vals[vals.length - 1]) + unit + " en " + data.length + " entrenamientos." : d === 0 ? "Te mantienes en " + kgNum(vals[0]) + unit + ". Cuando completes todas las series, la app te sugiere subir." : "Bajaste de " + kgNum(vals[0]) + " a " + kgNum(vals[vals.length - 1]) + unit + ". Es normal, a veces toca un día más suave.";
+  }
+  $("p-ex").addEventListener("change", (e) => { progEx = e.target.value; renderProg(); });
+  seg("p-metric", "pm", (v) => { progMetric = v; renderProg(); });
+
+  // respaldo: todo lo guardado, en un archivo
+  function backupName() { return "calma-respaldo-" + ymd(new Date()) + ".json"; }
+  $("bk-out").addEventListener("click", async () => {
+    const keys = {}; for (const k in mem) if (k !== "_at" && k !== "active") keys[k] = mem[k];
+    const text = JSON.stringify({ app: "calma", v: 1, at: Date.now(), keys }, null, 1);
+    const file = new File([text], backupName(), { type: "application/json" });
+    try {
+      if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: "Respaldo de Calma" }); $("bk-note").textContent = "Respaldo listo."; return; }
+    } catch (err) { if (err && err.name === "AbortError") return; }
+    const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    $("bk-note").textContent = "Descargué " + file.name + ". Guárdalo en un lugar seguro.";
+  });
+  let importArmed = null;
+  $("bk-file").addEventListener("change", async (e) => {
+    const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+    try {
+      const d = JSON.parse(await f.text());
+      if (!d || d.app !== "calma" || !d.keys || typeof d.keys !== "object") throw 0;
+      importArmed = d.keys;
+      const n = Object.keys(d.keys).length;
+      $("bk-note").textContent = "Archivo válido (" + n + " datos). Esto reemplaza lo que tienes ahora."; $("bk-in").textContent = "Toca para reemplazar";
+    } catch { importArmed = null; $("bk-note").textContent = "Ese archivo no es un respaldo de Calma."; }
+  });
+  $("bk-in").addEventListener("click", async () => {
+    if (!importArmed) { $("bk-file").click(); return; }
+    const keys = importArmed; importArmed = null;
+    for (const k in keys) if (k !== "active" && typeof keys[k] === "string") keep(k, keys[k]);
+    keep("active", "null"); keep("_at", String(Date.now()));
+    try { await cloud.flush(); } catch {}
+    location.reload();
+  });
+  // el primer toque abre el selector de archivos; con un archivo válido cargado, el segundo lo aplica
 
   // ---------- respiración ----------
   const IN = 4, HOLD = 2, OUT = 6, CYCLE = IN + HOLD + OUT;
@@ -2120,6 +2531,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       left = sessionLeft();
       if (left <= 0) finish(false); else renderTime();
     } else if (mode === "train") trainTick();
+    checkReminder();
   }
   const TITLE = document.title;
   function updateTitle() {
@@ -2251,7 +2663,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   async function requestWake() { try { wake = await navigator.wakeLock?.request("screen"); } catch {} }
   function releaseWake() { try { wake?.release(); } catch {} wake = null; }
 
-  layout(); updateSky(); setMode("home"); restoreActive(); updateTitle(); requestAnimationFrame(frame);
+  layout(); updateSky(); firstDay(); checkAch(); setMode("home"); restoreActive(); updateTitle(); requestAnimationFrame(frame);
   loadWeather(); setInterval(loadWeather, 20 * 60e3);
 
   // pantalla de inicio: una vez por apertura, y no si vuelves a un entrenamiento o sesión en curso
