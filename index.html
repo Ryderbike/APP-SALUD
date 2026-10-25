@@ -373,6 +373,14 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 .get { background: rgba(43, 17, 0, 0.88); color: #ffe2c2; box-shadow: inset 0 1px 0 rgba(255,255,255,0.18); }
 .get.soft-get { background: linear-gradient(180deg, rgba(255,200,140,0.32), rgba(255,140,60,0.18)); color: #ffd2a6; box-shadow: inset 0 1px 0 rgba(255,255,255,0.35); }
 
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips button {
+  font: inherit; font-size: 0.9rem; font-weight: 600; color: var(--mist); background: rgba(0,0,0,0.25);
+  border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px; cursor: pointer;
+}
+.chips button[aria-pressed="true"] { background: var(--moon); color: var(--night); border-color: var(--moon); }
+.auto-sum { color: var(--moon); font-size: 0.9rem; }
+
 @media (prefers-reduced-motion: reduce) { .card.swap, .sheet { animation: none; } .app, .page { transition: none; } }
 </style>
 </head>
@@ -512,6 +520,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     <div class="plan" id="plan" aria-label="Tu semana"></div>
     <div class="sec-row"><h2 class="sec">Tus rutinas</h2><button class="see" id="r-new">+ Nueva</button></div>
     <div class="carousel" id="routines"></div>
+    <button class="btn" id="r-auto">Armar una rutina automática</button>
     <button class="btn" id="r-how">Ver cómo se hace cada ejercicio</button>
     <div id="hist-wrap">
       <h2 class="sec">Últimos entrenamientos</h2>
@@ -561,6 +570,35 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     <button class="btn go" id="e-save">Guardar</button>
   </div>
   <button class="link" id="e-cancel">Volver sin guardar</button>
+</section>
+
+<!-- hoja: armar rutina automática -->
+<section class="sheet" id="auto" hidden aria-label="Armar rutina">
+  <div class="grab"></div>
+  <div class="stack">
+    <h2>Armar rutina</h2>
+    <p class="muted">Elige qué quieres trabajar y la app arma la rutina con tus mancuernas y la banca. Después puedes cambiarla.</p>
+  </div>
+  <div class="q">
+    <span id="lbl-mus">Músculos</span>
+    <div class="chips" id="a-mus" role="group" aria-labelledby="lbl-mus"></div>
+  </div>
+  <div class="q">
+    <span id="lbl-sty">Estilo</span>
+    <div class="seg" id="a-style" role="group" aria-labelledby="lbl-sty">
+      <button data-style="vol" aria-pressed="true">Volumen 3×15</button>
+      <button data-style="fuerza" aria-pressed="false">Fuerza 5×5</button>
+    </div>
+  </div>
+  <div class="q">
+    <span id="lbl-bike">Para cerrar</span>
+    <div class="seg" id="a-bike" role="group" aria-labelledby="lbl-bike">
+      <button data-bike="0" aria-pressed="true">Solo pesas</button>
+      <button data-bike="1" aria-pressed="false">Con bici 15 min</button>
+    </div>
+  </div>
+  <p class="auto-sum" id="a-msg"></p>
+  <button class="cta sage" id="a-go">Armar rutina</button>
 </section>
 
 <!-- hoja: cómo se hace (encima de las otras hojas) -->
@@ -807,12 +845,12 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   }
 
   // ---------- pantallas ----------
-  const SHEETS = ["setup", "end", "tedit", "tend", "stats", "skysheet"];
+  const SHEETS = ["setup", "end", "tedit", "tend", "stats", "skysheet", "auto"];
   function openSheet(id) { $("scrim").hidden = false; SHEETS.forEach((s) => $(s).hidden = s !== id); }
   function closeSheets() { $("scrim").hidden = true; SHEETS.forEach((s) => $(s).hidden = true); }
   // las hojas de elegir se cierran tocando afuera, con Escape o deslizando; las de resultado piden una respuesta
   function dismissSheet() {
-    if (!$("setup").hidden || !$("stats").hidden || !$("tedit").hidden || !$("skysheet").hidden) closeSheets();
+    if (!$("setup").hidden || !$("stats").hidden || !$("tedit").hidden || !$("skysheet").hidden || !$("auto").hidden) closeSheets();
   }
   $("scrim").addEventListener("click", dismissSheet);
   addEventListener("keydown", (e) => { if (e.key === "Escape") { if (!$("how").hidden) closeHow(); else dismissSheet(); } });
@@ -1208,6 +1246,58 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   $("r-how").addEventListener("click", () => openHow(Object.keys(MOVES), 0));
   $("r-new").addEventListener("click", () => openEditor(null));
 
+  // armar rutina: elige ejercicios por músculo, compuestos primero, y reparte lo que hay en casa (mancuernas, banca plana e inclinada, bici)
+  const MUSCLES = {
+    "Pecho": ["Press banca con mancuernas", "Press inclinado con mancuernas", "Aperturas inclinadas", "Aperturas en banca", "Flexiones"],
+    "Espalda": ["Remo con mancuerna", "Remo apoyado en banca inclinada", "Remo inclinado con mancuernas", "Pullover", "Remo abierto con mancuernas"],
+    "Hombros": ["Press de hombros", "Elevaciones laterales", "Pájaros (deltoide posterior)", "Encogimientos de hombros"],
+    "Bíceps": ["Curl de bíceps", "Curl martillo"],
+    "Tríceps": ["Extensión de tríceps sobre la cabeza", "Patada de tríceps en banca", "Fondos de tríceps en banca"],
+    "Piernas": ["Sentadilla goblet", "Peso muerto rumano", "Zancadas con mancuernas", "Sentadilla búlgara", "Step-up a la banca"],
+    "Glúteos": ["Hip thrust en banca", "Peso muerto rumano", "Sentadilla búlgara"],
+    "Abdomen": ["Plancha", "Abdominales", "Elevación de piernas"]
+  };
+  // kg sugeridos [volumen, fuerza] con mancuernas de hasta 25 kg; los compuestos van pesados en fuerza
+  const KG = { "Press banca con mancuernas": [20, 25], "Press inclinado con mancuernas": [16, 24], "Aperturas en banca": [10, 12], "Aperturas inclinadas": [8, 12], "Remo con mancuerna": [20, 25], "Remo inclinado con mancuernas": [16, 22.5], "Remo apoyado en banca inclinada": [14, 20], "Pullover": [16, 20], "Remo abierto con mancuernas": [8, 12], "Press de hombros": [14, 22.5], "Elevaciones laterales": [6, 8], "Pájaros (deltoide posterior)": [6, 8], "Encogimientos de hombros": [20, 25], "Curl de bíceps": [10, 14], "Curl martillo": [10, 14], "Extensión de tríceps sobre la cabeza": [14, 18], "Patada de tríceps en banca": [6, 10], "Sentadilla goblet": [22.5, 25], "Peso muerto rumano": [22.5, 25], "Zancadas con mancuernas": [12, 20], "Sentadilla búlgara": [12, 20], "Step-up a la banca": [12, 20], "Hip thrust en banca": [25, 25] };
+  const COMPOUND = new Set(["Press banca con mancuernas", "Press inclinado con mancuernas", "Remo con mancuerna", "Remo inclinado con mancuernas", "Remo apoyado en banca inclinada", "Press de hombros", "Sentadilla goblet", "Peso muerto rumano", "Zancadas con mancuernas", "Sentadilla búlgara", "Step-up a la banca", "Hip thrust en banca"]);
+  let autoSel = new Set(["Pecho", "Espalda"]), autoStyle = "vol", autoBike = false;
+  function renderAuto() {
+    $("a-mus").innerHTML = Object.keys(MUSCLES).map((m) => '<button data-mus="' + m + '" aria-pressed="' + autoSel.has(m) + '">' + m + "</button>").join("");
+    const n = autoSel.size ? Math.min(8, 4 + autoSel.size) : 0;
+    $("a-msg").textContent = n ? "Saldrán unos " + n + " ejercicios" + (autoBike ? " y la bici" : "") + ". Si algo no te gusta, lo cambias antes de guardar." : "Elige al menos un músculo.";
+    $("a-go").disabled = !n;
+  }
+  function buildRoutine() {
+    const lastKg = store.get("lastkg", {}), muscles = Object.keys(MUSCLES).filter((m) => autoSel.has(m));
+    const total = Math.min(8, 4 + muscles.length), fuerza = autoStyle === "fuerza", used = new Set();
+    // primero el compuesto base, luego los otros compuestos y al final los de aislamiento; se mezclan dentro de su grupo para que cada vez salga una combinación distinta
+    const mix = (l) => l.slice().sort(() => Math.random() - 0.5);
+    const lists = muscles.map((m) => { const [a, ...b] = MUSCLES[m]; return [a].concat(mix(b.filter((x) => COMPOUND.has(x))), mix(b.filter((x) => !COMPOUND.has(x)))); });
+    const items = [];
+    for (let round = 0; items.length < total && round < 6; round++) {
+      for (const l of lists) {
+        if (items.length >= total) break;
+        const ex = l.slice(round).find((x) => !used.has(x)); if (!ex) continue;
+        used.add(ex);
+        const heavy = fuerza && COMPOUND.has(ex), k = KG[ex];
+        const kg = k ? (fuerza ? Math.min(25, Math.max(lastKg[ex] || 0, k[1])) : (lastKg[ex] ?? k[0])) : 0;
+        const bodyReps = ex === "Plancha" ? 30 : 20;
+        items.push(k ? F(ex, heavy ? 5 : 3, heavy ? 5 : fuerza ? 10 : 15, kg) : F(ex, 3, bodyReps, 0));
+      }
+    }
+    if (autoBike) items.push(C("Bici estática", 15));
+    const nm = muscles.map((m) => m.toLowerCase()), name = nm.length > 1 ? nm.slice(0, -1).join(", ") + " y " + nm[nm.length - 1] : nm[0];
+    return { id: uid(), name: name[0].toUpperCase() + name.slice(1), days: [], rest: fuerza ? 120 : 90, items };
+  }
+  $("r-auto").addEventListener("click", () => { renderAuto(); openSheet("auto"); $("auto").scrollTop = 0; });
+  $("a-mus").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-mus]"); if (!b) return;
+    autoSel.has(b.dataset.mus) ? autoSel.delete(b.dataset.mus) : autoSel.add(b.dataset.mus); renderAuto();
+  });
+  seg("a-style", "style", (v) => { autoStyle = v; });
+  seg("a-bike", "bike", (v) => { autoBike = v === "1"; renderAuto(); });
+  $("a-go").addEventListener("click", () => { if (autoSel.size) openEditor(buildRoutine(), true); });
+
   // editor de rutinas
   let draft = null, delArmed = false;
   function exOptions(sel) {
@@ -1226,13 +1316,13 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     }).join("");
     $("e-msg").textContent = draft.items.length > 6 ? "Llevas " + draft.items.length + " ejercicios. Con 4 o 5 la rutina queda más corta y fácil de cumplir." : "";
   }
-  function openEditor(r) {
+  function openEditor(r, isNew) {
     draft = r ? JSON.parse(JSON.stringify(r)) : { id: uid(), name: "", days: [], rest: 90, items: [F("Press banca con mancuernas", 4, 10, 20), F("Remo con mancuerna", 4, 10, 20), F("Sentadilla goblet", 3, 10, 20), F("Press de hombros", 3, 10, 12)] };
-    $("e-head").textContent = r ? "Editar rutina" : "Nueva rutina";
+    $("e-head").textContent = r && !isNew ? "Editar rutina" : "Nueva rutina";
     $("e-name").value = draft.name;
     $("e-days").innerHTML = DAY_ORDER.map((d) => '<button data-day="' + d + '" aria-pressed="' + draft.days.includes(d) + '">' + DAYS[d] + "</button>").join("");
     $("e-rest").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", +b.dataset.rest === draft.rest ? "true" : "false"));
-    $("e-del").hidden = !r; delArmed = false; $("e-del").textContent = "Borrar rutina";
+    $("e-del").hidden = !r || isNew; delArmed = false; $("e-del").textContent = "Borrar rutina";
     renderItems(); openSheet("tedit"); $("tedit").scrollTop = 0;
   }
   $("e-days").addEventListener("click", (e) => {
@@ -1262,7 +1352,14 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     renderItems();
   });
   $("e-items").addEventListener("input", (e) => { if (e.target.dataset.custom) draft.items[+e.target.dataset.i].ex = e.target.value; });
-  $("e-add").addEventListener("click", () => { draft.items.push(F("Curl de bíceps", 3, 10, 10)); renderItems(); });
+  // agregar: propone un ejercicio que aún no está, del mismo músculo que los que ya tiene la rutina (lo puedes cambiar en la lista)
+  $("e-add").addEventListener("click", () => {
+    const have = new Set(draft.items.map((i) => i.ex)), mine = Object.values(MUSCLES).filter((l) => l.some((x) => have.has(x)));
+    const ex = mine.flat().find((x) => !have.has(x) && KG[x]) || Object.keys(KG).find((x) => !have.has(x)) || "Curl de bíceps";
+    const k = KG[ex], pick = autoStyle === "fuerza" ? 1 : 0;
+    draft.items.push(k ? F(ex, 3, pick ? 10 : 15, store.get("lastkg", {})[ex] ?? k[pick]) : F(ex, 3, 20, 0));
+    renderItems(); $("e-items").lastElementChild.scrollIntoView({ block: "nearest" });
+  });
   $("e-save").addEventListener("click", () => {
     draft.items = draft.items.filter((i) => i.ex.trim());
     if (!draft.items.length) { renderItems(); $("e-msg").textContent = "Agrega al menos un ejercicio para guardar la rutina."; return; }
@@ -2059,7 +2156,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   $("rain").addEventListener("click", () => toggleRain());
 
   // deslizar hacia abajo para cerrar las hojas de elegir
-  ["setup", "tedit", "stats", "skysheet"].forEach((id) => {
+  ["setup", "tedit", "stats", "skysheet", "auto"].forEach((id) => {
     const sh = $(id); let y0 = null, dy = 0;
     sh.addEventListener("pointerdown", (e) => { if (sh.scrollTop > 0 || e.target.closest("button,input,select")) return; y0 = e.clientY; dy = 0; sh.style.transition = "none"; });
     addEventListener("pointermove", (e) => { if (y0 == null) return; dy = Math.max(0, e.clientY - y0); sh.style.transform = "translateY(" + dy + "px)"; });
