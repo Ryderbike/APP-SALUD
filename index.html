@@ -85,7 +85,7 @@ p { margin: 0; }
 
 /* dock */
 .dock { display: flex; flex-direction: column; gap: 12px; }
-.pills { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.pills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .pill {
   display: flex; align-items: baseline; justify-content: center; gap: 5px; padding: 8px 6px; border-radius: 999px; white-space: nowrap;
   background: var(--glass); border: 1px solid var(--line); font-size: 0.8rem; color: var(--mist);
@@ -277,7 +277,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   <footer class="dock" id="dock-home">
     <div class="week" id="week" aria-label="Tus últimas 7 noches"></div>
     <div class="pills">
-      <span class="pill"><b id="t-wins">0</b>noches</span>
+      <span class="pill"><b id="t-wins">0</b>antojos evitados</span>
+      <span class="pill"><b id="t-falls">0</b>caídas</span>
       <span class="pill"><b id="t-trains">0</b>entrenos</span>
       <span class="pill"><b id="t-saved">$0</b>ahorrado</span>
     </div>
@@ -575,7 +576,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   function greeting() { const h = new Date().getHours(); return h >= 20 || h < 5 ? "Buenas noches" : h < 12 ? "Buenos días" : "Buenas tardes"; }
   function renderTally() {
     const s = stats();
-    $("t-wins").textContent = s.wins; $("t-trains").textContent = s.trains || 0; $("t-saved").textContent = fmtMoney(s.saved);
+    $("t-wins").textContent = s.wins; $("t-falls").textContent = s.falls || 0; $("t-trains").textContent = s.trains || 0; $("t-saved").textContent = fmtMoney(s.saved);
     if (mode === "home") $("big").textContent = Math.round(s.minutes || 0) + " min";
     renderWeek();
   }
@@ -692,7 +693,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   }
   function addWin(win) {
     const s = stats();
-    if (win) { s.wins++; s.orders++; s.saved += price(); }
+    if (win) { s.wins++; s.orders++; s.saved += price(); } else s.falls = (s.falls || 0) + 1;
     store.set("stats", s);
     markNight(win ? "win" : "try");
   }
