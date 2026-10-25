@@ -314,6 +314,40 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 .list div:last-child { border-bottom: 0; }
 .list b { color: var(--moon); font-weight: 600; font-size: 0.95rem; }
 
+.t-head { display: flex; align-items: center; gap: 10px; }
+.t-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.t-how {
+  flex: 0 0 auto; width: 96px; font: inherit; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--sage); background: rgba(0,0,0,0.25); border: 1px solid var(--line); border-radius: 14px; padding: 4px 4px 5px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+}
+.mv { width: 100%; height: auto; display: block; overflow: visible; }
+.mv path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.mv .gnd { stroke: var(--line); stroke-width: 1.5; }
+.mv .bn { stroke: #3d5080; stroke-linecap: butt; }
+.mv .ol { stroke: var(--night); stroke-width: 10; }
+.mv .lg { stroke: var(--moon); stroke-width: 6.5; }
+.mv .lg.far { stroke: #76839f; }
+.mv .ts { stroke: var(--moon); stroke-width: 11; }
+.mv .tf { stroke: var(--moon); fill: var(--moon); stroke-width: 7; }
+.mv .nk { stroke: var(--moon); stroke-width: 5; }
+.mv .hd { fill: var(--moon); }
+.mv .dbb { stroke: var(--ember); stroke-width: 3; }
+.mv .dbp { fill: var(--ember); }
+.mv .dbc { fill: var(--night); }
+.how-scrim { z-index: 7; }
+.sheet.how { z-index: 8; gap: 14px; }
+.how-top { display: flex; align-items: center; gap: 8px; }
+.how-top select {
+  flex: 1; min-width: 0; font: inherit; font-family: var(--display); font-size: 1.15rem; font-weight: 700; color: var(--moon);
+  background: var(--glass-2); border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px;
+}
+.how-top .x { width: 40px; height: 40px; font-size: 1.4rem; }
+.how-stage { position: relative; background: radial-gradient(120% 90% at 50% 30%, rgba(255,255,255,0.07), rgba(0,0,0,0.25)); border: 1px solid var(--line); border-radius: 20px; padding: 14px 10px 40px; }
+.how-say { position: absolute; left: 0; right: 0; bottom: 10px; text-align: center; font-family: var(--display); font-weight: 700; color: var(--sage); }
+.cues { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 6px; font-size: 0.95rem; }
+.cues li::marker { color: var(--sage); font-weight: 700; }
+.x.hw { color: var(--sage); font-size: 0.85rem; }
 .page { bottom: auto; height: 100vh; height: 100lvh; }
 
 /* liquid glass: vidrio claro con brillo en el borde, como en iOS; los botones principales en naranjo */
@@ -399,8 +433,10 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   <footer class="dock" id="dock-train" hidden>
     <article class="card" id="tcard" aria-live="polite">
       <div class="eyebrow"><span id="t-label"></span><span class="soft" id="t-next"></span></div>
-      <h3 id="t-title"></h3>
-      <p class="why" id="t-plan"></p>
+      <div class="t-head">
+        <div class="t-txt"><h3 id="t-title"></h3><p class="why" id="t-plan"></p></div>
+        <button class="t-how" id="t-how" aria-label="Ver cómo se hace" hidden><svg class="mv" id="t-mv" viewBox="0 -12 200 140" role="img"><g class="pr"></g><g class="fg"></g></svg>Técnica</button>
+      </div>
       <div class="adjust" id="t-adjust">
         <div class="stepper"><span>Reps</span><button data-adj="reps" data-d="-1" aria-label="Menos repeticiones">−</button><b id="t-reps">10</b><button data-adj="reps" data-d="1" aria-label="Más repeticiones">+</button></div>
         <div class="stepper"><span>Kg</span><button data-adj="kg" data-d="-2.5" aria-label="Menos peso">−</button><b id="t-kg">0</b><button data-adj="kg" data-d="2.5" aria-label="Más peso">+</button></div>
@@ -476,6 +512,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     <div class="plan" id="plan" aria-label="Tu semana"></div>
     <div class="sec-row"><h2 class="sec">Tus rutinas</h2><button class="see" id="r-new">+ Nueva</button></div>
     <div class="carousel" id="routines"></div>
+    <button class="btn" id="r-how">Ver cómo se hace cada ejercicio</button>
     <div id="hist-wrap">
       <h2 class="sec">Últimos entrenamientos</h2>
       <div class="list" id="hist" style="margin-top: 10px"></div>
@@ -524,6 +561,21 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     <button class="btn go" id="e-save">Guardar</button>
   </div>
   <button class="link" id="e-cancel">Volver sin guardar</button>
+</section>
+
+<!-- hoja: cómo se hace (encima de las otras hojas) -->
+<div class="scrim how-scrim" id="how-scrim" hidden></div>
+<section class="sheet how" id="how" hidden aria-label="Cómo se hace">
+  <div class="grab"></div>
+  <div class="how-top">
+    <button class="x" id="h-prev" aria-label="Ejercicio anterior">‹</button>
+    <select id="h-pick" aria-label="Ejercicio"></select>
+    <button class="x" id="h-next" aria-label="Ejercicio siguiente">›</button>
+  </div>
+  <div class="how-stage"><svg class="mv" id="h-mv" viewBox="0 -12 200 140" role="img"><g class="pr"></g><g class="fg"></g></svg><span class="how-say" id="h-say" aria-hidden="true"></span></div>
+  <p class="muted" id="h-mus"></p>
+  <ol class="cues" id="h-cues"></ol>
+  <button class="cta sage" id="h-ok">Entendido</button>
 </section>
 
 <!-- hoja: fin del entrenamiento -->
@@ -763,7 +815,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     if (!$("setup").hidden || !$("stats").hidden || !$("tedit").hidden || !$("skysheet").hidden) closeSheets();
   }
   $("scrim").addEventListener("click", dismissSheet);
-  addEventListener("keydown", (e) => { if (e.key === "Escape") dismissSheet(); });
+  addEventListener("keydown", (e) => { if (e.key === "Escape") { if (!$("how").hidden) closeHow(); else dismissSheet(); } });
 
   function setMode(m) {
     mode = m;
@@ -775,6 +827,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     $("pause").hidden = m !== "session" && m !== "train";
     $("big").style.color = "";
     $("clock").hidden = inSession;
+    if (m !== "train") stopMove($("t-mv"));
     if (m === "home") {
       $("cap-top").textContent = greeting(); $("breath").textContent = "juntados para ti";
       $("hint").textContent = homeHint(); $("hint").style.opacity = 1;
@@ -798,7 +851,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   $("tabs").addEventListener("click", (e) => { const b = e.target.closest("[data-tab]"); if (b) { audio.init(); setTab(b.dataset.tab); } });
   let swipe = null;
   addEventListener("pointerdown", (e) => {
-    swipe = mode === "home" && $("scrim").hidden && !e.target.closest(".carousel, .plan, .tabs") && !(tab === "calma" && onOrb(e.clientX, e.clientY)) ? { x: e.clientX, y: e.clientY } : null;
+    swipe = mode === "home" && $("scrim").hidden && $("how").hidden && !e.target.closest(".carousel, .plan, .tabs") && !(tab === "calma" && onOrb(e.clientX, e.clientY)) ? { x: e.clientX, y: e.clientY } : null;
   }, true);
   addEventListener("pointerup", (e) => {
     if (!swipe) return;
@@ -908,8 +961,8 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 
   // ---------- entrenar: planificador de rutinas ----------
   const LIB = [
-    ["Mancuernas", ["Press de hombros", "Remo con mancuerna", "Curl de bíceps", "Curl martillo", "Elevaciones laterales", "Pájaros (deltoide posterior)", "Sentadilla goblet", "Peso muerto rumano", "Zancadas con mancuernas", "Extensión de tríceps sobre la cabeza", "Encogimientos de hombros"]],
-    ["Banca", ["Press banca con mancuernas", "Press inclinado con mancuernas", "Aperturas en banca", "Pullover", "Remo apoyado en banca inclinada", "Patada de tríceps en banca", "Fondos de tríceps en banca", "Hip thrust en banca", "Step-up a la banca", "Sentadilla búlgara"]],
+    ["Mancuernas", ["Press de hombros", "Remo con mancuerna", "Curl de bíceps", "Curl martillo", "Elevaciones laterales", "Pájaros (deltoide posterior)", "Sentadilla goblet", "Peso muerto rumano", "Zancadas con mancuernas", "Remo inclinado con mancuernas", "Remo abierto con mancuernas", "Extensión de tríceps sobre la cabeza", "Encogimientos de hombros"]],
+    ["Banca", ["Press banca con mancuernas", "Press inclinado con mancuernas", "Aperturas en banca", "Aperturas inclinadas", "Pullover", "Remo apoyado en banca inclinada", "Patada de tríceps en banca", "Fondos de tríceps en banca", "Hip thrust en banca", "Step-up a la banca", "Sentadilla búlgara"]],
     ["Cardio", ["Bici estática", "Bicicleta de calle"]],
     ["Peso corporal", ["Flexiones", "Plancha", "Abdominales", "Elevación de piernas"]]
   ];
@@ -935,6 +988,187 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   const todayDow = () => { const d = new Date(); if (d.getHours() < 4) d.setDate(d.getDate() - 1); return d.getDay(); };
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
+  // ---------- técnica: monos animados de cada ejercicio ----------
+  // cada ejercicio son dos poses (inicio y fin); los codos y rodillas salen por cinemática inversa, así brazos y piernas no cambian de largo.
+  // "s" = de lado, mirando a la derecha; "f" = de frente. Ángulos en grados (0 = derecha, 90 = abajo). Suelo en y = 122.
+  const TL = 34, UA = 19, FA = 18, TH = 26, SH = 26;
+  const FLAT = [[52, 95.5, 150, 95.5, 7], [62, 99, 62, 122, 4], [140, 99, 140, 122, 4]];
+  const ROWB = [[74, 97.5, 172, 97.5, 7], [84, 101, 84, 122, 4], [162, 101, 162, 122, 4]];
+  const STAND = { sy: 37, sw: 13, hy: 71, hw: 8, hdy: 25, fx: 12, fy: 121 };
+  const BENT = { sy: 66, sw: 15, hy: 74, hw: 9, hdy: 64, fx: 12, fy: 121 };
+  const ROWRIG = { hip: [82, 72], tor: -10, foot: [70, 121], foot2: [62, 91], ff2: 180, ha2: 78, hr2: 31 };
+  const mv = (o, a, b) => Object.assign({ v: "s", kb: -1, eb: 1, db: "d", props: [] }, o, { p: [a, b] });
+  const MOVES = {
+    "Remo con mancuerna": mv({ props: ROWB, db: "b", kb2: -1, eb2: -1, mus: "Dorsal, espalda media y bíceps", say: ["Tira el codo atrás", "Baja lento"],
+      cue: ["Rodilla y mano del mismo lado sobre la banca, espalda plana como mesa.", "Tira el codo hacia la cadera, no hacia el hombro.", "Baja en 2 segundos hasta estirar el brazo, sin girar el tronco."] },
+      Object.assign({ ha: 90, hr: 35 }, ROWRIG), Object.assign({ ha: 163, hr: 21 }, ROWRIG)),
+    "Remo inclinado con mancuernas": mv({ db: "b", mus: "Espalda, bíceps y zona lumbar", say: ["Tira hacia el ombligo", "Baja lento"],
+      cue: ["Rodillas suaves, cadera atrás y espalda recta, inclinado unos 45°.", "Lleva las mancuernas hacia el ombligo juntando las escápulas.", "Mira el piso un poco adelante; nunca redondees la espalda."] },
+      { hip: [88, 74], tor: -22, foot: [100, 121], ha: 90, hr: 35 }, { hip: [88, 74], tor: -22, foot: [100, 121], ha: 155, hr: 19 }),
+    "Remo abierto con mancuernas": mv({ v: "f", db: "b", eb: -1, mus: "Espalda alta y hombro posterior", say: ["Codos afuera y arriba", "Baja lento"],
+      cue: ["Inclinado como en el remo, con las palmas mirando hacia atrás.", "Sube los codos hacia los lados hasta la altura del hombro.", "Aprieta un segundo arriba y baja controlado."] },
+      Object.assign({ ha: 92, hr: 35 }, BENT), Object.assign({ ha: 43, hr: 26 }, BENT)),
+    "Remo apoyado en banca inclinada": mv({ props: [[86, 101.2, 114.7, 79.5, 7], [96, 94, 96, 121, 4], [74, 120.5, 126, 120.5, 3]], db: "b", mus: "Espalda media, sin cargar la zona lumbar", say: ["Codos atrás", "Baja lento"],
+      cue: ["Pecho apoyado en la banca inclinada a 30–45°, pies firmes atrás.", "Tira los codos hacia atrás y junta las escápulas.", "No despegues el pecho del respaldo para ayudarte."] },
+      { hip: [84, 92], tor: -37, foot: [58, 121], ha: 90, hr: 35 }, { hip: [84, 92], tor: -37, foot: [58, 121], ha: 145, hr: 17 }),
+    "Pullover": mv({ props: FLAT, db: "b", one: true, eb: -1, mus: "Dorsales, pecho y serrato", say: ["Baja atrás de la cabeza", "Vuelve sobre el pecho"],
+      cue: ["Una mancuerna con ambas manos sobre el pecho, codos apenas doblados.", "Bájala en arco detrás de la cabeza hasta sentir que estira, sin arquear la espalda.", "Vuelve por el mismo arco, con los codos fijos."] },
+      { hip: [120, 87], tor: 180, foot: [150, 121], ha: -90, hr: 34 }, { hip: [120, 87], tor: 180, foot: [150, 121], ha: -186, hr: 34 }),
+    "Press banca con mancuernas": mv({ props: FLAT, mus: "Pecho, hombro frontal y tríceps", say: ["Baja controlado", "Empuja arriba"],
+      cue: ["Escápulas juntas y pies firmes en el piso.", "Baja al costado del pecho con los codos a unos 45° del cuerpo.", "Empuja hacia arriba sin chocar las mancuernas."] },
+      { hip: [120, 87], tor: 180, foot: [150, 121], ha: -92, hr: 35.5 }, { hip: [120, 87], tor: 180, foot: [150, 121], ha: -41, hr: 10.6 }),
+    "Press inclinado con mancuernas": mv({ props: [[108.5, 101.5, 77.9, 75.8, 8], [104, 101, 140, 101, 6], [92, 104, 98, 121, 4], [134, 104, 134, 121, 4]], mus: "Pecho alto, hombros y tríceps", say: ["Baja controlado", "Empuja arriba"],
+      cue: ["Banca a 30–45°, espalda y cabeza apoyadas.", "Baja a la parte alta del pecho, con los codos un poco bajo los hombros.", "Empuja en línea recta sobre los hombros."] },
+      { hip: [114, 95], tor: -140, foot: [150, 121], ha: -90, hr: 35 }, { hip: [114, 95], tor: -140, foot: [150, 121], ha: -37, hr: 10 }),
+    "Aperturas en banca": mv({ v: "f", hb: true, props: [[86, 96, 114, 96, 8], [100, 100, 100, 121, 5]], mus: "Pecho", say: ["Abre en arco", "Cierra apretando"],
+      cue: ["Codos apenas doblados y fijos todo el movimiento.", "Abre los brazos en arco hasta la altura del pecho, sin pasarte.", "Cierra como abrazando un árbol. Usa menos peso que en el press."] },
+      { sy: 86, sw: 15, hy: 89, hw: 9, hdy: 79, fx: 34, fy: 121, ha: -104, hr: 35 }, { sy: 86, sw: 15, hy: 89, hw: 9, hdy: 79, fx: 34, fy: 121, ha: 10, hr: 35 }),
+    "Aperturas inclinadas": mv({ v: "f", props: [[100, 30, 100, 92, 34], [76, 95, 124, 95, 7], [100, 98, 100, 121, 5]], mus: "Pecho alto", say: ["Abre en arco", "Cierra apretando"],
+      cue: ["Banca a 30–45°, codos apenas doblados y fijos.", "Abre en arco hasta la altura del pecho.", "Cierra arriba sin chocar las mancuernas, lento al bajar."] },
+      { sy: 54, sw: 15, hy: 88, hw: 10, hdy: 41, fx: 26, fy: 121, ha: -102, hr: 35 }, { sy: 54, sw: 15, hy: 88, hw: 10, hdy: 41, fx: 26, fy: 121, ha: 10, hr: 35 }),
+    "Press de hombros": mv({ v: "f", db: "b", mus: "Hombros y tríceps", say: ["Empuja arriba", "Baja controlado"],
+      cue: ["Abdomen firme y glúteos apretados, sin arquear la espalda.", "Parte con las mancuernas a la altura de las orejas.", "Empuja hasta casi juntarlas arriba y baja lento."] },
+      Object.assign({ ha: -34.5, hr: 19.4 }, STAND), Object.assign({ ha: -96, hr: 35 }, STAND)),
+    "Elevaciones laterales": mv({ v: "f", mus: "Hombro (deltoide lateral)", say: ["Sube a los lados", "Baja en 3 segundos"],
+      cue: ["Codos apenas doblados; sube hacia los lados hasta la altura del hombro.", "Guía con los codos, no con las manos, y no encojas los hombros.", "Baja lento. Aquí sirve poco peso."] },
+      Object.assign({ ha: 82, hr: 35 }, STAND), Object.assign({ ha: 2, hr: 34 }, STAND)),
+    "Pájaros (deltoide posterior)": mv({ v: "f", mus: "Hombro posterior y espalda alta", say: ["Abre los brazos", "Baja lento"],
+      cue: ["Inclínate desde la cadera con la espalda recta.", "Abre los brazos hacia los lados con los codos suaves.", "Aprieta las escápulas arriba y baja controlado."] },
+      Object.assign({ ha: 95, hr: 35 }, BENT), Object.assign({ ha: -4, hr: 34 }, BENT)),
+    "Encogimientos de hombros": mv({ v: "f", mus: "Trapecio", say: ["Hombros a las orejas", "Baja lento"],
+      cue: ["Brazos estirados a los costados.", "Sube los hombros hacia las orejas, sin girarlos.", "Aguanta un segundo arriba y baja lento."] },
+      Object.assign({}, STAND, { ha: 86, hr: 36 }), Object.assign({}, STAND, { sy: 31.5, ha: 86, hr: 36 })),
+    "Curl de bíceps": mv({ mus: "Bíceps", say: ["Sube", "Baja lento"],
+      cue: ["Codos pegados al cuerpo; que no se muevan.", "Sube girando la palma hacia ti, sin balancear el tronco.", "Baja lento hasta estirar casi del todo."] },
+      { hip: [100, 71], tor: -90, foot: [100, 121], ha: 88, hr: 35.5 }, { hip: [100, 71], tor: -90, foot: [100, 121], ha: 34, hr: 14.4 }),
+    "Curl martillo": mv({ db: "b", mus: "Bíceps y antebrazo", say: ["Sube", "Baja lento"],
+      cue: ["Palmas mirando hacia el cuerpo todo el rato, como sosteniendo un martillo.", "Codos fijos al costado.", "Sube y baja sin impulso."] },
+      { hip: [100, 71], tor: -90, foot: [100, 121], ha: 88, hr: 35.5 }, { hip: [100, 71], tor: -90, foot: [100, 121], ha: 34, hr: 14.4 }),
+    "Extensión de tríceps sobre la cabeza": mv({ db: "b", one: true, mus: "Tríceps", say: ["Baja atrás", "Estira arriba"],
+      cue: ["Una mancuerna con ambas manos sobre la cabeza.", "Bájala detrás de la cabeza moviendo solo los antebrazos; codos apuntando arriba.", "Estira los brazos sin arquear la espalda."] },
+      { hip: [100, 71], tor: -90, foot: [100, 121], ha: -88, hr: 35.5 }, { hip: [100, 71], tor: -90, foot: [100, 121], ha: -153, hr: 9 }),
+    "Sentadilla goblet": mv({ db: "b", one: true, bar: 90, mus: "Piernas y glúteos", say: ["Baja sentándote", "Sube empujando el piso"],
+      cue: ["Mancuerna vertical pegada al pecho, codos hacia abajo.", "Baja como sentándote entre los talones, con el pecho arriba.", "Rodillas en la dirección de los pies; sube empujando el piso."] },
+      { hip: [97, 71], tor: -86, foot: [100, 121], ha: 45, hr: 14 }, { hip: [80, 100], tor: -58, foot: [100, 121], ha: 73, hr: 14 }),
+    "Peso muerto rumano": mv({ mus: "Isquiotibiales, glúteos y espalda baja", say: ["Cadera atrás", "Sube apretando glúteos"],
+      cue: ["Rodillas apenas dobladas; lleva la cadera hacia atrás.", "Mancuernas rozando las piernas y espalda recta.", "Baja hasta media canilla o hasta sentir que estira, y sube apretando glúteos."] },
+      { hip: [98, 71], tor: -90, foot: [100, 121], ha: 88, hr: 35.5 }, { hip: [86, 75], tor: -15, foot: [100, 121], ha: 90, hr: 35.5 }),
+    "Zancadas con mancuernas": mv({ db: "b", ff2: 40, mus: "Piernas y glúteos", say: ["Baja recto", "Sube con el talón"],
+      cue: ["Paso largo y tronco derecho.", "Baja hasta que la rodilla de atrás casi toque el piso.", "La rodilla de adelante sobre el pie; sube empujando con el talón."] },
+      { hip: [99, 74], tor: -90, foot: [120, 121], foot2: [78, 120], ha: 90, hr: 35 }, { hip: [99, 96], tor: -90, foot: [120, 121], foot2: [78, 120], ha: 90, hr: 35 }),
+    "Sentadilla búlgara": mv({ db: "b", props: [[20, 97.5, 70, 97.5, 7], [28, 101, 28, 122, 4], [62, 101, 62, 122, 4]], ff2: 175, mus: "Cuádriceps y glúteos", say: ["Baja recto", "Sube con el talón"],
+      cue: ["Empeine del pie de atrás sobre la banca.", "Baja recto hasta que el muslo de adelante quede paralelo al piso.", "Peso en el talón de adelante y tronco firme."] },
+      { hip: [96, 72], tor: -84, foot: [115, 121], foot2: [64, 91], ha: 90, hr: 35 }, { hip: [92, 98], tor: -80, foot: [115, 121], foot2: [64, 91], ha: 90, hr: 35 }),
+    "Step-up a la banca": mv({ db: "b", props: [[100, 97.5, 172, 97.5, 7], [108, 101, 108, 122, 4], [164, 101, 164, 122, 4]], mus: "Piernas y glúteos", say: ["Sube con la pierna de arriba", "Baja controlado"],
+      cue: ["Pie completo sobre la banca.", "Sube empujando con la pierna de arriba, sin impulsarte con la de abajo.", "Baja controlado y cambia de pierna."] },
+      { hip: [100, 76], tor: -84, foot: [122, 93], foot2: [90, 121], ha: 90, hr: 35 }, { hip: [118, 44], tor: -86, foot: [122, 93], foot2: [114, 90], ha: 90, hr: 35 }),
+    "Hip thrust en banca": mv({ one: true, props: [[26, 95.5, 88, 95.5, 7], [34, 99, 34, 122, 4], [80, 99, 80, 122, 4]], hd: 20, mus: "Glúteos", say: ["Empuja la cadera", "Baja lento"],
+      cue: ["Parte alta de la espalda en el borde de la banca, mancuerna sobre la cadera.", "Empuja con los talones hasta quedar recto de rodillas a hombros.", "Aprieta glúteos arriba con el mentón hacia el pecho."] },
+      { hip: [115, 110], tor: -141, foot: [142, 121], ha: 28.6, hr: 30 }, { hip: [122, 87], tor: -180, foot: [142, 121], ha: -11.6, hr: 34.7 }),
+    "Patada de tríceps en banca": mv({ props: ROWB, db: "b", kb2: -1, eb2: -1, mus: "Tríceps", say: ["Estira atrás", "Vuelve lento"],
+      cue: ["Rodilla y mano en la banca; brazo pegado al cuerpo y paralelo al piso.", "Estira el antebrazo hacia atrás hasta dejar el brazo recto.", "Solo se mueve el codo; vuelve lento."] },
+      Object.assign({ ha: 131, hr: 28 }, ROWRIG), Object.assign({ ha: 174, hr: 36 }, ROWRIG)),
+    "Fondos de tríceps en banca": mv({ db: "", props: [[30, 97.5, 100, 97.5, 7], [38, 101, 38, 122, 4], [92, 101, 92, 122, 4]], mus: "Tríceps y pecho", say: ["Baja doblando codos", "Empuja arriba"],
+      cue: ["Manos en el borde de la banca, dedos hacia adelante.", "Baja doblando los codos hacia atrás hasta unos 90°.", "Espalda cerca de la banca; sube empujando con las palmas."] },
+      { hip: [102, 91], tor: -90, foot: [146, 121], ha: 96, hr: 36 }, { hip: [104, 108], tor: -86, foot: [146, 121], ha: 114, hr: 20.7 }),
+    "Flexiones": mv({ db: "", ff: 100, mus: "Pecho, hombros y tríceps", say: ["Baja el pecho", "Empuja el piso"],
+      cue: ["Manos bajo los hombros y cuerpo recto de cabeza a talones.", "Baja el pecho hasta casi tocar el piso, codos a 45°.", "Empuja el piso sin hundir la cadera. Si cuesta, apoya las rodillas."] },
+      { hip: [96.5, 97.7], tor: -22, fa: 158, fr: 51, ha: 89.5, hr: 34.2 }, { hip: [99.6, 112.7], tor: -7, fa: 173, fr: 51, ha: 113, hr: 13.6 }),
+    "Plancha": mv({ db: "", ff: 100, mus: "Abdomen y core", say: ["Aguanta", "Respira"],
+      cue: ["Codos bajo los hombros.", "Cuerpo recto: aprieta glúteos y abdomen.", "Respira normal y aguanta 30 a 45 segundos."] },
+      { hip: [95.8, 107], tor: -12.2, fa: 167.8, fr: 51, ha: 48, hr: 27 }, { hip: [95.8, 108], tor: -12.6, fa: 167.4, fr: 51, ha: 48.5, hr: 27 }),
+    "Abdominales": mv({ db: "", mus: "Abdomen", say: ["Sube enrollando", "Baja lento"],
+      cue: ["Rodillas dobladas y pies en el piso.", "Despega los hombros enrollando el tronco, sin tirar del cuello.", "Baja lento, sin descansar del todo."] },
+      { hip: [112, 116], tor: -180, foot: [140, 121], ha: 0, hr: 12 }, { hip: [112, 116], tor: -152, foot: [140, 121], ha: 28, hr: 12 }),
+    "Elevación de piernas": mv({ db: "", mus: "Abdomen bajo", say: ["Sube las piernas", "Baja lento"],
+      cue: ["Espalda baja pegada al piso y manos a los costados.", "Sube las piernas estiradas hasta quedar verticales.", "Baja lento sin tocar el piso."] },
+      { hip: [96, 116], tor: 180, fa: -4, fr: 51.5, ff: -86, ha: 0, hr: 34 }, { hip: [96, 116], tor: 180, fa: -88, fr: 51.5, ff: 0, ha: 0, hr: 34 })
+  };
+  const mvRad = (d) => d * Math.PI / 180;
+  const at = (p, a, r) => [p[0] + r * Math.cos(mvRad(a)), p[1] + r * Math.sin(mvRad(a))];
+  const mvAdd = (p, q) => [p[0] + q[0], p[1] + q[1]];
+  // codo o rodilla: dos huesos de largo fijo entre la raíz y el objetivo; s elige hacia qué lado dobla
+  function ik(root, tgt, l1, l2, s) {
+    const dx = tgt[0] - root[0], dy = tgt[1] - root[1], h = Math.hypot(dx, dy) || 1e-3;
+    const d = Math.min(Math.max(h, Math.abs(l1 - l2) + 0.01), l1 + l2 - 0.01), base = Math.atan2(dy, dx);
+    const a = Math.acos((l1 * l1 + d * d - l2 * l2) / (2 * l1 * d));
+    return [[root[0] + l1 * Math.cos(base + s * a), root[1] + l1 * Math.sin(base + s * a)], [root[0] + dx / h * d, root[1] + dy / h * d]];
+  }
+  function mvMix(a, b, t) {
+    const o = {};
+    for (const k in a) o[k] = Array.isArray(a[k]) ? a[k].map((v, i) => v + (b[k][i] - v) * t) : a[k] + (b[k] - a[k]) * t;
+    return o;
+  }
+  const pt = (p) => p[0].toFixed(1) + " " + p[1].toFixed(1);
+  // los miembros cercanos llevan un borde oscuro para que se lean sobre el tronco
+  const limb = (cls, a, b, c, d) => { const dd = "M" + pt(a) + "L" + pt(b) + "L" + pt(c) + (d ? "L" + pt(d) : ""); return (cls === "lg" ? '<path class="ol" d="' + dd + '"/>' : "") + '<path class="' + cls + '" d="' + dd + '"/>'; };
+  function bell(m, hand, elb) {
+    if (!m.db) return "";
+    if (m.db === "d") return '<circle class="dbp" cx="' + hand[0].toFixed(1) + '" cy="' + hand[1].toFixed(1) + '" r="6"/><circle class="dbc" cx="' + hand[0].toFixed(1) + '" cy="' + hand[1].toFixed(1) + '" r="2"/>';
+    const ang = m.bar ?? Math.atan2(hand[1] - elb[1], hand[0] - elb[0]) * 180 / Math.PI + 90, e1 = at(hand, ang, 8), e2 = at(hand, ang + 180, 8);
+    return '<path class="dbb" d="M' + pt(e1) + "L" + pt(e2) + '"/><circle class="dbp" cx="' + e1[0].toFixed(1) + '" cy="' + e1[1].toFixed(1) + '" r="4"/><circle class="dbp" cx="' + e2[0].toFixed(1) + '" cy="' + e2[1].toFixed(1) + '" r="4"/>';
+  }
+  function drawMove(m, t) {
+    const q = mvMix(m.p[0], m.p[1], t);
+    if (m.v === "f") {
+      const c = 100, out = [];
+      const sides = [1, -1].map((k) => {
+        const sh = [c + k * q.sw, q.sy], hip = [c + k * q.hw, q.hy];
+        const [knee, foot] = ik(hip, [c + k * q.fx, q.fy], TH, SH, k * m.kb);
+        const [elb, hand] = ik(sh, at(sh, k > 0 ? q.ha : 180 - q.ha, q.hr), UA, FA, k * m.eb);
+        return { sh, hip, knee, foot, elb, hand, toe: [foot[0] + k * 5, foot[1]] };
+      });
+      const head = '<path class="nk" d="M' + c + " " + q.sy + "L" + c + " " + q.hdy + '"/><circle class="hd" cx="' + c + '" cy="' + q.hdy.toFixed(1) + '" r="7.5"/>';
+      if (m.hb) out.push(head);
+      for (const s of sides) out.push(limb("lg", s.hip, s.knee, s.foot, s.toe));
+      out.push('<path class="tf" d="M' + pt(sides[0].sh) + "L" + pt(sides[1].sh) + "L" + pt(sides[1].hip) + "L" + pt(sides[0].hip) + 'Z"/>');
+      if (!m.hb) out.push(head);
+      for (const s of sides) out.push(limb("lg", s.sh, s.elb, s.hand), bell(m, s.hand, s.elb));
+      return out.join("");
+    }
+    const off = [5, -3], hip = q.hip, sh = at(hip, q.tor, TL), head = at(sh, q.tor + (m.hd || 0), 11);
+    const hip2 = mvAdd(hip, off), sh2 = mvAdd(sh, off);
+    const fT = q.fa != null ? at(hip, q.fa, q.fr) : q.foot, fT2 = q.foot2 || mvAdd(fT, off);
+    const hT = at(sh, q.ha, q.hr), hT2 = q.ha2 != null ? at(sh2, q.ha2, q.hr2) : mvAdd(hT, off);
+    const [knee, foot] = ik(hip, fT, TH, SH, m.kb), [knee2, foot2] = ik(hip2, fT2, TH, SH, m.kb2 ?? m.kb);
+    const [elb, hand] = ik(sh, hT, UA, FA, m.eb), [elb2, hand2] = ik(sh2, hT2, UA, FA, m.eb2 ?? m.eb);
+    const ff = q.ff ?? m.ff ?? 0, ff2 = q.ff2 ?? m.ff2 ?? ff;
+    return limb("lg far", hip2, knee2, foot2, at(foot2, ff2, 7)) + limb("lg far", sh2, elb2, hand2) + (m.one ? "" : bell(m, hand2, elb2)) +
+      '<path class="ts" d="M' + pt(hip) + "L" + pt(sh) + '"/><path class="nk" d="M' + pt(sh) + "L" + pt(head) + '"/><circle class="hd" cx="' + head[0].toFixed(1) + '" cy="' + head[1].toFixed(1) + '" r="7.5"/>' +
+      limb("lg", hip, knee, foot, at(foot, ff, 7)) + limb("lg", sh, elb, hand) + bell(m, m.one ? [(hand[0] + hand2[0]) / 2, (hand[1] + hand2[1]) / 2] : hand, elb);
+  }
+  // reloj de la animación: va (1,3 s), aguanta, vuelve (1,6 s), aguanta
+  const CYC = [1.3, 0.35, 1.6, 0.45], CYC_T = CYC.reduce((a, b) => a + b);
+  const mvEase = (x) => x < 0.5 ? 2 * x * x : 1 - 2 * (1 - x) * (1 - x);
+  const live = new Set(); let mvRaf = 0;
+  function playMove(svg, name, sayEl) {
+    const m = MOVES[name]; if (!m) { live.delete(svg); return; }
+    if (svg._name !== name) {
+      svg._name = name; svg._t0 = performance.now();
+      svg.querySelector(".pr").innerHTML = '<path class="gnd" d="M8 122.5H192"/>' + m.props.map((b) => '<path class="bn" stroke-width="' + b[4] + '" d="M' + b[0] + " " + b[1] + "L" + b[2] + " " + b[3] + '"/>').join("");
+      svg.setAttribute("aria-label", "Animación: " + name);
+    }
+    svg._say = sayEl || null; live.add(svg);
+    if (!mvRaf) mvRaf = requestAnimationFrame(moveLoop);
+  }
+  const stopMove = (svg) => { live.delete(svg); svg._name = null; };
+  function moveLoop(now) {
+    mvRaf = 0; if (!live.size) return;
+    for (const svg of live) {
+      if (!svg.isConnected || !svg.getClientRects().length) continue;
+      const m = MOVES[svg._name]; let t = ((now - svg._t0) / 1000) % CYC_T, p, ph;
+      if (reduced) { p = 1; ph = 0; }  // con "reducir movimiento": una sola pose, sin animar
+      else if (t < CYC[0]) { p = mvEase(t / CYC[0]); ph = 0; }
+      else if ((t -= CYC[0]) < CYC[1]) { p = 1; ph = 0; }
+      else if ((t -= CYC[1]) < CYC[2]) { p = 1 - mvEase(t / CYC[2]); ph = 1; }
+      else { p = 0; ph = 1; }
+      svg.querySelector(".fg").innerHTML = drawMove(m, p);
+      if (svg._say && svg._say._ph !== ph) { svg._say._ph = ph; svg._say.textContent = m.say[ph]; }
+    }
+    mvRaf = requestAnimationFrame(moveLoop);
+  }
+
+
   function renderToday() {
     const r = routines.find((x) => x.days.includes(todayDow()));
     $("tr-date").textContent = new Date().toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long" });
@@ -952,7 +1186,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   function renderRoutines() {
     renderPlanner(); renderToday();
     $("routines").innerHTML = routines.length ? routines.map((r) =>
-      '<div class="rcard"><span class="kick" style="color: var(--sage)">' + (r.days.length ? daysText(r.days) : "Sin día fijo") + "</span><b>" + esc(r.name) + (r.example ? '<span class="tag">ejemplo</span>' : "") + "</b><small>" + r.items.length + " ejercicios · ~" + estMin(r) + ' min</small><small class="ex">' + esc(r.items.map((i) => i.ex).join(", ")) + '</small><div class="acts"><button class="get soft-get" data-go="' + r.id + '">Empezar</button><button class="see" data-edit="' + r.id + '">Editar</button></div></div>'
+      '<div class="rcard"><span class="kick" style="color: var(--sage)">' + (r.days.length ? daysText(r.days) : "Sin día fijo") + "</span><b>" + esc(r.name) + (r.example ? '<span class="tag">ejemplo</span>' : "") + "</b><small>" + r.items.length + " ejercicios · ~" + estMin(r) + ' min</small><small class="ex">' + esc(r.items.map((i) => i.ex).join(", ")) + '</small><div class="acts"><button class="get soft-get" data-go="' + r.id + '">Empezar</button><button class="see" data-edit="' + r.id + '">Editar</button><button class="see" data-how-r="' + r.id + '">Técnica</button></div></div>'
     ).join("") : '<p class="muted">Todavía no tienes rutinas. Crea la primera con 4 o 5 ejercicios.</p>';
     const all = store.get("workouts", []), wk7 = all.filter((w) => Date.now() - w.date < 7 * 864e5);
     const planned = new Set(routines.flatMap((r) => r.days)).size;
@@ -968,7 +1202,10 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     const g = e.target.closest("[data-go]"), ed = e.target.closest("[data-edit]");
     if (g) startWorkout(routines.find((r) => r.id === g.dataset.go));
     if (ed) openEditor(routines.find((r) => r.id === ed.dataset.edit));
+    const hr = e.target.closest("[data-how-r]");
+    if (hr) openHow(routines.find((r) => r.id === hr.dataset.howR).items.map((i) => i.ex), 0);
   });
+  $("r-how").addEventListener("click", () => openHow(Object.keys(MOVES), 0));
   $("r-new").addEventListener("click", () => openEditor(null));
 
   // editor de rutinas
@@ -982,7 +1219,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   function renderItems() {
     $("e-items").innerHTML = draft.items.map((it, i) => {
       const custom = !ALL_EX.has(it.ex);
-      return '<div class="item"><div class="item-top"><span class="num">' + (i + 1) + '</span><select data-i="' + i + '" aria-label="Ejercicio ' + (i + 1) + '">' + exOptions(custom ? "__otro" : it.ex) + '</select><button class="x" data-del="' + i + '" aria-label="Quitar ejercicio">×</button></div>' +
+      return '<div class="item"><div class="item-top"><span class="num">' + (i + 1) + '</span><select data-i="' + i + '" aria-label="Ejercicio ' + (i + 1) + '">' + exOptions(custom ? "__otro" : it.ex) + "</select>" + (MOVES[it.ex] ? '<button class="x hw" data-how="' + i + '" aria-label="Ver cómo se hace">▶</button>' : "") + '<button class="x" data-del="' + i + '" aria-label="Quitar ejercicio">×</button></div>' +
         (custom ? '<input class="text" data-i="' + i + '" data-custom="1" value="' + esc(it.ex) + '" placeholder="Nombre del ejercicio" maxlength="40">' : "") +
         (it.type === "cardio" ? '<div class="adjust one">' + stepper("Minutos", "min", it.min, i) + "</div>"
           : '<div class="adjust three">' + stepper("Series", "sets", it.sets, i) + stepper("Reps", "reps", it.reps, i) + stepper("Kg", "kg", it.kg, i) + "</div>") + "</div>";
@@ -1006,6 +1243,8 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   });
   seg("e-rest", "rest", (v) => draft.rest = +v);
   $("e-items").addEventListener("click", (e) => {
+    const hw = e.target.closest("[data-how]");
+    if (hw) { openHow(draft.items.map((x) => x.ex), +hw.dataset.how); return; }
     const del = e.target.closest("[data-del]");
     if (del) { draft.items.splice(+del.dataset.del, 1); renderItems(); return; }
     const b = e.target.closest("[data-k]"); if (!b) return;
@@ -1043,10 +1282,10 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   function startWorkout(r) {
     if (!r || !r.items.length) return;
     closeSheets();
-    const lastKg = store.get("lastkg", {});
+    const lastKg = store.get("lastkg", {}), lastReps = store.get("lastreps", {});
     wk = { r: JSON.parse(JSON.stringify(r)), i: 0, s: 0, phase: "work", left: 0, span: 1, endAt: 0, start: Date.now(), doneSets: 0,
       totalSets: r.items.reduce((a, it) => a + (it.type === "cardio" ? 1 : it.sets), 0),
-      log: r.items.map((it) => ({ ex: it.ex, type: it.type, sets: [], reps: it.reps, kg: lastKg[it.ex] ?? it.kg })) };
+      log: r.items.map((it) => ({ ex: it.ex, type: it.type, sets: [], reps: lastReps[it.ex] ?? it.reps, kg: lastKg[it.ex] ?? it.kg })) };
     orb.level = 0; orb.base = 0; orb.ring = 0;
     setMode("train"); enterItem();
     $("hint").textContent = "Ajusta reps y kg si cambió algo. La esfera se llena al descansar.";
@@ -1093,15 +1332,44 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       $("t-title").textContent = it.ex; $("t-plan").textContent = it.min + " minutos a un ritmo en que puedas hablar.";
       $("t-main").textContent = "Terminé"; $("t-alt").textContent = "+5 min";
     }
+    const showEx = wk.phase === "work" ? it.ex : wk.phase === "rest" ? (wk.s < it.sets ? it : next).ex : null;
+    $("t-how").hidden = !MOVES[showEx];
+    if (MOVES[showEx]) playMove($("t-mv"), showEx); else stopMove($("t-mv"));
     $("t-bar").innerHTML = wk.r.items.map((_, j) => "<i" + (j < wk.i ? ' class="on"' : j === wk.i ? ' class="now"' : "") + "></i>").join("");
     if (anim) { const c = $("tcard"); c.classList.remove("swap"); void c.offsetWidth; c.classList.add("swap"); }
   }
+  $("t-how").addEventListener("click", () => { if (wk) { const n = $("t-mv")._name; openHow(wk.r.items.map((x) => x.ex), Math.max(0, wk.r.items.findIndex((x) => x.ex === n))); } });
+
+  // hoja "cómo se hace": se abre encima de cualquier otra hoja y se puede pasar de ejercicio en ejercicio
+  let howList = [], howI = 0;
+  function openHow(list, i) {
+    howList = list.filter((x) => MOVES[x]); if (!howList.length) return;
+    howI = Math.max(0, howList.indexOf(list[i])); if (howI < 0) howI = 0;
+    $("h-pick").innerHTML = howList.map((x, j) => '<option value="' + j + '">' + esc(x) + "</option>").join("");
+    $("how-scrim").hidden = false; $("how").hidden = false; $("how").scrollTop = 0;
+    showHow();
+  }
+  function showHow() {
+    const name = howList[howI], m = MOVES[name];
+    $("h-pick").value = howI;
+    $("h-prev").disabled = howI === 0; $("h-next").disabled = howI === howList.length - 1;
+    $("h-mus").textContent = "Trabaja: " + m.mus;
+    $("h-cues").innerHTML = m.cue.map((c) => "<li>" + esc(c) + "</li>").join("");
+    playMove($("h-mv"), name, $("h-say"));
+  }
+  function closeHow() { $("how").hidden = true; $("how-scrim").hidden = true; stopMove($("h-mv")); }
+  $("h-pick").addEventListener("change", () => { howI = +$("h-pick").value; showHow(); });
+  $("h-prev").addEventListener("click", () => { if (howI > 0) { howI--; showHow(); } });
+  $("h-next").addEventListener("click", () => { if (howI < howList.length - 1) { howI++; showHow(); } });
+  $("h-ok").addEventListener("click", closeHow);
+  $("how-scrim").addEventListener("click", closeHow);
+
   function countSet() { wk.doneSets++; orb.ring = Math.min(1, wk.doneSets / wk.totalSets); }
   $("t-main").addEventListener("click", () => {
     if (!wk || mode !== "train") return;
     const it = wk.r.items[wk.i], lg = wk.log[wk.i];
     if (wk.phase === "work") {
-      lg.sets.push({ reps: lg.reps, kg: lg.kg }); wk.s++; countSet();
+      lg.sets.push({ reps: lg.reps, kg: lg.kg }); wk.s++; countSet(); rememberSet(lg);
       buzz(25); audio.chime(1.2);
       const r = $("t-main").getBoundingClientRect(); burst(r.left + r.width / 2, r.top, 14);
       if (wk.s >= it.sets && wk.i === wk.r.items.length - 1) { workoutFinish(false); return; }
@@ -1123,8 +1391,16 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     const b = e.target.closest("[data-adj]"); if (!b || !wk) return;
     const lg = wk.log[wk.i], k = b.dataset.adj;
     lg[k] = Math.max(k === "kg" ? 0 : 1, Math.round((lg[k] + +b.dataset.d) * 10) / 10);
-    renderWk(false); saveActive();
+    rememberSet(lg); renderWk(false); saveActive();
   });
+  // el peso y las repes que elijas quedan guardados al tiro: para ese ejercicio y en la rutina, así la próxima vez parte igual
+  function rememberSet(lg) {
+    const lk = store.get("lastkg", {}), lr = store.get("lastreps", {});
+    lk[lg.ex] = lg.kg; lr[lg.ex] = lg.reps; store.set("lastkg", lk); store.set("lastreps", lr);
+    const r = routines.find((x) => x.id === wk.r.id), it = r && r.items.find((x) => x.ex === lg.ex && x.type !== "cardio");
+    if (it && (it.kg !== lg.kg || it.reps !== lg.reps)) { it.kg = lg.kg; it.reps = lg.reps; saveRoutines(); }
+    const cur = wk.r.items.find((x) => x.ex === lg.ex && x.type !== "cardio"); if (cur) { cur.kg = lg.kg; cur.reps = lg.reps; }
+  }
   function endRest() {
     audio.note(1046.5, 0.08); buzz(40);
     if (wk.s >= wk.r.items[wk.i].sets) nextItem(); else { wk.phase = "work"; renderWk(true); saveActive(); }
