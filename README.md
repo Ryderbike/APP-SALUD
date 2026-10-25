@@ -62,6 +62,8 @@ La app se publica como un Worker que solo sirve archivos estáticos, igual que o
 
 Cada push a `main` publica una versión nueva. Los pull requests reciben su propia URL de vista previa.
 
+Si en **Settings → Builds** aparece el aviso "disconnected from your Git account" (pasa, por ejemplo, si el repo cambia de nombre), toca **Disconnect** y vuelve a **Connect**. Deja el build command vacío: con `npm run build` la publicación falla, porque no hay `package.json`.
+
 Cuando cambies archivos, sube el número de `VERSION` en `sw.js` para que los teléfonos que ya la instalaron descarguen lo nuevo.
 
 ## Cambiar las tareas
