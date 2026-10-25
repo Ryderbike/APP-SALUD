@@ -141,9 +141,9 @@ p { margin: 0; }
 .dots i.on { background: var(--sage); }
 
 /* sheets */
-.scrim { position: fixed; inset: 0; background: rgba(3, 6, 14, 0.55); z-index: 5; }
+.scrim { position: fixed; inset: 0; bottom: calc(-1 * var(--vgap, 0px)); background: rgba(3, 6, 14, 0.55); z-index: 5; }
 .sheet {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; margin: 0 auto; max-width: 480px;
+  position: fixed; left: 0; right: 0; bottom: calc(-1 * var(--vgap, 0px)); z-index: 6; margin: 0 auto; max-width: 480px;
   background: #121b2e; border: 1px solid var(--line); border-bottom: 0; border-radius: 28px 28px 0 0;
   padding-block: 10px calc(20px + env(safe-area-inset-bottom, 0px));
   padding-left: max(20px, env(safe-area-inset-left, 0px));
@@ -249,7 +249,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 
 /* pestañas: Calma y Entrenar son dos pantallas; se cambia con la cápsula de abajo o deslizando de lado */
 .tabs {
-  position: fixed; z-index: 3; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  position: fixed; z-index: 3; left: 50%; bottom: calc(max(10px, env(safe-area-inset-bottom, 0px)) - var(--vgap, 0px)); transform: translateX(-50%);
   display: flex; gap: 4px; padding: 4px; border-radius: 999px; width: min(250px, calc(100% - 32px)); box-sizing: border-box;
   background: rgba(22, 32, 54, 0.86); border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
@@ -260,7 +260,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 }
 .tabs svg { width: 18px; height: 18px; flex: 0 0 auto; }
 .tabs button[aria-selected="true"] { color: var(--sage); background: rgba(255,176,102,0.14); }
-body.has-tabs .app { padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
+body.has-tabs .app { padding-bottom: calc(62px + max(10px, env(safe-area-inset-bottom, 0px)) - var(--vgap, 0px)); }
 .app { transition: opacity 0.25s ease; }
 body.tab-train .app { opacity: 0; }
 .page {
@@ -275,7 +275,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 .mini span { font-size: 0.72rem; color: var(--mist); font-weight: 600; }
 .page-in {
   max-width: 480px; margin: 0 auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;
-  padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(84px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(72px + max(10px, env(safe-area-inset-bottom, 0px))) max(16px, env(safe-area-inset-left, 0px));
 }
 .page-date { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mist); }
 .page-in h1 { font-size: 2.2rem; font-weight: 700; line-height: 1.1; }
@@ -348,7 +348,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 .cues { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 6px; font-size: 0.95rem; }
 .cues li::marker { color: var(--sage); font-weight: 700; }
 .x.hw { color: var(--sage); font-size: 0.85rem; }
-.page { bottom: auto; height: 100vh; height: 100lvh; }
+.page { bottom: auto; height: 100vh; height: var(--fullh, 100lvh); }
 
 /* liquid glass: vidrio claro con brillo en el borde, como en iOS; los botones principales en naranjo */
 :root {
@@ -1583,6 +1583,14 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   const orb = { x: 0, y: 0, r: 100, level: 0, base: 0, wobble: 0, press: 0, held: false, glow: 0, tilt: 0 };
   function layout() {
     dpr = Math.min(2, window.devicePixelRatio || 1);
+    // iOS app de inicio: el viewport puede quedar más corto que la pantalla y deja una franja abajo; medimos la pantalla real y estiramos cielo, páginas y hojas hasta el borde
+    const iosApp = navigator.standalone === true;
+    const screenH = innerWidth < innerHeight ? Math.max(screen.width, screen.height) : Math.min(screen.width, screen.height);
+    const fullH = iosApp ? Math.max(innerHeight, screenH) : innerHeight;
+    const root = document.documentElement.style;
+    root.setProperty("--vgap", (fullH - innerHeight) + "px");
+    if (iosApp) root.setProperty("--fullh", fullH + "px"); else root.removeProperty("--fullh");
+    cv.style.height = iosApp ? fullH + "px" : "";
     W = innerWidth; H = Math.max(innerHeight, cv.clientHeight); cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const s = $("stage").getBoundingClientRect();
     orb.x = s.left + s.width / 2; orb.y = s.top + s.height / 2;
