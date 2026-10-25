@@ -85,13 +85,12 @@ p { margin: 0; }
 
 /* dock */
 .dock { display: flex; flex-direction: column; gap: 12px; }
-.pills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.pill {
-  display: flex; align-items: baseline; justify-content: center; gap: 5px; padding: 8px 6px; border-radius: 999px; white-space: nowrap;
-  background: var(--glass); border: 1px solid var(--line); font-size: 0.8rem; color: var(--mist);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-}
-.pill b { color: var(--moon); font-family: var(--display); font-size: 1rem; font-variant-numeric: tabular-nums; }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.tile { background: rgba(0,0,0,0.25); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tile b { font-family: var(--display); font-size: 1.6rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.tile span { font-size: 0.8rem; color: var(--mist); font-weight: 600; }
+.tile.good b { color: var(--sage); }
+.tile.warn b { color: var(--ember); }
 
 .week {
   display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px;
@@ -250,6 +249,9 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   <header class="bar">
     <div class="brand"><i></i>Calma Nocturna</div>
     <span class="clock" id="clock"></span>
+    <button class="icon-btn" id="open-stats" aria-label="Tu registro">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 20v-8M12 20V4M19 20v-5"/></svg>
+    </button>
     <button class="icon-btn" id="music" aria-pressed="false" aria-label="Música" hidden>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
     </button>
@@ -275,13 +277,6 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 
   <!-- dock inicio -->
   <footer class="dock" id="dock-home">
-    <div class="week" id="week" aria-label="Tus últimas 7 noches"></div>
-    <div class="pills">
-      <span class="pill"><b id="t-wins">0</b>antojos evitados</span>
-      <span class="pill"><b id="t-falls">0</b>caídas</span>
-      <span class="pill"><b id="t-trains">0</b>entrenos</span>
-      <span class="pill"><b id="t-saved">$0</b>ahorrado</span>
-    </div>
     <div class="duo">
       <button class="cta" id="open-setup">Tengo ganas<span>de comer algo</span></button>
       <button class="cta sage" id="open-train">Entrenar<span id="train-sub">tus rutinas</span></button>
@@ -422,6 +417,24 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   <div class="stack">
     <button class="cta sage" id="te-done">Guardar entrenamiento</button>
     <button class="link" id="te-again">Salir sin guardar</button>
+  </div>
+</section>
+
+<!-- hoja: registro -->
+<section class="sheet" id="stats" hidden aria-label="Tu registro">
+  <div class="grab"></div>
+  <h2>Tu registro</h2>
+  <div class="week" id="week" aria-label="Tus últimas 7 noches"></div>
+  <p class="muted">Verde: noche ganada. Punteado: lo intentaste. Punto naranjo: entrenaste.</p>
+  <div class="tiles">
+    <div class="tile good"><b id="t-wins">0</b><span>antojos evitados</span></div>
+    <div class="tile warn"><b id="t-falls">0</b><span>caídas</span></div>
+    <div class="tile good"><b id="t-saved">$0</b><span>dinero ahorrado</span></div>
+    <div class="tile warn"><b id="t-spent">$0</b><span>dinero gastado</span></div>
+    <div class="tile"><b id="t-nights">0</b><span>noches ganadas</span></div>
+    <div class="tile"><b id="t-rate">–</b><span>de las veces lo lograste</span></div>
+    <div class="tile"><b id="t-trains">0</b><span>entrenos</span></div>
+    <div class="tile"><b id="t-mins">0 min</b><span>de calma juntados</span></div>
   </div>
 </section>
 
@@ -577,17 +590,20 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   function renderTally() {
     const s = stats();
     $("t-wins").textContent = s.wins; $("t-falls").textContent = s.falls || 0; $("t-trains").textContent = s.trains || 0; $("t-saved").textContent = fmtMoney(s.saved);
+    $("t-spent").textContent = fmtMoney(s.spent || 0); $("t-mins").textContent = Math.round(s.minutes || 0) + " min";
+    $("t-nights").textContent = Object.values(store.get("nights", {})).filter((v) => v === "win").length;
+    const tries = s.wins + (s.falls || 0); $("t-rate").textContent = tries ? Math.round(100 * s.wins / tries) + "%" : "–";
     if (mode === "home") $("big").textContent = Math.round(s.minutes || 0) + " min";
     renderWeek();
   }
 
   // ---------- pantallas ----------
-  const SHEETS = ["setup", "end", "tsetup", "tedit", "tend"];
+  const SHEETS = ["setup", "end", "tsetup", "tedit", "tend", "stats"];
   function openSheet(id) { $("scrim").hidden = false; SHEETS.forEach((s) => $(s).hidden = s !== id); }
   function closeSheets() { $("scrim").hidden = true; SHEETS.forEach((s) => $(s).hidden = true); }
   // las hojas de elegir se cierran tocando afuera, con Escape o deslizando; las de resultado piden una respuesta
   function dismissSheet() {
-    if (!$("setup").hidden || !$("tsetup").hidden) closeSheets();
+    if (!$("setup").hidden || !$("tsetup").hidden || !$("stats").hidden) closeSheets();
     else if (!$("tedit").hidden) openSheet("tsetup");
   }
   $("scrim").addEventListener("click", dismissSheet);
@@ -598,6 +614,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
     const inSession = m !== "home";
     $("dock-home").hidden = inSession; $("dock-session").hidden = m !== "session"; $("dock-train").hidden = m !== "train";
     ["music", "rain", "quit"].forEach((id) => $(id).hidden = !inSession);
+    $("open-stats").hidden = inSession;
     $("pause").hidden = m !== "session" && m !== "train";
     $("big").style.color = "";
     $("clock").hidden = inSession;
@@ -609,6 +626,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   }
 
   $("open-setup").addEventListener("click", () => { openSheet("setup"); audio.init(); });
+  $("open-stats").addEventListener("click", () => { renderTally(); openSheet("stats"); });
   $("start").addEventListener("click", () => { extended = false; startSession(minutes); });
 
   function startSession(mins) {
@@ -693,7 +711,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   }
   function addWin(win) {
     const s = stats();
-    if (win) { s.wins++; s.orders++; s.saved += price(); } else s.falls = (s.falls || 0) + 1;
+    if (win) { s.wins++; s.orders++; s.saved += price(); } else { s.falls = (s.falls || 0) + 1; s.spent = (s.spent || 0) + price(); }
     store.set("stats", s);
     markNight(win ? "win" : "try");
   }
@@ -1367,7 +1385,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   $("rain").addEventListener("click", () => toggleRain());
 
   // deslizar hacia abajo para cerrar las hojas de elegir
-  ["setup", "tsetup", "tedit"].forEach((id) => {
+  ["setup", "tsetup", "tedit", "stats"].forEach((id) => {
     const sh = $(id); let y0 = null, dy = 0;
     sh.addEventListener("pointerdown", (e) => { if (sh.scrollTop > 0 || e.target.closest("button,input,select")) return; y0 = e.clientY; dy = 0; sh.style.transition = "none"; });
     addEventListener("pointermove", (e) => { if (y0 == null) return; dy = Math.max(0, e.clientY - y0); sh.style.transform = "translateY(" + dy + "px)"; });
