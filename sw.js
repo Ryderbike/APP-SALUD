@@ -1,6 +1,6 @@
 // Guarda la app en el teléfono para que abra sin conexión.
 // Sube VERSION cada vez que publiques cambios, así el teléfono descarga lo nuevo.
-const VERSION = "calma-v13";
+const VERSION = "calma-v16";
 const FILES = [
   "./",
   "index.html",
@@ -37,4 +37,10 @@ self.addEventListener("fetch", (e) => {
       })
       .catch(() => caches.match(e.request).then((r) => r || caches.match("index.html")))
   );
+});
+
+// al tocar un aviso (descanso terminado, hora difícil) se abre la app
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((cs) => cs.length ? cs[0].focus() : self.clients.openWindow("./")));
 });
