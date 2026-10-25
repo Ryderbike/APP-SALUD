@@ -85,13 +85,12 @@ p { margin: 0; }
 
 /* dock */
 .dock { display: flex; flex-direction: column; gap: 12px; }
-.pills { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.pill {
-  display: flex; align-items: baseline; justify-content: center; gap: 5px; padding: 8px 6px; border-radius: 999px; white-space: nowrap;
-  background: var(--glass); border: 1px solid var(--line); font-size: 0.8rem; color: var(--mist);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-}
-.pill b { color: var(--moon); font-family: var(--display); font-size: 1rem; font-variant-numeric: tabular-nums; }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.tile { background: rgba(0,0,0,0.25); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tile b { font-family: var(--display); font-size: 1.6rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.tile span { font-size: 0.8rem; color: var(--mist); font-weight: 600; }
+.tile.good b { color: var(--sage); }
+.tile.warn b { color: var(--ember); }
 
 .week {
   display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px;
@@ -238,7 +237,71 @@ p { margin: 0; }
 .link { font: inherit; background: none; border: 0; color: var(--mist); cursor: pointer; padding: 8px; text-decoration: underline; text-underline-offset: 3px; }
 
 button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
-@media (prefers-reduced-motion: reduce) { .card.swap, .sheet { animation: none; } }
+
+/* pestañas: Calma y Entrenar son dos pantallas que se deslizan, como en la App Store */
+.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 3; display: flex; justify-content: center; gap: 8px;
+  padding: 6px 16px calc(6px + env(safe-area-inset-bottom, 0px));
+  background: rgba(11, 18, 32, 0.84); border-top: 1px solid var(--line);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+}
+.tabs button {
+  flex: 1; max-width: 160px; font: inherit; font-size: 0.72rem; font-weight: 600; color: var(--mist);
+  background: none; border: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; cursor: pointer;
+}
+.tabs svg { width: 26px; height: 26px; }
+.tabs button[aria-selected="true"] { color: var(--sage); }
+body.has-tabs .app { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+.app { transition: transform 0.45s cubic-bezier(.2,.8,.2,1), opacity 0.45s; }
+body.tab-train .app { transform: translateX(-30%); opacity: 0; }
+.page {
+  position: fixed; inset: 0; z-index: 2; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
+  background: rgba(11, 18, 32, 0.97); transform: translateX(100%); visibility: hidden;
+  transition: transform 0.45s cubic-bezier(.2,.8,.2,1), visibility 0s 0.45s;
+}
+body.tab-train .page { transform: none; visibility: visible; transition: transform 0.45s cubic-bezier(.2,.8,.2,1); }
+.page-in {
+  max-width: 480px; margin: 0 auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;
+  padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(100px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+.page-date { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mist); }
+.page-in h1 { font-size: 2.2rem; font-weight: 700; line-height: 1.1; }
+.feature {
+  border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 4px; color: var(--sage-ink);
+  background: linear-gradient(150deg, #d2f9ec 0%, var(--sage) 45%, #3aa58a 100%); box-shadow: 0 14px 40px rgba(127,224,192,0.18);
+}
+.feature.off { color: var(--moon); background: linear-gradient(150deg, #2b3d66, #172238); box-shadow: none; }
+.kick { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; }
+.feature h3 { font-size: 2rem; font-weight: 700; line-height: 1.1; }
+.feature p { font-size: 0.9rem; opacity: 0.85; }
+.get {
+  font: inherit; font-weight: 700; font-size: 0.9rem; border: 0; border-radius: 999px; padding: 8px 22px; cursor: pointer;
+  background: var(--sage-ink); color: #d9fff1; align-self: flex-start; margin-top: 10px;
+}
+.get.soft-get { background: rgba(127,224,192,0.16); color: var(--sage); margin-top: 0; }
+.sec-row { display: flex; align-items: baseline; justify-content: space-between; margin-top: 10px; }
+.sec { font-size: 1.3rem; font-weight: 700; }
+.see { font: inherit; font-weight: 600; color: var(--sage); background: none; border: 0; cursor: pointer; padding: 8px 0 8px 12px; }
+.carousel {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 80%; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory;
+  margin: 0 -16px; padding: 2px 16px 8px; scroll-padding-inline: 16px; scrollbar-width: none; touch-action: pan-x pan-y;
+}
+.carousel::-webkit-scrollbar { display: none; }
+.rcard {
+  scroll-snap-align: start; background: var(--glass-2); border: 1px solid var(--line); border-radius: 22px; padding: 16px;
+  display: flex; flex-direction: column; gap: 4px; min-width: 0;
+}
+.rcard b { font-family: var(--display); font-size: 1.35rem; font-weight: 700; }
+.rcard small { color: var(--mist); font-size: 0.82rem; }
+.rcard .ex { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.rcard .acts { display: flex; align-items: center; gap: 4px; margin-top: auto; padding-top: 10px; }
+.tag { font-size: 0.7rem; font-weight: 600; color: var(--ember); border: 1px solid currentColor; border-radius: 999px; padding: 1px 6px; vertical-align: 3px; margin-left: 4px; }
+.list { background: var(--glass-2); border: 1px solid var(--line); border-radius: 18px; padding: 4px 14px; }
+.list div { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--mist); }
+.list div:last-child { border-bottom: 0; }
+.list b { color: var(--moon); font-weight: 600; font-size: 0.95rem; }
+
+@media (prefers-reduced-motion: reduce) { .card.swap, .sheet { animation: none; } .app, .page { transition: none; } }
 </style>
 </head>
 <body>
@@ -250,6 +313,9 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   <header class="bar">
     <div class="brand"><i></i>Calma Nocturna</div>
     <span class="clock" id="clock"></span>
+    <button class="icon-btn" id="open-stats" aria-label="Tu registro">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 20v-8M12 20V4M19 20v-5"/></svg>
+    </button>
     <button class="icon-btn" id="music" aria-pressed="false" aria-label="Música" hidden>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
     </button>
@@ -275,16 +341,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 
   <!-- dock inicio -->
   <footer class="dock" id="dock-home">
-    <div class="week" id="week" aria-label="Tus últimas 7 noches"></div>
-    <div class="pills">
-      <span class="pill"><b id="t-wins">0</b>noches</span>
-      <span class="pill"><b id="t-trains">0</b>entrenos</span>
-      <span class="pill"><b id="t-saved">$0</b>ahorrado</span>
-    </div>
-    <div class="duo">
-      <button class="cta" id="open-setup">Tengo ganas<span>de comer algo</span></button>
-      <button class="cta sage" id="open-train">Entrenar<span id="train-sub">tus rutinas</span></button>
-    </div>
+    <button class="cta" id="open-setup">Tengo ganas<span>de comer algo</span></button>
   </footer>
 
   <!-- dock sesión -->
@@ -363,18 +420,33 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   <button class="cta sage" id="start">Empezar</button>
 </section>
 
-<!-- hoja: mis rutinas -->
-<section class="sheet" id="tsetup" hidden aria-label="Mis rutinas">
-  <div class="grab"></div>
-  <h2>Mis rutinas</h2>
-  <div class="plan" id="plan" aria-label="Tu semana"></div>
-  <div class="routines" id="routines"></div>
-  <button class="btn" id="r-new">+ Nueva rutina</button>
-  <div class="q" id="hist-wrap" hidden>
-    <span>Últimos entrenamientos</span>
-    <div class="hist" id="hist"></div>
+<!-- pantalla: entrenar -->
+<section class="page" id="page-train" aria-label="Entrenar" inert>
+  <div class="page-in">
+    <div>
+      <span class="page-date" id="tr-date"></span>
+      <h1>Entrenar</h1>
+    </div>
+    <article class="feature" id="tr-today"></article>
+    <h2 class="sec">Tu semana</h2>
+    <div class="plan" id="plan" aria-label="Tu semana"></div>
+    <div class="sec-row"><h2 class="sec">Tus rutinas</h2><button class="see" id="r-new">+ Nueva</button></div>
+    <div class="carousel" id="routines"></div>
+    <div id="hist-wrap" hidden>
+      <h2 class="sec">Últimos entrenamientos</h2>
+      <div class="list" id="hist" style="margin-top: 10px"></div>
+    </div>
   </div>
 </section>
+
+<nav class="tabs" id="tabs" role="tablist" aria-label="Pantallas">
+  <button role="tab" data-tab="calma" aria-selected="true">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>Calma
+  </button>
+  <button role="tab" data-tab="train" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 7v10M4 9.5v5M17 7v10M20 9.5v5M7 12h10"/></svg>Entrenar
+  </button>
+</nav>
 
 <!-- hoja: editar rutina -->
 <section class="sheet" id="tedit" hidden aria-label="Editar rutina">
@@ -421,6 +493,24 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   <div class="stack">
     <button class="cta sage" id="te-done">Guardar entrenamiento</button>
     <button class="link" id="te-again">Salir sin guardar</button>
+  </div>
+</section>
+
+<!-- hoja: registro -->
+<section class="sheet" id="stats" hidden aria-label="Tu registro">
+  <div class="grab"></div>
+  <h2>Tu registro</h2>
+  <div class="week" id="week" aria-label="Tus últimas 7 noches"></div>
+  <p class="muted">Verde: noche ganada. Punteado: lo intentaste. Punto naranjo: entrenaste.</p>
+  <div class="tiles">
+    <div class="tile good"><b id="t-wins">0</b><span>antojos evitados</span></div>
+    <div class="tile warn"><b id="t-falls">0</b><span>caídas</span></div>
+    <div class="tile good"><b id="t-saved">$0</b><span>dinero ahorrado</span></div>
+    <div class="tile warn"><b id="t-spent">$0</b><span>dinero gastado</span></div>
+    <div class="tile"><b id="t-nights">0</b><span>noches ganadas</span></div>
+    <div class="tile"><b id="t-rate">–</b><span>de las veces lo lograste</span></div>
+    <div class="tile"><b id="t-trains">0</b><span>entrenos</span></div>
+    <div class="tile"><b id="t-mins">0 min</b><span>de calma juntados</span></div>
   </div>
 </section>
 
@@ -575,19 +665,21 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   function greeting() { const h = new Date().getHours(); return h >= 20 || h < 5 ? "Buenas noches" : h < 12 ? "Buenos días" : "Buenas tardes"; }
   function renderTally() {
     const s = stats();
-    $("t-wins").textContent = s.wins; $("t-trains").textContent = s.trains || 0; $("t-saved").textContent = fmtMoney(s.saved);
+    $("t-wins").textContent = s.wins; $("t-falls").textContent = s.falls || 0; $("t-trains").textContent = s.trains || 0; $("t-saved").textContent = fmtMoney(s.saved);
+    $("t-spent").textContent = fmtMoney(s.spent || 0); $("t-mins").textContent = Math.round(s.minutes || 0) + " min";
+    $("t-nights").textContent = Object.values(store.get("nights", {})).filter((v) => v === "win").length;
+    const tries = s.wins + (s.falls || 0); $("t-rate").textContent = tries ? Math.round(100 * s.wins / tries) + "%" : "–";
     if (mode === "home") $("big").textContent = Math.round(s.minutes || 0) + " min";
     renderWeek();
   }
 
   // ---------- pantallas ----------
-  const SHEETS = ["setup", "end", "tsetup", "tedit", "tend"];
+  const SHEETS = ["setup", "end", "tedit", "tend", "stats"];
   function openSheet(id) { $("scrim").hidden = false; SHEETS.forEach((s) => $(s).hidden = s !== id); }
   function closeSheets() { $("scrim").hidden = true; SHEETS.forEach((s) => $(s).hidden = true); }
   // las hojas de elegir se cierran tocando afuera, con Escape o deslizando; las de resultado piden una respuesta
   function dismissSheet() {
-    if (!$("setup").hidden || !$("tsetup").hidden) closeSheets();
-    else if (!$("tedit").hidden) openSheet("tsetup");
+    if (!$("setup").hidden || !$("stats").hidden || !$("tedit").hidden) closeSheets();
   }
   $("scrim").addEventListener("click", dismissSheet);
   addEventListener("keydown", (e) => { if (e.key === "Escape") dismissSheet(); });
@@ -597,17 +689,42 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
     const inSession = m !== "home";
     $("dock-home").hidden = inSession; $("dock-session").hidden = m !== "session"; $("dock-train").hidden = m !== "train";
     ["music", "rain", "quit"].forEach((id) => $(id).hidden = !inSession);
+    $("open-stats").hidden = inSession;
+    showTab();
     $("pause").hidden = m !== "session" && m !== "train";
     $("big").style.color = "";
     $("clock").hidden = inSession;
     if (m === "home") {
       $("cap-top").textContent = greeting(); $("breath").textContent = "juntados para ti";
       $("hint").textContent = "Toca la esfera. Atrapa las estrellas fugaces."; $("hint").style.opacity = 1;
-      renderTally(); renderToday();
+      renderTally(); renderRoutines();
     }
   }
 
   $("open-setup").addEventListener("click", () => { openSheet("setup"); audio.init(); });
+
+  // pestañas: se tocan abajo o se desliza de lado, fuera de la esfera y del carrusel
+  let tab = "calma";
+  function showTab() {
+    const train = mode === "home" && tab === "train";
+    document.body.classList.toggle("tab-train", train);
+    document.body.classList.toggle("has-tabs", mode === "home");
+    $("tabs").hidden = mode !== "home";
+    $("page-train").inert = !train;
+    $("tabs").querySelectorAll("button").forEach((b) => b.setAttribute("aria-selected", b.dataset.tab === tab ? "true" : "false"));
+  }
+  function setTab(t) { if (t === tab) return; tab = t; if (t === "train") { renderRoutines(); $("page-train").scrollTop = 0; } showTab(); buzz(8); }
+  $("tabs").addEventListener("click", (e) => { const b = e.target.closest("[data-tab]"); if (b) { audio.init(); setTab(b.dataset.tab); } });
+  let swipe = null;
+  addEventListener("pointerdown", (e) => {
+    swipe = mode === "home" && $("scrim").hidden && !e.target.closest(".carousel, .plan, .tabs") && !(tab === "calma" && onOrb(e.clientX, e.clientY)) ? { x: e.clientX, y: e.clientY } : null;
+  }, true);
+  addEventListener("pointerup", (e) => {
+    if (!swipe) return;
+    const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y; swipe = null;
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) setTab(dx < 0 ? "train" : "calma");
+  }, true);
+  $("open-stats").addEventListener("click", () => { renderTally(); openSheet("stats"); });
   $("start").addEventListener("click", () => { extended = false; startSession(minutes); });
 
   function startSession(mins) {
@@ -692,7 +809,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   }
   function addWin(win) {
     const s = stats();
-    if (win) { s.wins++; s.orders++; s.saved += price(); }
+    if (win) { s.wins++; s.orders++; s.saved += price(); } else { s.falls = (s.falls || 0) + 1; s.spent = (s.spent || 0) + price(); }
     store.set("stats", s);
     markNight(win ? "win" : "try");
   }
@@ -739,7 +856,11 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 
   function renderToday() {
     const r = routines.find((x) => x.days.includes(todayDow()));
-    $("train-sub").textContent = r ? "hoy toca " + r.name : "tus rutinas";
+    $("tr-date").textContent = new Date().toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long" });
+    $("tr-today").className = "feature" + (r ? "" : " off");
+    $("tr-today").innerHTML = r
+      ? '<span class="kick">Hoy toca</span><h3>' + esc(r.name) + "</h3><p>" + r.items.length + " ejercicios · ~" + estMin(r) + " min</p><p>" + esc(r.items.map((i) => i.ex).join(", ")) + '</p><button class="get" data-go="' + r.id + '">Empezar</button>'
+      : '<span class="kick">Hoy</span><h3>Día libre</h3><p>Descansa, o elige cualquier rutina de abajo si te dan ganas de moverte.</p>';
   }
   function renderPlanner() {
     $("plan").innerHTML = DAY_ORDER.map((d) => {
@@ -750,18 +871,18 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   function renderRoutines() {
     renderPlanner(); renderToday();
     $("routines").innerHTML = routines.length ? routines.map((r) =>
-      '<div class="routine"><div class="r-info"><b>' + esc(r.name) + (r.example ? " <em>ejemplo</em>" : "") + "</b><small>" + (r.days.length ? daysText(r.days) + " · " : "") + r.items.length + " ejercicios · ~" + estMin(r) + ' min</small><small class="r-ex">' + esc(r.items.map((i) => i.ex).join(", ")) + '</small></div><div class="r-act"><button class="btn go small" data-go="' + r.id + '">Empezar</button><button class="btn small" data-edit="' + r.id + '">Editar</button></div></div>'
+      '<div class="rcard"><span class="kick" style="color: var(--sage)">' + (r.days.length ? daysText(r.days) : "Sin día fijo") + "</span><b>" + esc(r.name) + (r.example ? '<span class="tag">ejemplo</span>' : "") + "</b><small>" + r.items.length + " ejercicios · ~" + estMin(r) + ' min</small><small class="ex">' + esc(r.items.map((i) => i.ex).join(", ")) + '</small><div class="acts"><button class="get soft-get" data-go="' + r.id + '">Empezar</button><button class="see" data-edit="' + r.id + '">Editar</button></div></div>'
     ).join("") : '<p class="muted">Todavía no tienes rutinas. Crea la primera con 4 o 5 ejercicios.</p>';
     const h = store.get("workouts", []).slice(-3).reverse();
     $("hist-wrap").hidden = !h.length;
     $("hist").innerHTML = h.map((w) => "<div><b>" + esc(w.name) + "</b><span>" + new Date(w.date).toLocaleDateString("es-CL", { weekday: "short", day: "numeric", month: "short" }) + " · " + Math.max(1, Math.round(w.secs / 60)) + " min · " + w.sets + " series</span></div>").join("");
   }
+  $("tr-today").addEventListener("click", (e) => { const g = e.target.closest("[data-go]"); if (g) startWorkout(routines.find((r) => r.id === g.dataset.go)); });
   $("routines").addEventListener("click", (e) => {
     const g = e.target.closest("[data-go]"), ed = e.target.closest("[data-edit]");
     if (g) startWorkout(routines.find((r) => r.id === g.dataset.go));
     if (ed) openEditor(routines.find((r) => r.id === ed.dataset.edit));
   });
-  $("open-train").addEventListener("click", () => { renderRoutines(); openSheet("tsetup"); audio.init(); });
   $("r-new").addEventListener("click", () => openEditor(null));
 
   // editor de rutinas
@@ -824,11 +945,11 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
     delete draft.example;
     const i = routines.findIndex((r) => r.id === draft.id);
     if (i >= 0) routines[i] = draft; else routines.push(draft);
-    saveRoutines(); renderRoutines(); openSheet("tsetup");
+    saveRoutines(); renderRoutines(); closeSheets();
   });
   $("e-del").addEventListener("click", () => {
     if (!delArmed) { delArmed = true; $("e-del").textContent = "Toca otra vez para borrar"; return; }
-    routines = routines.filter((r) => r.id !== draft.id); saveRoutines(); renderRoutines(); openSheet("tsetup");
+    routines = routines.filter((r) => r.id !== draft.id); saveRoutines(); renderRoutines(); closeSheets();
   });
 
   // entrenamiento guiado: serie por serie, con descanso que llena la esfera
@@ -1366,7 +1487,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   $("rain").addEventListener("click", () => toggleRain());
 
   // deslizar hacia abajo para cerrar las hojas de elegir
-  ["setup", "tsetup", "tedit"].forEach((id) => {
+  ["setup", "tedit", "stats"].forEach((id) => {
     const sh = $(id); let y0 = null, dy = 0;
     sh.addEventListener("pointerdown", (e) => { if (sh.scrollTop > 0 || e.target.closest("button,input,select")) return; y0 = e.clientY; dy = 0; sh.style.transition = "none"; });
     addEventListener("pointermove", (e) => { if (y0 == null) return; dy = Math.max(0, e.clientY - y0); sh.style.transform = "translateY(" + dy + "px)"; });
@@ -1376,7 +1497,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
     };
     addEventListener("pointerup", end); addEventListener("pointercancel", end);
   });
-  $("e-cancel").addEventListener("click", () => openSheet("tsetup"));
+  $("e-cancel").addEventListener("click", closeSheets);
 
   // app instalable y sin conexión (solo cuando corre en su propio dominio)
   if ("serviceWorker" in navigator && location.protocol === "https:" && !/claude\.ai|claudeusercontent/.test(location.hostname)) {
