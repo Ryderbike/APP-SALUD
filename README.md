@@ -1,4 +1,4 @@
-# Calma
+# Stillfit
 
 Una app web para dejar pasar las ganas de comer dulce, picotear o pedir delivery a cualquier hora del día, y para planificar y seguir tus rutinas de gimnasio en casa.
 

@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Calma</title>
+<title>Stillfit</title>
 <meta name="theme-color" content="#0b1220">
 <meta name="description" content="Una app para dejar pasar las ganas de comer dulce o pedir delivery, a cualquier hora del día.">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Calma">
+<meta name="apple-mobile-web-app-title" content="Stillfit">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -507,7 +507,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     <span class="s-fly" style="--a: 200deg; animation-delay: 0.9s"></span>
     <span class="s-fly" style="--a: 290deg; animation-delay: 1.4s"></span>
   </div>
-  <div class="s-name">Calma</div>
+  <div class="s-name">Stillfit</div>
   <div class="s-sub">respira, ya pasa</div>
 </div>
 <canvas id="sky" aria-hidden="true"></canvas>
@@ -515,7 +515,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
 
 <div class="app">
   <header class="bar">
-    <div class="brand"><i></i>Calma</div>
+    <div class="brand"><i></i>Stillfit</div>
     <button class="clock" id="clock" aria-label="Elegir el cielo"><span id="clock-t"></span><span id="clock-p"></span></button>
     <button class="icon-btn" id="open-stats" aria-label="Tu registro">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 20v-8M12 20V4M19 20v-5"/></svg>
@@ -2101,7 +2101,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     const at = (((remTime() % 1440) + 1440) % 1440), key = nightKey();
     if (rem.last === key || m < at || m > at + 90 || mode !== "home") return;
     rem.last = key; store.set("rem", rem);
-    toast("Se acerca tu hora difícil. Aquí estoy."); notify("Calma", "Se acerca tu hora difícil. Si te dan ganas, aquí estoy.", "calma-rem");
+    toast("Se acerca tu hora difícil. Aquí estoy."); notify("Stillfit", "Se acerca tu hora difícil. Si te dan ganas, aquí estoy.", "calma-rem");
     $("hint").textContent = "Se acerca tu hora difícil. Si llegan las ganas, toca \"Lo necesito ya\"."; $("hint").style.opacity = 1;
   }
 
@@ -2152,13 +2152,13 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   seg("p-metric", "pm", (v) => { progMetric = v; renderProg(); });
 
   // respaldo: todo lo guardado, en un archivo
-  function backupName() { return "calma-respaldo-" + ymd(new Date()) + ".json"; }
+  function backupName() { return "stillfit-respaldo-" + ymd(new Date()) + ".json"; }
   $("bk-out").addEventListener("click", async () => {
     const keys = {}; for (const k in mem) if (k !== "_at" && k !== "active") keys[k] = mem[k];
-    const text = JSON.stringify({ app: "calma", v: 1, at: Date.now(), keys }, null, 1);
+    const text = JSON.stringify({ app: "stillfit", v: 1, at: Date.now(), keys }, null, 1);
     const file = new File([text], backupName(), { type: "application/json" });
     try {
-      if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: "Respaldo de Calma" }); $("bk-note").textContent = "Respaldo listo."; return; }
+      if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: "Respaldo de Stillfit" }); $("bk-note").textContent = "Respaldo listo."; return; }
     } catch (err) { if (err && err.name === "AbortError") return; }
     const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
@@ -2169,11 +2169,11 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     const f = e.target.files[0]; e.target.value = ""; if (!f) return;
     try {
       const d = JSON.parse(await f.text());
-      if (!d || d.app !== "calma" || !d.keys || typeof d.keys !== "object") throw 0;
+      if (!d || (d.app !== "calma" && d.app !== "stillfit") || !d.keys || typeof d.keys !== "object") throw 0;
       importArmed = d.keys;
       const n = Object.keys(d.keys).length;
       $("bk-note").textContent = "Archivo válido (" + n + " datos). Esto reemplaza lo que tienes ahora."; $("bk-in").textContent = "Toca para reemplazar";
-    } catch { importArmed = null; $("bk-note").textContent = "Ese archivo no es un respaldo de Calma."; }
+    } catch { importArmed = null; $("bk-note").textContent = "Ese archivo no es un respaldo de Stillfit."; }
   });
   $("bk-in").addEventListener("click", async () => {
     if (!importArmed) { $("bk-file").click(); return; }
@@ -3118,13 +3118,13 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   $("we-cancel").addEventListener("click", closeSheets);
 
   // app instalable y sin conexión (solo cuando corre en su propio dominio)
-  // diagnóstico escondido: 5 toques seguidos en "Calma" muestran los tamaños que ve la app (sirve para depurar la ventana en iOS)
+  // diagnóstico escondido: 5 toques seguidos en "Stillfit" muestran los tamaños que ve la app (sirve para depurar la ventana en iOS)
   (function () {
     const brand = document.querySelector(".brand");
     if (!brand) return;
-    const APP_VERSION = "calma-v28"; // igual que VERSION en sw.js
+    const APP_VERSION = "stillfit-v29"; // igual que VERSION en sw.js
     let taps = 0, last = 0, box = null, probe = null, cached = "…";
-    (window.caches ? caches.keys() : Promise.resolve([])).then((k) => { cached = k.filter((n) => /^calma-v/.test(n)).join(", ") || "sin caché"; paint(); }).catch(() => {});
+    (window.caches ? caches.keys() : Promise.resolve([])).then((k) => { cached = k.filter((n) => /^(calma|stillfit)-v/.test(n)).join(", ") || "sin caché"; paint(); }).catch(() => {});
     function read() {
       probe = probe || Object.assign(document.createElement("div"), { style: "position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)" });
       if (!probe.isConnected) document.body.appendChild(probe);
