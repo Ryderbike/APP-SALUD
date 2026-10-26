@@ -2923,9 +2923,17 @@ body.arena {
     rest: { top: [14, 12, 28], mid: [40, 20, 46], low: [96, 38, 58], glow: [255, 150, 120] },
     done: { top: [28, 12, 10], mid: [76, 30, 12], low: [180, 96, 20], glow: [255, 184, 72] }
   };
-  // el color de fondo avanza con la rutina: de vino oscuro al partir a naranjo encendido y dorado cerca del final
-  const WORK_END = { top: [38, 14, 8], mid: [112, 44, 10], low: [226, 128, 26], glow: [255, 200, 84] };
-  const workPal = (p) => { const q = Math.pow(Math.max(0, Math.min(1, p)), 0.9), o = {}; for (const key in WORK_END) o[key] = ARENA_PAL.work[key].map((v, i) => v + (WORK_END[key][i] - v) * q); return o; };
+  // el color de fondo avanza con la rutina como una barra de energía: verde fresco al partir, amarillo y naranjo a la mitad, rojo oscuro al final
+  const WORK_STOPS = [
+    { top: [12, 62, 52], mid: [26, 124, 92], low: [96, 196, 118], glow: [160, 255, 160] },
+    { top: [44, 34, 10], mid: [132, 92, 18], low: [232, 176, 44], glow: [255, 214, 84] },
+    { top: [30, 6, 10], mid: [98, 14, 20], low: [176, 30, 24], glow: [255, 72, 50] }
+  ];
+  const workPal = (p) => {
+    p = Math.max(0, Math.min(1, p)) * 2; const k = Math.min(1, Math.floor(p)), a = WORK_STOPS[k], b = WORK_STOPS[k + 1], q = p - k, o = {};
+    for (const key in a) o[key] = a[key].map((v, i) => v + (b[key][i] - v) * q);
+    return o;
+  };
   let AP = JSON.parse(JSON.stringify(ARENA_PAL.work)), arenaKick = 0, arenaPrev = 0;
   const arenaWaves = [];
   const embers = Array.from({ length: 56 }, () => ({ x: Math.random(), y: Math.random(), s: 0.8 + Math.random() * 2.2, sp: 0.02 + Math.random() * 0.05, ph: Math.random() * 6.3 }));
@@ -3273,7 +3281,7 @@ body.arena {
   (function () {
     const brand = document.querySelector(".brand");
     if (!brand) return;
-    const APP_VERSION = "stillfit-v35"; // igual que VERSION en sw.js
+    const APP_VERSION = "stillfit-v36"; // igual que VERSION en sw.js
     let taps = 0, last = 0, box = null, probe = null, cached = "…";
     (window.caches ? caches.keys() : Promise.resolve([])).then((k) => { cached = k.filter((n) => /^(calma|stillfit)-v/.test(n)).join(", ") || "sin caché"; paint(); }).catch(() => {});
     function read() {
