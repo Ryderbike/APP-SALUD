@@ -17,7 +17,7 @@ La idea es simple: las ganas suben y bajan como una ola. Si les das unos minutos
 - **Un cielo que sigue la hora.** La app calcula a qué hora sale y se pone el sol (para Santiago si el teléfono está en hora de Chile) y el cielo va pasando de madrugada a amanecer, mañana, tarde, atardecer, anochecer y noche, con transiciones suaves. De día hay sol que recorre su arco, nubes, pájaros y pompas de jabón para reventar; de noche, estrellas fugaces para atrapar y la luna con su fase real. La esfera, las luciérnagas, las ideas que te propone y la música también cambian con la hora. Tocando la hora arriba puedes dejar el cielo fijo en amanecer, día, atardecer o noche.
 - **Tu registro.** Calendario de los últimos 7 días (días ganados y días entrenados), antojos evitados, entrenamientos y plata ahorrada.
 
-Todo se guarda en tu teléfono (`localStorage`) y se respalda automáticamente en una base D1 de Cloudflare (`worker/index.js`) con un código secreto por dispositivo.
+Todo se guarda en tu teléfono (`localStorage`) y se respalda automáticamente en una base D1 de Cloudflare (`worker/index.js`) con tu cuenta (usuario + contraseña, `/api/auth/*`) o, si no inicias sesión, con un código secreto por dispositivo. Al iniciar sesión por primera vez en un teléfono, lo que haya en la cuenta, en el código anterior y en el teléfono se une sin borrar nada (si hay datos distintos, eliges cuáles conservar y lo otro queda en una copia aparte). Las contraseñas se guardan con PBKDF2-SHA256 y sal propia; la sesión es una cookie `HttpOnly` y solo se guarda su huella. Cuántas cuentas se pueden crear lo fija la variable `MAX_USERS` (por defecto 5).
 
 ## Instalarla en el teléfono
 
@@ -35,7 +35,7 @@ index.html            la app completa (HTML, CSS y JS en un solo archivo)
 manifest.webmanifest  nombre, colores e íconos para instalarla
 sw.js                 service worker: la guarda para usarla sin conexión
 _headers              cabeceras HTTP (las respeta Cloudflare)
-worker/index.js       API de respaldo en Cloudflare D1 (/api/sync)
+worker/index.js       API de cuentas y respaldo en Cloudflare D1 (/api/auth/*, /api/sync)
 icons/                íconos de la app
 ```
 
