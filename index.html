@@ -539,6 +539,23 @@ body.arena {
 .hud-msg.pop { animation: msg 2.2s ease forwards; }
 @keyframes msg { 0% { opacity: 0; transform: translateY(10px) scale(0.9); } 12% { opacity: 1; transform: none; } 75% { opacity: 1; } 100% { opacity: 0; } }
 .arena .hint { display: none; }
+/* pantalla de entrenamiento: botones más grandes para tocar con la mano sudada, y cambios suaves */
+.arena .stepper { padding: 6px 6px 8px; gap: 2px 6px; flex-wrap: wrap; justify-content: space-between; }
+.arena .stepper span { flex: 0 0 100%; text-align: center; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.arena .stepper button { width: 44px; height: 44px; border-radius: 12px; font-size: 1.3rem; background: var(--lg), rgba(255,255,255,0.04); box-shadow: var(--lg-edge); border: 0; }
+.arena .stepper button:active { transform: scale(0.92); }
+.arena .stepper input.num { font-size: 1.35rem; width: 3.2ch; padding: 9px 2px; border-radius: 12px; background: rgba(0,0,0,0.34); }
+.arena .btn { min-height: 52px; }
+.arena .btn.go { font-size: 1.1rem; font-weight: 700; }
+.arena .btn:active, .arena .cta:active { transform: scale(0.98); }
+.arena .btn { transition: transform 0.12s; }
+.arena .card h3 { font-size: 1.3rem; }
+.arena .t-how { transition: transform 0.12s; }
+.arena .t-how:active { transform: scale(0.95); }
+.arena .big.pop { animation: bigpop 0.45s cubic-bezier(.2,.9,.3,1.2); }
+@keyframes bigpop { from { transform: scale(0.86); opacity: 0.4; } }
+.arena .tube i { transition: width 0.9s cubic-bezier(.2,.8,.2,1); }
+@media (prefers-reduced-motion: reduce) { .arena .big.pop { animation: none; } }
 @media (max-height: 700px) { .arena .readout .big { font-size: 4.2rem; } .pips { margin-top: 2px; } .hud-bars { margin-top: 6px; } }
 @media (prefers-reduced-motion: reduce) { .tube i::after, .pips i.now, .hud-msg.pop { animation: none; } .hud-msg.pop { opacity: 1; } }
 </style>
@@ -1758,7 +1775,7 @@ body.arena {
   function renderWk(anim) {
     const it = wk.r.items[wk.i], lg = wk.log[wk.i], next = wk.r.items[wk.i + 1];
     $("t-adjust").hidden = wk.phase !== "work";
-    $("big").style.color = wk.phase === "rest" ? "var(--sage)" : "";
+    if (anim) { const b = $("big"); b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); }
     $("t-label").textContent = "Ejercicio " + (wk.i + 1) + " de " + wk.r.items.length;
     $("t-next").textContent = next ? "Sigue: " + next.ex : "Último";
     if (wk.phase === "work") {
@@ -2961,7 +2978,7 @@ body.arena {
     // horno abajo: late más rápido cuanto más avanzas, y se enciende con cada serie hecha
     const per = 1.5 - 0.6 * prog, ph = (t % per) / per;
     const beat = reduced ? 0 : Math.exp(-(((ph - 0.05) / 0.07) ** 2)) + 0.5 * Math.exp(-(((ph - 0.3) / 0.09) ** 2));
-    const inten = (phase === "work" ? 0.5 : phase === "rest" ? 0.22 + 0.28 * u : 0.6) + 0.18 * beat + 0.4 * k + 0.45 * secPulse;
+    const inten = (phase === "work" ? 0.5 : phase === "rest" ? 0.22 + 0.28 * u : 0.6) + 0.12 * beat + 0.4 * k + 0.45 * secPulse;
     const hot = ctx.createRadialGradient(W / 2, H * 1.04, 0, W / 2, H * 1.04, H * (0.62 + 0.08 * beat + 0.12 * k));
     hot.addColorStop(0, rgba(AP.glow, inten)); hot.addColorStop(1, rgba(AP.glow, 0));
     ctx.fillStyle = hot; ctx.fillRect(0, 0, W, H);
@@ -2970,9 +2987,9 @@ body.arena {
     for (const e of embers) {
       e.y -= e.sp * sp * dt; if (e.y < -0.05) { e.y = 1.05; e.x = Math.random(); }
       const x = (e.x + Math.sin(t * 0.6 + e.ph) * 0.02) * W, y = e.y * H, a = (0.3 + 0.5 * (0.5 + 0.5 * Math.sin(t * 3 + e.ph))) * Math.min(1, e.y * 1.6 + 0.2);
-      const g = ctx.createRadialGradient(x, y, 0, x, y, e.s * 4);
-      g.addColorStop(0, rgba(phase === "rest" ? [255, 190, 170] : [255, 190, 110], a)); g.addColorStop(1, rgba(AP.glow, 0));
-      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, e.s * 4, 0, TAU); ctx.fill();
+      const ec = phase === "rest" ? [255, 200, 180] : [255, 214, 140];
+      ctx.fillStyle = rgba(ec, a * 0.18); ctx.beginPath(); ctx.arc(x, y, e.s * 3.6, 0, TAU); ctx.fill();
+      ctx.fillStyle = rgba(ec, a); ctx.beginPath(); ctx.arc(x, y, e.s * 0.9, 0, TAU); ctx.fill();
     }
     // onda de choque desde el botón al marcar una serie
     for (let i = arenaWaves.length - 1; i >= 0; i--) {
@@ -3281,7 +3298,7 @@ body.arena {
   (function () {
     const brand = document.querySelector(".brand");
     if (!brand) return;
-    const APP_VERSION = "stillfit-v36"; // igual que VERSION en sw.js
+    const APP_VERSION = "stillfit-v37"; // igual que VERSION en sw.js
     let taps = 0, last = 0, box = null, probe = null, cached = "…";
     (window.caches ? caches.keys() : Promise.resolve([])).then((k) => { cached = k.filter((n) => /^(calma|stillfit)-v/.test(n)).join(", ") || "sin caché"; paint(); }).catch(() => {});
     function read() {
