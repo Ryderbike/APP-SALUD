@@ -2660,7 +2660,7 @@ body.arena {
   }
   $("ac-open").addEventListener("click", () => openAcct(lsGet(USER_KEY) || !hasOwn() ? "login" : "signup"));
   $("ac-swap").addEventListener("click", () => setAcMode(acMode === "signup" ? "login" : "signup"));
-  $("ac-later").addEventListener("click", () => { closeSheets(); if (pending) { renderCloudNote(); toast("Sigues sin cuenta vinculada: elige cuando quieras en Ajustes"); } });
+  $("ac-later").addEventListener("click", () => { lsSet(OFFER_KEY, "1"); closeSheets(); if (pending) { renderCloudNote(); toast("Sigues sin cuenta vinculada: elige cuando quieras en Ajustes"); } });
   $("ac-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const msg = $("ac-msg"); msg.textContent = "";
@@ -3529,11 +3529,11 @@ body.arena {
   })();
   // nube propia: base D1 en Cloudflare, con la cuenta (o, si no hay, con el código de este dispositivo)
   ensureCloud();
-  // se ofrece crear cuenta / entrar una sola vez, al abrir por primera vez (en un teléfono sin datos, directo a "entrar")
+  // se ofrece crear cuenta / entrar al abrir la app, hasta que entres o toques "Ahora no" (en un teléfono sin datos, directo a "entrar")
   if (CLOUD_OK && !lsGet(OFFER_KEY)) setTimeout(async () => {
     await ensureCloud();
     if (account || pending || mode !== "home" || !$("scrim").hidden || lsGet(OFFER_KEY)) return;
-    lsSet(OFFER_KEY, "1"); openAcct(hasOwn() ? "signup" : "login");
+    openAcct(hasOwn() ? "signup" : "login");
   }, 3500);
 })();
 </script>
