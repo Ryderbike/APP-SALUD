@@ -279,24 +279,29 @@ p { margin: 0; }
 
 button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
 
-/* pestañas: Calma y Entrenar son dos pantallas; barra clásica de iOS pegada abajo, ancho completo, con vidrio y espacio para la barra de inicio */
+/* pestañas: Calma y Entrenar son dos pantallas; cápsula de vidrio flotante (como iOS 26) con un indicador que se desliza de una a otra */
 .tabs {
-  position: fixed; z-index: 3; left: 0; right: 0; bottom: 0; box-sizing: border-box;
-  display: flex; justify-content: center; gap: 6px;
-  padding: 3px max(12px, calc((100% - 420px) / 2)) calc(1px + env(safe-area-inset-bottom, 0px));
-  /* vidrio transparente como la barra de iOS: el cielo se ve a través; el fondo de la página (#0b1220) queda solo por si el sistema deja una franja bajo la ventana */
-  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04)), rgba(14, 20, 36, 0.52);
-  border-top: 1px solid rgba(255,255,255,0.18);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.22);
-  backdrop-filter: blur(26px) saturate(180%); -webkit-backdrop-filter: blur(26px) saturate(180%);
+  position: fixed; z-index: 3; left: 0; right: 0; margin: 0 auto; bottom: max(10px, calc(env(safe-area-inset-bottom, 0px) - 4px));
+  width: min(300px, calc(100% - 40px)); height: 54px; box-sizing: border-box; padding: 4px; border-radius: 999px;
+  display: grid; grid-template-columns: 1fr 1fr; isolation: isolate;
+  background: linear-gradient(160deg, rgba(255,255,255,0.26), rgba(255,255,255,0.07) 55%, rgba(255,255,255,0.14)), rgba(18, 26, 46, 0.46);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), inset 0 0 0 1px rgba(255,255,255,0.14), 0 12px 32px rgba(0,0,0,0.32);
+  backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
 }
+.tabs::before {
+  content: ""; position: absolute; z-index: -1; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,205,150,0.55), rgba(255,138,70,0.34));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), inset 0 0 0 1px rgba(255,190,120,0.35), 0 4px 14px rgba(255,130,50,0.28);
+  transition: transform 0.38s cubic-bezier(0.3, 1.25, 0.5, 1);
+}
+.tabs:has(button[data-tab="train"][aria-selected="true"])::before { transform: translateX(100%); }
 .tabs button {
-  flex: 1; max-width: 170px; font: inherit; font-size: 0.64rem; font-weight: 600; letter-spacing: 0.01em; color: var(--mist); background: none; border: 0; border-radius: 16px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 2px 4px; cursor: pointer; transition: background 0.2s, color 0.2s;
+  font: inherit; font-size: 0.86rem; font-weight: 650; letter-spacing: 0.005em; color: rgba(236, 240, 250, 0.72); background: none; border: 0; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center; gap: 7px; padding: 0 10px; cursor: pointer; transition: color 0.25s;
 }
-.tabs svg { width: 21px; height: 21px; flex: 0 0 auto; }
-.tabs button[aria-selected="true"] { color: #ffb066; background: radial-gradient(70% 80% at 50% 30%, rgba(255,176,102,0.3), rgba(255,176,102,0) 75%); }
-body.has-tabs .app { padding-bottom: calc(54px + env(safe-area-inset-bottom, 0px)); }
+.tabs svg { width: 20px; height: 20px; flex: 0 0 auto; }
+.tabs button[aria-selected="true"] { color: #fff2e2; }
+body.has-tabs .app { padding-bottom: calc(max(10px, calc(env(safe-area-inset-bottom, 0px) - 4px)) + 54px + 14px); }
 .app { transition: opacity 0.25s ease; }
 body.tab-train .app { opacity: 0; }
 .page {
@@ -311,7 +316,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 .mini span { font-size: 0.72rem; color: var(--mist); font-weight: 600; }
 .page-in {
   max-width: 480px; margin: 0 auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;
-  padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(92px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(96px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
 }
 .page-date { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mist); }
 .page-in h1 { font-size: 2.2rem; font-weight: 700; line-height: 1.1; }
