@@ -1,6 +1,6 @@
 // Guarda la app en el teléfono para que abra sin conexión.
 // Sube VERSION cada vez que publiques cambios, así el teléfono descarga lo nuevo.
-const VERSION = "stillfit-v31";
+const VERSION = "stillfit-v33";
 const FILES = [
   "./",
   "index.html",
