@@ -2996,11 +2996,11 @@ body.sport {
       show = rc.width > 0 && rc.bottom > -20 && rc.top < H + 20;
       cx = rc.left + rc.width / 2; cy = rc.top + rc.height / 2; cr = rc.height * 0.44;
       A.lvl += (A.weekP - A.lvl) * 0.06; rings = [A.lvl];
-    } else if (mode === "tend" || !it) { A.lvl += (1 - A.lvl) * 0.15; rings = [1, 1, 1]; }
+    } else if (mode === "tend" || !it) { A.lvl += (1 - A.lvl) * 0.15; rings = [1]; }
     else {
-      const setsP = it.type === "cardio" ? 0 : wk.s / it.sets;
+      // un solo anillo: en la serie cuenta el avance de la rutina; en el descanso o el cardio, el tiempo que va
       A.lvl += ((orb.ring ?? 0) - A.lvl) * 0.15;
-      rings = [A.lvl, (wk.i + (wk.phase === "work" ? setsP : Math.min(1, setsP))) / wk.r.items.length, wk.phase === "work" ? setsP : orb.level];
+      rings = [wk.phase === "work" ? A.lvl : orb.level];
     }
     if (show) {
       const R = cr * 0.95 * (1 + 0.012 * k), n = rings.length, w = n === 1 ? R * 0.15 : R * 0.1, gap = n === 1 ? 0 : 4;
