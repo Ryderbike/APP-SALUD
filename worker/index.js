@@ -19,10 +19,11 @@ async function digest(code) {
 // la tabla se crea sola la primera vez, no hace falta correr migraciones a mano
 let ready = null;
 function ensureTable(db) {
-  ready ||= db
-    .prepare("CREATE TABLE IF NOT EXISTS backups (id TEXT PRIMARY KEY, at INTEGER NOT NULL, data TEXT NOT NULL, updated INTEGER NOT NULL)")
-    .run()
-    .catch((e) => { ready = null; throw e; });
+  ready ||= db.batch([
+    db.prepare("CREATE TABLE IF NOT EXISTS backups (id TEXT PRIMARY KEY, at INTEGER NOT NULL, data TEXT NOT NULL, updated INTEGER NOT NULL)"),
+    // red de seguridad: copia de la versión anterior, por si un teléfono sube algo malo
+    db.prepare("CREATE TABLE IF NOT EXISTS backups_prev (id TEXT PRIMARY KEY, at INTEGER NOT NULL, data TEXT NOT NULL, saved INTEGER NOT NULL)")
+  ]).catch((e) => { ready = null; throw e; });
   return ready;
 }
 
@@ -52,6 +53,13 @@ async function handleSync(request, env) {
     // una fecha en el futuro bloquearía todos los respaldos siguientes ("gana lo más nuevo"), así que se limita a ahora
     const now = Date.now();
     const at = Math.min(Math.max(0, Math.floor(+body.at || 0)) || now, now + 60000);
+    // antes de reemplazar, se guarda la versión anterior (como mucho una cada 6 horas) para poder recuperarla
+    const cur = await env.DB.prepare("SELECT at, data FROM backups WHERE id = ?").bind(id).first();
+    if (cur && cur.data !== JSON.stringify(keys)) {
+      await env.DB.prepare(
+        "INSERT INTO backups_prev (id, at, data, saved) VALUES (?1, ?2, ?3, ?4) ON CONFLICT(id) DO UPDATE SET at = ?2, data = ?3, saved = ?4 WHERE backups_prev.saved < ?4 - 21600000"
+      ).bind(id, cur.at, cur.data, Date.now()).run();
+    }
     // solo gana lo más nuevo: un teléfono con datos viejos no pisa un respaldo reciente
     const res = await env.DB.prepare(
       "INSERT INTO backups (id, at, data, updated) VALUES (?1, ?2, ?3, ?4) ON CONFLICT(id) DO UPDATE SET at = ?2, data = ?3, updated = ?4 WHERE excluded.at >= backups.at"

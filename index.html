@@ -2375,6 +2375,8 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   }
   // trae lo más nuevo desde la nube y refresca la pantalla
   function adoptRemote(d, withActive) {
+    // por si acaso: lo que había en este dispositivo queda guardado aparte antes de traer lo de la nube
+    try { localStorage.setItem("calma-antes-de-nube", JSON.stringify({ at: Date.now(), keys: mem })); } catch {}
     for (const k in d.keys) if ((withActive || k !== "active") && typeof d.keys[k] === "string") keep(k, d.keys[k]);
     keep("_at", String(d.at || Date.now()));
     migrate();
@@ -2386,7 +2388,9 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   async function startCloud(ref, withActive) {
     try {
       const snap = await ref.get(), d = snap.exists ? snap.data() : null;
-      if (d && d.keys && (d.at || 0) > (+mem._at || 0)) adoptRemote(d, withActive);
+      // un teléfono sin datos propios (almacenamiento borrado, app recién instalada) nunca debe pisar el respaldo: se trae lo de la nube sí o sí
+      const st = stats(), own = ["routines", "workouts", "trains", "lastkg", "lastreps"].some((k) => mem[k]) || (st.wins || 0) + (st.orders || 0) + (st.saved || 0) + (st.minutes || 0) + (st.minutesAll || 0) > 0;
+      if (d && d.keys && (!own || (d.at || 0) > (+mem._at || 0))) adoptRemote(d, withActive);
       cloud.ref = ref; cloud.withActive = !!withActive; cloud.failed = false;
       if (!d || (+mem._at || 0) > (d.at || 0)) cloud.dirty(); else cloud.okAt = Date.now();
       return true;
