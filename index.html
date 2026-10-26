@@ -302,7 +302,7 @@ body.has-tabs .app { padding-bottom: calc(max(10px, calc(env(safe-area-inset-bot
 body.tab-train .app { opacity: 0; }
 .page {
   position: fixed; inset: 0; z-index: 2; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
-  background: rgba(11, 18, 32, 0.97); opacity: 0; transform: translateY(10px); visibility: hidden;
+  background: linear-gradient(180deg, rgba(11, 18, 32, 0.42), rgba(11, 18, 32, 0.78)); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); opacity: 0; transform: translateY(10px); visibility: hidden;
   transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s 0.25s;
 }
 body.tab-train .page { opacity: 1; transform: none; visibility: visible; transition: opacity 0.25s ease, transform 0.25s ease; }
@@ -451,6 +451,50 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 .toggle-note { margin-top: -2px; }
 
 @media (prefers-reduced-motion: reduce) { .card.swap, .sheet { animation: none; } .app, .page { transition: none; } .splash { display: none; } }
+
+/* ---- deporte: mismo vidrio, naranjo y cielo que Calma ---- */
+html, body { touch-action: manipulation; }
+input, select, textarea { font-size: 16px; } /* iOS acerca la pantalla al escribir si la letra es menor a 16px */
+.sp-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.sp-nav button { font-weight: 650; font-size: 0.88rem; }
+.sp-pane { display: flex; flex-direction: column; gap: 12px; }
+.hero { border-radius: 24px; padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 6px; background: var(--lg), rgba(20, 28, 48, 0.55); box-shadow: var(--lg-edge), var(--lg-drop); backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%); }
+.hero .kick { color: var(--sage); opacity: 1; }
+.hero-n { display: flex; align-items: baseline; gap: 8px; font-family: var(--display); }
+.hero-n b { font-size: clamp(3.4rem, 17vw, 4.6rem); line-height: 1; font-weight: 800; font-variant-numeric: tabular-nums; }
+.hero-n span { font-size: 1.2rem; font-weight: 700; color: var(--mist); }
+.hero p { color: var(--mist); font-size: 0.9rem; }
+.hero-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+.hero-row div { background: rgba(0,0,0,0.25); border-radius: 14px; padding: 8px 10px; display: flex; flex-direction: column; min-width: 0; }
+.hero-row b { font-family: var(--display); font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.hero-row span { font-size: 0.7rem; color: var(--mist); font-weight: 600; }
+.hmonth { color: var(--mist); margin: 10px 0 -4px; font-size: 0.85rem; }
+.hrow {
+  font: inherit; color: var(--moon); text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 3px; width: 100%; margin-top: 8px;
+  padding: 12px 14px; border-radius: 18px; border: 0; background: var(--lg), rgba(20, 28, 48, 0.4); box-shadow: var(--lg-edge);
+}
+.hrow-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.hrow-top b { font-family: var(--display); font-size: 1.05rem; }
+.hrow-top small, .hrow-sub { color: var(--mist); font-size: 0.8rem; }
+.hrow-ex { color: var(--mist); font-size: 0.8rem; }
+.hrow-ex b { color: var(--moon); font-weight: 600; }
+.hrow.skip { opacity: 0.55; }
+input.num {
+  font-family: var(--display); font-weight: 700; font-size: 16px; color: var(--moon); background: rgba(0,0,0,0.3); border: 1px solid var(--line);
+  border-radius: 9px; text-align: center; padding: 6px 2px; width: 4ch; min-width: 0; box-sizing: content-box;
+  user-select: text; -webkit-user-select: text; -moz-appearance: textfield; appearance: textfield;
+}
+input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.stepper input.num { flex: 0 1 auto; width: 3.6ch; }
+.srow { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--mist); }
+.srow > span { flex: 1; min-width: 0; font-weight: 600; }
+.srow em { font-style: normal; font-size: 0.75rem; }
+.hex { background: rgba(0,0,0,0.22); border: 1px solid var(--line); border-radius: 16px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.hex .item-top .text { flex: 1; min-width: 0; }
+.code {
+  font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: 1.1rem; letter-spacing: 0.04em; text-align: center; padding: 12px; border-radius: 14px;
+  background: rgba(0,0,0,0.3); border: 1px dashed var(--line); user-select: all; -webkit-user-select: all; word-break: break-all;
+}
 </style>
 </head>
 <body>
@@ -528,8 +572,8 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
         <button class="t-how" id="t-how" aria-label="Ver cómo se hace" hidden><svg class="mv" id="t-mv" viewBox="0 -12 200 140" role="img"><g class="pr"></g><g class="fg"></g></svg>Técnica</button>
       </div>
       <div class="adjust" id="t-adjust">
-        <div class="stepper"><span>Reps</span><button data-adj="reps" data-d="-1" aria-label="Menos repeticiones">−</button><b id="t-reps">10</b><button data-adj="reps" data-d="1" aria-label="Más repeticiones">+</button></div>
-        <div class="stepper"><span>Kg</span><button data-adj="kg" data-d="-2.5" aria-label="Menos peso">−</button><b id="t-kg">0</b><button data-adj="kg" data-d="2.5" aria-label="Más peso">+</button></div>
+        <div class="stepper"><span>Reps</span><button data-adj="reps" data-d="-1" aria-label="Menos repeticiones">−</button><input class="num" id="t-reps" type="number" inputmode="numeric" min="1" step="1" aria-label="Repeticiones" value="10"><button data-adj="reps" data-d="1" aria-label="Más repeticiones">+</button></div>
+        <div class="stepper"><span>Kg</span><button data-adj="kg" data-d="-2.5" aria-label="Menos peso">−</button><input class="num" id="t-kg" type="number" inputmode="decimal" min="0" step="0.5" aria-label="Kilos" value="0"><button data-adj="kg" data-d="2.5" aria-label="Más peso">+</button></div>
       </div>
       <div class="segbar" id="t-bar"></div>
       <div class="row">
@@ -584,53 +628,61 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   <button class="cta sage" id="start">Empezar</button>
 </section>
 
-<!-- pantalla: entrenar -->
+<!-- pantalla: deporte (Hoy, Historial y Progreso) -->
 <section class="page" id="page-train" aria-label="Entrenar" inert>
   <div class="page-in">
-    <div>
-      <span class="page-date" id="tr-date"></span>
-      <h1>Entrenar</h1>
-    </div>
-    <article class="feature" id="tr-today"></article>
-    <span class="page-date" style="margin-bottom: -4px">Últimos 7 días</span>
-    <div class="mini" aria-label="Últimos 7 días">
-      <div><b id="m-done">0</b><span>entrenos</span></div>
-      <div><b id="m-sets">0</b><span>series</span></div>
-      <div><b id="m-mins">0</b><span>minutos</span></div>
-    </div>
-    <h2 class="sec">Tu semana</h2>
-    <div class="plan" id="plan" aria-label="Tu semana"></div>
-    <div class="sec-row"><h2 class="sec">Tus rutinas</h2><button class="see" id="r-new">+ Nueva</button></div>
-    <div class="carousel" id="routines"></div>
-    <button class="btn" id="r-auto">Armar una rutina automática</button>
-    <h2 class="sec">Bici</h2>
-    <div class="panel" id="bike">
-      <div class="seg" id="b-type" role="group" aria-label="Qué bici">
-        <button data-bt="estatica" aria-pressed="true">Estática</button>
-        <button data-bt="ruta" aria-pressed="false">De ruta</button>
+    <div class="sp-top">
+      <div>
+        <span class="page-date" id="tr-date"></span>
+        <h1>Entrenar</h1>
       </div>
-      <div class="adjust"><div class="stepper"><span>Minutos</span><button data-bm="-5" aria-label="Menos minutos">−</button><b id="b-min">30</b><button data-bm="5" aria-label="Más minutos">+</button></div></div>
-      <div class="seg" id="b-feel" role="group" aria-label="Cómo se sintió">
-        <button data-bf="1" aria-pressed="false">Suave</button>
-        <button data-bf="2" aria-pressed="true">Normal</button>
-        <button data-bf="3" aria-pressed="false">Duro</button>
+      <button class="icon-btn" id="open-data" aria-label="Ajustes y respaldo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="3"/><circle cx="8" cy="17" r="3"/></svg>
+      </button>
+    </div>
+    <div class="seg sp-nav" id="sp-nav" role="group" aria-label="Secciones de entrenar">
+      <button data-sp="hoy" aria-pressed="true">Hoy</button>
+      <button data-sp="hist" aria-pressed="false">Historial</button>
+      <button data-sp="prog" aria-pressed="false">Progreso</button>
+    </div>
+
+    <div class="sp-pane" id="sp-hoy">
+      <article class="hero" id="sp-hero">
+        <span class="kick">Minutos entrenados</span>
+        <div class="hero-n"><b id="sp-total">0</b><span>min</span></div>
+        <p id="sp-sub"></p>
+        <div class="hero-row" aria-label="Últimos 7 días">
+          <div><b id="m-done">0</b><span>entrenos en 7 días</span></div>
+          <div><b id="m-sets">0</b><span>series</span></div>
+          <div><b id="m-mins">0</b><span>min</span></div>
+        </div>
+      </article>
+      <article class="feature" id="tr-today"></article>
+      <h2 class="sec">Tu semana</h2>
+      <div class="week" id="sp-week" aria-label="Días que entrenaste"></div>
+      <div class="plan" id="plan" aria-label="Plan de la semana"></div>
+      <div class="sec-row"><h2 class="sec">Tus rutinas</h2><button class="see" id="r-new">+ Nueva</button></div>
+      <div class="carousel" id="routines"></div>
+      <button class="btn" id="r-auto">Armar una rutina automática</button>
+      <button class="btn" id="r-how">Ver cómo se hace cada ejercicio</button>
+    </div>
+
+    <div class="sp-pane" id="sp-hist" hidden>
+      <div class="sec-row"><h2 class="sec">Historial</h2><span class="muted" id="h-count"></span></div>
+      <p class="muted">Todos tus entrenamientos con sus ejercicios. Toca uno para corregirlo o borrarlo: las estadísticas se recalculan solas.</p>
+      <div id="hist-all"></div>
+    </div>
+
+    <div class="sp-pane" id="sp-prog" hidden>
+      <h2 class="sec">Tu progreso</h2>
+      <div class="panel chart" id="progbox">
+        <select id="p-ex" aria-label="Ejercicio"></select>
+        <div class="seg" id="p-metric" role="group" aria-label="Qué medir"></div>
+        <div id="p-chart"></div>
+        <p class="muted" id="p-note"></p>
       </div>
-      <button class="btn go" id="b-save">Guardar paseo</button>
-      <div class="line2"><span id="b-week"></span></div>
-      <div class="list" id="b-list"></div>
-      <div class="q"><span>Días de bici</span><div class="seg" id="b-days" role="group" aria-label="Días de bici"></div></div>
-    </div>
-    <h2 class="sec">Tu progreso</h2>
-    <div class="panel chart" id="progbox">
-      <select id="p-ex" aria-label="Ejercicio"></select>
-      <div class="seg" id="p-metric" role="group" aria-label="Qué medir"></div>
-      <div id="p-chart"></div>
-      <p class="muted" id="p-note"></p>
-    </div>
-    <button class="btn" id="r-how">Ver cómo se hace cada ejercicio</button>
-    <div id="hist-wrap">
-      <h2 class="sec">Últimos entrenamientos</h2>
-      <div class="list" id="hist" style="margin-top: 10px"></div>
+      <h2 class="sec">Logros</h2>
+      <div class="badges" id="ach-d"></div>
     </div>
   </div>
 </section>
@@ -696,13 +748,6 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       <button data-style="fuerza" aria-pressed="false">Fuerza 5×5</button>
     </div>
   </div>
-  <div class="q">
-    <span id="lbl-bike">Para cerrar</span>
-    <div class="seg" id="a-bike" role="group" aria-labelledby="lbl-bike">
-      <button data-bike="0" aria-pressed="true">Solo pesas</button>
-      <button data-bike="1" aria-pressed="false">Con bici 15 min</button>
-    </div>
-  </div>
   <p class="auto-sum" id="a-msg"></p>
   <button class="cta sage" id="a-go">Armar rutina</button>
 </section>
@@ -741,7 +786,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   <div class="grab"></div>
   <h2>Tu registro</h2>
   <div class="week" id="week" aria-label="Tus últimos 7 días"></div>
-  <p class="muted">Verde: día ganado. Punteado: lo intentaste. Punto naranjo: entrenaste.</p>
+  <p class="muted">Verde: día ganado. Punteado: lo intentaste.</p>
   <div class="tiles">
     <div class="tile good"><b id="t-wins">0</b><span>antojos evitados</span></div>
     <div class="tile warn"><b id="t-falls">0</b><span>caídas</span></div>
@@ -749,7 +794,6 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     <div class="tile warn"><b id="t-spent">$0</b><span>dinero gastado</span></div>
     <div class="tile"><b id="t-nights">0</b><span>días ganados</span></div>
     <div class="tile"><b id="t-rate">–</b><span>de las veces lo lograste</span></div>
-    <div class="tile"><b id="t-trains">0</b><span>entrenos</span></div>
     <div class="tile"><b id="t-mins">0 min</b><span>de calma juntados</span></div>
     <div class="tile good"><b id="t-streak">0</b><span>días sin caídas seguidos</span></div>
     <div class="tile"><b id="t-best">0</b><span>mejor racha</span></div>
@@ -778,6 +822,60 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     </div>
     <p class="muted" id="rem-note"></p>
   </div>
+</section>
+
+<!-- hoja: editar entrenamiento del historial -->
+<section class="sheet" id="hedit" hidden aria-label="Editar entrenamiento">
+  <div class="grab"></div>
+  <h2>Editar entrenamiento</h2>
+  <div class="q">
+    <label for="we-name">Nombre</label>
+    <input class="text" id="we-name" maxlength="40" autocomplete="off">
+  </div>
+  <div class="duo">
+    <div class="q"><label for="we-date">Fecha</label><input class="text" type="date" id="we-date"></div>
+    <div class="q"><label for="we-min">Minutos</label><input class="text" type="number" id="we-min" min="1" max="600" inputmode="numeric"></div>
+  </div>
+  <div class="q">
+    <span id="lbl-inc">¿Cuenta en las estadísticas?</span>
+    <div class="seg" id="we-inc" role="group" aria-labelledby="lbl-inc">
+      <button data-inc="1" aria-pressed="true">Sí cuenta</button>
+      <button data-inc="0" aria-pressed="false">No cuenta</button>
+    </div>
+  </div>
+  <div class="q">
+    <span>Ejercicios y series</span>
+    <div class="items" id="we-items"></div>
+    <p class="muted" id="we-msg"></p>
+  </div>
+  <div class="row">
+    <button class="btn" id="we-del">Borrar entrenamiento</button>
+    <button class="btn go" id="we-save">Guardar</button>
+  </div>
+  <button class="link" id="we-cancel">Volver sin guardar</button>
+</section>
+
+<!-- hoja: ajustes y respaldo -->
+<section class="sheet" id="data" hidden aria-label="Ajustes y respaldo">
+  <div class="grab"></div>
+  <h2>Ajustes y respaldo</h2>
+
+  <h3 class="sub">Respaldo en la nube</h3>
+  <div class="q" id="cl-box">
+    <p class="muted" id="cl-note"></p>
+    <div class="code" id="cl-code"></div>
+    <div class="row">
+      <button class="btn" id="cl-copy">Copiar código</button>
+      <button class="btn go" id="cl-now">Respaldar ahora</button>
+    </div>
+    <span>¿Tienes un código de otro dispositivo?</span>
+    <input class="text" id="cl-in" placeholder="Pega aquí el código" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <button class="btn" id="cl-use">Usar este código</button>
+    <p class="muted" id="cl-msg"></p>
+  </div>
+  <p class="muted" id="cl-off" hidden>El respaldo en la nube funciona desde la app publicada, no desde un archivo local ni dentro de Claude. Mientras tanto, usa el archivo de respaldo de más abajo.</p>
+
+  <h3 class="sub">Descanso</h3>
   <div class="q">
     <span id="lbl-vib">Vibrar al terminar el descanso</span>
     <div class="seg" id="vib" role="group" aria-labelledby="lbl-vib">
@@ -787,7 +885,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     <p class="muted">En iPhone, Safari no deja vibrar: ahí avisan el sonido y la pantalla.</p>
   </div>
 
-  <h3 class="sub">Respaldo</h3>
+  <h3 class="sub">Archivo de respaldo</h3>
   <div class="q">
     <div class="row">
       <button class="btn" id="bk-out">Exportar</button>
@@ -797,6 +895,8 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     <p class="muted" id="bk-note">Guarda todo en un archivo para no perderlo si cambias de teléfono.</p>
   </div>
 </section>
+
+<!-- hoja: el cielo --></section>
 
 <!-- hoja: el cielo -->
 <section class="sheet" id="skysheet" hidden aria-label="El cielo">
@@ -863,6 +963,17 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 <script>
 (() => {
   const $ = (id) => document.getElementById(id);
+  // un doble toque sobre el mismo botón cuenta una sola vez (antes sumaba dos series o saltaba dos ideas)
+  let lastBtn = null, lastBtnAt = 0;
+  document.addEventListener("click", (e) => {
+    if (!e.isTrusted) return;
+    const b = e.target.closest && e.target.closest("button");
+    if (!b || b.closest(".stepper, .seg, .scale, .chips, .tabs")) return;
+    const now = performance.now();
+    if (b === lastBtn && now - lastBtnAt < 450) { e.stopImmediatePropagation(); e.preventDefault(); return; }
+    lastBtn = b; lastBtnAt = now;
+  }, true);
+  addEventListener("dblclick", (e) => { if (!e.target.closest || !e.target.closest("input, textarea, select")) e.preventDefault(); });
   // todo se guarda en memoria y en localStorage; dentro de Claude, además, en la base del artifact (ver "nube"),
   // porque ahí la vista previa puede recargarse al volver a la app y perder el localStorage
   const mem = {};
@@ -870,20 +981,23 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   const keep = (k, raw) => { mem[k] = raw; try { localStorage.setItem("calma:" + k, raw); } catch {} };
   const store = {
     get(k, d) { try { const v = mem[k]; return v == null ? d : JSON.parse(v); } catch { return d; } },
-    set(k, v) { keep(k, JSON.stringify(v)); keep("_at", String(Date.now())); cloud.dirty(); }
+    set(k, v) { keep(k, JSON.stringify(v)); if (k !== "active" || cloud.withActive) { keep("_at", String(Date.now())); cloud.dirty(); } }
   };
   const cloud = {
-    ref: null, timer: 0, busy: false, again: false,
+    ref: null, timer: 0, busy: false, again: false, okAt: 0, failed: false, withActive: false, onNewer: null, changed: null,
     dirty() { if (!this.ref) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.flush(), 1200); },
     async flush() {
       clearTimeout(this.timer);
-      if (!this.ref) return;
-      if (this.busy) { this.again = true; return; }
-      this.busy = true;
+      if (!this.ref) return false;
+      if (this.busy) { this.again = true; return false; }
+      this.busy = true; let ok = false;
       const keys = {}; for (const k in mem) if (k !== "_at") keys[k] = mem[k];
-      try { await this.ref.set({ at: +mem._at || 0, keys }); } catch {}
+      try { await this.ref.set({ at: +mem._at || 0, keys }); ok = true; this.okAt = Date.now(); this.failed = false; }
+      catch (e) { this.failed = true; if (e && e.newer && this.onNewer) this.onNewer(e.newer); }
       this.busy = false;
       if (this.again) { this.again = false; this.flush(); }
+      if (this.changed) this.changed();
+      return ok;
     }
   };
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -996,7 +1110,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       const d = new Date(base); d.setDate(d.getDate() - i);
       const k = ymd(d), st = n[k];
       const day = document.createElement("div");
-      day.className = "day" + (st ? " " + st : "") + (tr[k] ? " trained" : "") + (i === 0 ? " today" : "");
+      day.className = "day" + (st ? " " + st : "") + (i === 0 ? " today" : "");
       day.innerHTML = "<span>" + names[d.getDay()] + "</span><i></i><b></b>";
       day.title = st === "win" ? "Día ganado" : st === "try" ? "Lo intentaste" : "";
       el.appendChild(day);
@@ -1009,7 +1123,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   function greeting() { return { manana: "Buenos días", tarde: "Buenas tardes", noche: "Buenas noches" }[slot()]; }
   function renderTally() {
     const s = stats();
-    $("t-wins").textContent = s.wins; $("t-falls").textContent = s.falls || 0; $("t-trains").textContent = s.trains || 0; $("t-saved").textContent = fmtMoney(s.saved);
+    $("t-wins").textContent = s.wins; $("t-falls").textContent = s.falls || 0; $("t-saved").textContent = fmtMoney(s.saved);
     $("t-spent").textContent = fmtMoney(s.spent || 0); $("t-mins").textContent = Math.round(s.minutes || 0) + " min";
     $("t-nights").textContent = Object.values(store.get("nights", {})).filter((v) => v === "win").length;
     const tries = s.wins + (s.falls || 0); $("t-rate").textContent = tries ? Math.round(100 * s.wins / tries) + "%" : "–";
@@ -1018,12 +1132,12 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   }
 
   // ---------- pantallas ----------
-  const SHEETS = ["setup", "end", "tedit", "tend", "stats", "skysheet", "auto"];
+  const SHEETS = ["setup", "end", "tedit", "tend", "stats", "skysheet", "auto", "hedit", "data"];
   function openSheet(id) { $("scrim").hidden = false; SHEETS.forEach((s) => $(s).hidden = s !== id); }
   function closeSheets() { $("scrim").hidden = true; SHEETS.forEach((s) => $(s).hidden = true); }
   // las hojas de elegir se cierran tocando afuera, con Escape o deslizando; las de resultado piden una respuesta
   function dismissSheet() {
-    if (!$("setup").hidden || !$("stats").hidden || !$("tedit").hidden || !$("skysheet").hidden || !$("auto").hidden) closeSheets();
+    if (!$("setup").hidden || !$("stats").hidden || !$("tedit").hidden || !$("skysheet").hidden || !$("auto").hidden || !$("hedit").hidden || !$("data").hidden) closeSheets();
   }
   $("scrim").addEventListener("click", dismissSheet);
   addEventListener("keydown", (e) => { if (e.key === "Escape") { if (!$("how").hidden) closeHow(); else dismissSheet(); } });
@@ -1053,6 +1167,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   function showTab() {
     const train = mode === "home" && tab === "train";
     document.body.classList.toggle("tab-train", train);
+    document.body.classList.toggle("sport", train || mode === "train" || mode === "tend");
     document.body.classList.toggle("has-tabs", mode === "home");
     $("tabs").hidden = mode !== "home";
     $("page-train").inert = !train;
@@ -1062,7 +1177,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   $("tabs").addEventListener("click", (e) => { const b = e.target.closest("[data-tab]"); if (b) { audio.init(); setTab(b.dataset.tab); } });
   let swipe = null;
   addEventListener("pointerdown", (e) => {
-    swipe = mode === "home" && $("scrim").hidden && $("how").hidden && !e.target.closest(".carousel, .plan, .tabs") && !(tab === "calma" && onOrb(e.clientX, e.clientY)) ? { x: e.clientX, y: e.clientY } : null;
+    swipe = mode === "home" && $("scrim").hidden && $("how").hidden && !e.target.closest(".carousel, .plan, .tabs, input") && !(tab === "calma" && onOrb(e.clientX, e.clientY)) ? { x: e.clientX, y: e.clientY } : null;
   }, true);
   addEventListener("pointerup", (e) => {
     if (!swipe) return;
@@ -1176,21 +1291,20 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   const LIB = [
     ["Mancuernas", ["Press de hombros", "Remo con mancuerna", "Curl de bíceps", "Curl martillo", "Elevaciones laterales", "Pájaros (deltoide posterior)", "Sentadilla goblet", "Peso muerto rumano", "Zancadas con mancuernas", "Remo inclinado con mancuernas", "Remo abierto con mancuernas", "Extensión de tríceps sobre la cabeza", "Encogimientos de hombros"]],
     ["Banca", ["Press banca con mancuernas", "Press inclinado con mancuernas", "Aperturas en banca", "Aperturas inclinadas", "Pullover", "Remo apoyado en banca inclinada", "Patada de tríceps en banca", "Fondos de tríceps en banca", "Hip thrust en banca", "Step-up a la banca", "Sentadilla búlgara"]],
-    ["Cardio", ["Bici estática", "Bicicleta de calle"]],
     ["Peso corporal", ["Flexiones", "Plancha", "Abdominales", "Elevación de piernas"]]
   ];
-  const CARDIO = new Set(LIB[2][1]);
+  const CARDIO = new Set(["Bici estática", "Bicicleta de calle"]);
   const ALL_EX = new Set(LIB.flatMap((g) => g[1]));
   const DAYS = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"];
   const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
   const uid = () => Math.random().toString(36).slice(2, 9);
   const F = (ex, sets, reps, kg) => ({ ex, type: "fuerza", sets, reps, kg, min: 0 });
   const C = (ex, min) => ({ ex, type: "cardio", sets: 1, reps: 0, kg: 0, min });
-  // rutinas de ejemplo con lo que hay en casa: mancuernas hasta 25 kg, banca y bicis
+  // rutinas de ejemplo con lo que hay en casa: mancuernas hasta 25 kg y banca
   const SEED = () => [
     { id: uid(), name: "Empuje", example: true, days: [1, 4], rest: 90, items: [F("Press banca con mancuernas", 4, 10, 20), F("Press inclinado con mancuernas", 3, 10, 16), F("Press de hombros", 3, 10, 14), F("Elevaciones laterales", 3, 12, 8), F("Fondos de tríceps en banca", 3, 12, 0)] },
     { id: uid(), name: "Tirón", example: true, days: [2, 5], rest: 90, items: [F("Remo con mancuerna", 4, 10, 22.5), F("Pullover", 3, 12, 16), F("Pájaros (deltoide posterior)", 3, 12, 6), F("Curl de bíceps", 3, 10, 12), F("Curl martillo", 3, 10, 12)] },
-    { id: uid(), name: "Pierna y bici", example: true, days: [3, 6], rest: 90, items: [F("Sentadilla goblet", 4, 10, 25), F("Peso muerto rumano", 4, 10, 22.5), F("Sentadilla búlgara", 3, 8, 12), F("Hip thrust en banca", 3, 12, 25), C("Bici estática", 15)] }
+    { id: uid(), name: "Pierna y glúteos", example: true, days: [3, 6], rest: 90, items: [F("Sentadilla goblet", 4, 10, 25), F("Peso muerto rumano", 4, 10, 22.5), F("Sentadilla búlgara", 3, 8, 12), F("Hip thrust en banca", 3, 12, 25)] }
   ];
   let routines = store.get("routines", null) || SEED();
   const saveRoutines = () => store.set("routines", routines);
@@ -1383,17 +1497,17 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 
 
   function renderToday() {
-    const r = routines.find((x) => x.days.includes(todayDow())), bikeToday = store.get("bikedays", []).includes(todayDow());
+    const r = routines.find((x) => x.days.includes(todayDow()));
     $("tr-date").textContent = new Date().toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long" });
     $("tr-today").className = "feature" + (r ? "" : " off");
     $("tr-today").innerHTML = r
-      ? '<span class="kick">Hoy toca</span><h3>' + esc(r.name) + "</h3><p>" + r.items.length + " ejercicios · ~" + estMin(r) + " min</p><p>" + esc(r.items.map((i) => i.ex).join(", ")) + '</p><button class="get" data-go="' + r.id + '">Empezar</button>'
-      : '<span class="kick">Hoy</span><h3>' + (bikeToday ? "Día de bici" : "Día libre") + "</h3><p>" + (bikeToday ? "Sal a rodar o usa la estática y anótalo en Bici, más abajo." : "Descansa, o elige cualquier rutina de abajo si te dan ganas de moverte.") + "</p>";
+      ? '<span class="kick">Hoy toca. Sin excusas</span><h3>' + esc(r.name) + "</h3><p>" + r.items.length + " ejercicios · ~" + estMin(r) + " min</p><p>" + esc(r.items.map((i) => i.ex).join(", ")) + '</p><button class="get" data-go="' + r.id + '">Entrenar ahora</button>'
+      : '<span class="kick">Hoy</span><h3>Día libre</h3><p>Descansa. Y si el cuerpo pide más, elige una rutina de abajo y dale.</p>';
   }
   function renderPlanner() {
     $("plan").innerHTML = DAY_ORDER.map((d) => {
-      const rs = routines.filter((r) => r.days.includes(d)), bike = store.get("bikedays", []).includes(d);
-      return '<div class="pd' + (d === todayDow() ? " today" : "") + '"><span>' + DAYS[d] + "</span><b" + (rs.length || bike ? "" : ' class="off"') + ">" + (rs.length || bike ? esc(rs.map((r) => r.name).concat(bike ? ["bici"] : []).join(" + ")) : "libre") + "</b></div>";
+      const rs = routines.filter((r) => r.days.includes(d));
+      return '<div class="pd' + (d === todayDow() ? " today" : "") + '"><span>' + DAYS[d] + "</span><b" + (rs.length ? "" : ' class="off"') + ">" + (rs.length ? esc(rs.map((r) => r.name).join(" + ")) : "libre") + "</b></div>";
     }).join("");
   }
   function renderRoutines() {
@@ -1401,15 +1515,12 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     $("routines").innerHTML = routines.length ? routines.map((r) =>
       '<div class="rcard"><span class="kick" style="color: var(--sage)">' + (r.days.length ? daysText(r.days) : "Sin día fijo") + "</span><b>" + esc(r.name) + (r.example ? '<span class="tag">ejemplo</span>' : "") + "</b><small>" + r.items.length + " ejercicios · ~" + estMin(r) + ' min</small><small class="ex">' + esc(r.items.map((i) => i.ex).join(", ")) + '</small><div class="acts"><button class="get soft-get" data-go="' + r.id + '">Empezar</button><button class="see" data-edit="' + r.id + '">Editar</button><button class="see" data-how-r="' + r.id + '">Técnica</button></div></div>'
     ).join("") : '<p class="muted">Todavía no tienes rutinas. Crea la primera con 4 o 5 ejercicios.</p>';
-    const all = store.get("workouts", []), wk7 = all.filter((w) => Date.now() - w.date < 7 * 864e5);
+    const all = counted(), wk7 = all.filter((w) => Date.now() - w.date < 7 * 864e5);
     const planned = new Set(routines.flatMap((r) => r.days)).size;
     $("m-done").textContent = wk7.length + (planned ? "/" + planned : "");
-    $("m-sets").textContent = wk7.reduce((a, w) => a + w.sets, 0);
-    $("m-mins").textContent = Math.round(wk7.reduce((a, w) => a + w.secs, 0) / 60);
-    const h = all.slice(-5).reverse();
-    $("hist").innerHTML = h.length ? "" : "<div>Cuando guardes un entrenamiento, aparece aquí con su fecha, tiempo y series.</div>";
-    renderBike(); renderProg();
-    $("hist").innerHTML += h.map((w) => "<div><b>" + esc(w.name) + "</b><span>" + new Date(w.date).toLocaleDateString("es-CL", { weekday: "short", day: "numeric", month: "short" }) + " · " + Math.max(1, Math.round(w.secs / 60)) + " min · " + w.sets + " series</span></div>").join("");
+    $("m-sets").textContent = wk7.reduce((a, w) => a + (w.sets || 0), 0);
+    $("m-mins").textContent = Math.round(wk7.reduce((a, w) => a + (w.secs || 0), 0) / 60);
+    renderHero(all); renderSpWeek(); renderHistAll(); renderAchD(); renderProg();
   }
   $("tr-today").addEventListener("click", (e) => { const g = e.target.closest("[data-go]"); if (g) startWorkout(routines.find((r) => r.id === g.dataset.go)); });
   $("routines").addEventListener("click", (e) => {
@@ -1422,7 +1533,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   $("r-how").addEventListener("click", () => openHow(Object.keys(MOVES), 0));
   $("r-new").addEventListener("click", () => openEditor(null));
 
-  // armar rutina: elige ejercicios por músculo, compuestos primero, y reparte lo que hay en casa (mancuernas, banca plana e inclinada, bici)
+  // armar rutina: elige ejercicios por músculo, compuestos primero, y reparte lo que hay en casa (mancuernas y banca plana e inclinada)
   const MUSCLES = {
     "Pecho": ["Press banca con mancuernas", "Press inclinado con mancuernas", "Aperturas inclinadas", "Aperturas en banca", "Flexiones"],
     "Espalda": ["Remo con mancuerna", "Remo apoyado en banca inclinada", "Remo inclinado con mancuernas", "Pullover", "Remo abierto con mancuernas"],
@@ -1436,11 +1547,11 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   // kg sugeridos [volumen, fuerza] con mancuernas de hasta 25 kg; los compuestos van pesados en fuerza
   const KG = { "Press banca con mancuernas": [20, 25], "Press inclinado con mancuernas": [16, 24], "Aperturas en banca": [10, 12], "Aperturas inclinadas": [8, 12], "Remo con mancuerna": [20, 25], "Remo inclinado con mancuernas": [16, 22.5], "Remo apoyado en banca inclinada": [14, 20], "Pullover": [16, 20], "Remo abierto con mancuernas": [8, 12], "Press de hombros": [14, 22.5], "Elevaciones laterales": [6, 8], "Pájaros (deltoide posterior)": [6, 8], "Encogimientos de hombros": [20, 25], "Curl de bíceps": [10, 14], "Curl martillo": [10, 14], "Extensión de tríceps sobre la cabeza": [14, 18], "Patada de tríceps en banca": [6, 10], "Sentadilla goblet": [22.5, 25], "Peso muerto rumano": [22.5, 25], "Zancadas con mancuernas": [12, 20], "Sentadilla búlgara": [12, 20], "Step-up a la banca": [12, 20], "Hip thrust en banca": [25, 25] };
   const COMPOUND = new Set(["Press banca con mancuernas", "Press inclinado con mancuernas", "Remo con mancuerna", "Remo inclinado con mancuernas", "Remo apoyado en banca inclinada", "Press de hombros", "Sentadilla goblet", "Peso muerto rumano", "Zancadas con mancuernas", "Sentadilla búlgara", "Step-up a la banca", "Hip thrust en banca"]);
-  let autoSel = new Set(["Pecho", "Espalda"]), autoStyle = "vol", autoBike = false;
+  let autoSel = new Set(["Pecho", "Espalda"]), autoStyle = "vol";
   function renderAuto() {
     $("a-mus").innerHTML = Object.keys(MUSCLES).map((m) => '<button data-mus="' + m + '" aria-pressed="' + autoSel.has(m) + '">' + m + "</button>").join("");
     const n = autoSel.size ? Math.min(8, 4 + autoSel.size) : 0;
-    $("a-msg").textContent = n ? "Saldrán unos " + n + " ejercicios" + (autoBike ? " y la bici" : "") + ". Si algo no te gusta, lo cambias antes de guardar." : "Elige al menos un músculo.";
+    $("a-msg").textContent = n ? "Saldrán unos " + n + " ejercicios. Si algo no te gusta, lo cambias antes de guardar." : "Elige al menos un músculo.";
     $("a-go").disabled = !n;
   }
   function buildRoutine() {
@@ -1461,7 +1572,6 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
         items.push(k ? F(ex, heavy ? 5 : 3, heavy ? 5 : fuerza ? 10 : 15, kg) : F(ex, 3, bodyReps, 0));
       }
     }
-    if (autoBike) items.push(C("Bici estática", 15));
     const nm = muscles.map((m) => m.toLowerCase()), name = nm.length > 1 ? nm.slice(0, -1).join(", ") + " y " + nm[nm.length - 1] : nm[0];
     return { id: uid(), name: name[0].toUpperCase() + name.slice(1), days: [], rest: fuerza ? 120 : 90, items };
   }
@@ -1471,7 +1581,6 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     autoSel.has(b.dataset.mus) ? autoSel.delete(b.dataset.mus) : autoSel.add(b.dataset.mus); renderAuto();
   });
   seg("a-style", "style", (v) => { autoStyle = v; });
-  seg("a-bike", "bike", (v) => { autoBike = v === "1"; renderAuto(); });
   $("a-go").addEventListener("click", () => { if (autoSel.size) openEditor(buildRoutine(), true); });
 
   // editor de rutinas
@@ -1481,7 +1590,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     for (const [g, list] of LIB) h += '<optgroup label="' + g + '">' + list.map((x) => "<option" + (x === sel ? " selected" : "") + ">" + x + "</option>").join("") + "</optgroup>";
     return h + '<option value="__otro"' + (sel === "__otro" ? " selected" : "") + ">Otro ejercicio…</option>";
   }
-  const stepper = (label, k, v, i) => '<div class="stepper" data-l="' + label + '"><span>' + label + '</span><div class="pm"><button data-i="' + i + '" data-k="' + k + '" data-d="-1" aria-label="Menos ' + label.toLowerCase() + '">−</button><b>' + (k === "kg" ? kgNum(v) : v) + '</b><button data-i="' + i + '" data-k="' + k + '" data-d="1" aria-label="Más ' + label.toLowerCase() + '">+</button></div></div>';
+  const stepper = (label, k, v, i) => '<div class="stepper" data-l="' + label + '"><span>' + label + '</span><div class="pm"><button data-i="' + i + '" data-k="' + k + '" data-d="-1" aria-label="Menos ' + label.toLowerCase() + '">−</button><input class="num" type="number" inputmode="' + (k === "kg" ? "decimal" : "numeric") + '" min="0" step="' + (k === "kg" ? "0.5" : "1") + '" data-i="' + i + '" data-ik="' + k + '" value="' + v + '" aria-label="' + label + '"><button data-i="' + i + '" data-k="' + k + '" data-d="1" aria-label="Más ' + label.toLowerCase() + '">+</button></div></div>';
   function renderItems() {
     $("e-items").innerHTML = draft.items.map((it, i) => {
       const custom = !ALL_EX.has(it.ex);
@@ -1519,7 +1628,16 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     it[k] = Math.max(lo, Math.round((it[k] + +b.dataset.d * by) * 10) / 10);
     renderItems();
   });
+  // lo que se escribe en kilos, series, reps o minutos queda al tiro, con topes razonables
+  function commitNum(inp, normalize) {
+    const it = draft.items[+inp.dataset.i], k = inp.dataset.ik, v = parseFloat(String(inp.value).replace(",", "."));
+    if (!it || !isFinite(v)) return;
+    const lo = { sets: 1, reps: 1, kg: 0, min: 1 }[k], hi = { sets: 20, reps: 200, kg: 500, min: 300 }[k];
+    it[k] = Math.min(hi, Math.max(lo, k === "kg" ? Math.round(v * 10) / 10 : Math.round(v)));
+    if (normalize) inp.value = it[k];
+  }
   $("e-items").addEventListener("change", (e) => {
+    const ni = e.target.closest("input[data-ik]"); if (ni) { commitNum(ni, true); return; }
     const s = e.target.closest("select"); if (!s) return;
     const it = draft.items[+s.dataset.i];
     if (s.value === "__otro") { it.ex = ""; if (it.type === "cardio") Object.assign(it, F("", 3, 10, 0)); }
@@ -1527,7 +1645,10 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     else Object.assign(it, it.type === "cardio" ? F(s.value, 3, 10, 10) : { ex: s.value });
     renderItems();
   });
-  $("e-items").addEventListener("input", (e) => { if (e.target.dataset.custom) draft.items[+e.target.dataset.i].ex = e.target.value; });
+  $("e-items").addEventListener("input", (e) => {
+    if (e.target.dataset.custom) draft.items[+e.target.dataset.i].ex = e.target.value;
+    const ni = e.target.closest("input[data-ik]"); if (ni) commitNum(ni, false);
+  });
   // agregar: propone un ejercicio que aún no está, del mismo músculo que los que ya tiene la rutina (lo puedes cambiar en la lista)
   $("e-add").addEventListener("click", () => {
     const have = new Set(draft.items.map((i) => i.ex)), mine = Object.values(MUSCLES).filter((l) => l.some((x) => have.has(x)));
@@ -1561,7 +1682,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       log: r.items.map((it) => ({ ex: it.ex, type: it.type, sets: [], reps: lastReps[it.ex] ?? it.reps, kg: lastKg[it.ex] ?? it.kg, reps0: lastReps[it.ex] ?? it.reps, kg0: lastKg[it.ex] ?? it.kg })) };
     orb.level = 0; orb.base = 0; orb.ring = 0;
     setMode("train"); enterItem();
-    $("hint").textContent = "Ajusta reps y kg si cambió algo. La esfera se llena al descansar.";
+    $("hint").textContent = "Anota lo que levantaste de verdad: toca el número y escríbelo. Descansa lo justo y vuelve.";
     $("hint").style.opacity = 1; setTimeout(() => $("hint").style.opacity = 0, 7000);
     running = true; setPauseIcon();
     if (!audio.on) toggleMusic(true);
@@ -1591,11 +1712,11 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       $("breath").textContent = lg.reps + " reps" + (lg.kg ? " · " + kgNum(lg.kg) + " kg" : "");
       $("t-title").textContent = it.ex;
       $("t-plan").textContent = "Plan: " + itemPlan(it) + (lg.sets.length ? ". Hechas: " + lg.sets.map((x) => x.reps + "×" + kgNum(x.kg)).join(", ") : "");
-      $("t-reps").textContent = lg.reps; $("t-kg").textContent = kgNum(lg.kg);
+      $("t-reps").value = lg.reps; $("t-kg").value = lg.kg;
       $("t-main").textContent = "Serie hecha"; $("t-alt").textContent = "Saltar ejercicio";
     } else if (wk.phase === "rest") {
       const same = wk.s < it.sets, nIt = same ? it : next, nLg = same ? lg : wk.log[wk.i + 1];
-      $("cap-top").textContent = "Descanso"; $("big").textContent = mmss(wk.left); $("breath").textContent = "Respira lento";
+      $("cap-top").textContent = "Descanso"; $("big").textContent = mmss(wk.left); $("breath").textContent = "Recupera. Ya vuelves";
       $("t-label").textContent = "Viene";
       $("t-title").textContent = nIt.ex + (same ? ", serie " + (wk.s + 1) : "");
       $("t-plan").textContent = nIt.type === "cardio" ? nIt.min + " min" : nLg.reps + " reps" + (nLg.kg ? " · " + kgNum(nLg.kg) + " kg" : "");
@@ -1660,6 +1781,19 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       renderWk(false); saveActive();
     }
   });
+  // escribir el número directo: queda guardado al tiro, sin esperar a que se cierre el teclado
+  $("t-adjust").addEventListener("input", (e) => {
+    const k = e.target.id === "t-kg" ? "kg" : e.target.id === "t-reps" ? "reps" : null;
+    if (!k || !wk || wk.phase !== "work") return;
+    const v = parseFloat(String(e.target.value).replace(",", "."));
+    if (!isFinite(v)) return;
+    const lg = wk.log[wk.i];
+    lg[k] = k === "kg" ? Math.max(0, Math.min(500, Math.round(v * 10) / 10)) : Math.max(1, Math.min(200, Math.round(v)));
+    rememberSet(lg);
+    $("breath").textContent = lg.reps + " reps" + (lg.kg ? " · " + kgNum(lg.kg) + " kg" : "");
+    saveActive();
+  });
+  $("t-adjust").addEventListener("change", () => { if (wk && wk.phase === "work") renderWk(false); });
   $("t-adjust").addEventListener("click", (e) => {
     const b = e.target.closest("[data-adj]"); if (!b || !wk) return;
     const lg = wk.log[wk.i], k = b.dataset.adj;
@@ -1722,7 +1856,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     setMode("tend");
     $("cap-top").textContent = "Entrenaste"; $("big").textContent = mmss(secs); $("breath").textContent = sets + (sets === 1 ? " serie" : " series");
     $("te-label").textContent = lastWorkout.name + " · " + Math.max(1, Math.round(secs / 60)) + " min";
-    $("te-title").textContent = early ? "Bien, cada serie suma." : "Rutina completa.";
+    $("te-title").textContent = early ? "Quedó a medias. Mañana la completas." : "Rutina completa. Eso es disciplina.";
     $("te-sub").innerHTML = lastWorkout.items.map((l) => "<div><b>" + esc(l.ex) + "</b> · " + (l.type === "cardio" ? l.sets[0].min + " min" : l.sets.map((x) => x.reps + "×" + kgNum(x.kg)).join(", ") + " kg") + "</div>").join("") || "<div>Esta vez no alcanzaste a registrar series.</div>";
     const pg = (lastWorkout.prog || []).map((p) => "<div><b>Sube la próxima vez:</b> " + esc(p.ex) + " " + (p.kind === "kg" ? kgNum(p.from) + " → " + kgNum(p.to) + " kg" : p.from + " → " + p.to + " reps") + "</div>").join("");
     $("te-sub").innerHTML += pg;
@@ -1732,7 +1866,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   }
   $("te-done").addEventListener("click", () => {
     if (lastWorkout && lastWorkout.sets) {
-      const w = store.get("workouts", []); w.push(lastWorkout); store.set("workouts", w.slice(-200));
+      lastWorkout.id = lastWorkout.id || uid(); const w = store.get("workouts", []); w.push(lastWorkout); store.set("workouts", w.slice(-3000));
       const lk = store.get("lastkg", {}), lr = store.get("lastreps", {});
       for (const it of lastWorkout.items) { const s = it.sets.filter((x) => x.kg != null); if (s.length) lk[it.ex] = s[s.length - 1].kg; }
       // aplica la progresión a la rutina y al peso con que parte la próxima vez
@@ -1743,7 +1877,6 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
       }
       if (rt && (lastWorkout.prog || []).length) { saveRoutines(); }
       store.set("lastkg", lk); store.set("lastreps", lr);
-      const s = stats(); s.trains = (s.trains || 0) + 1; s.minutes = (s.minutes || 0) + lastWorkout.secs / 60; store.set("stats", s);
       const t = store.get("trains", {}); t[nightKey()] = true; store.set("trains", t);
       checkAch();
     }
@@ -1798,7 +1931,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     else { endChosen = true; wk = null; lastWorkout = null; goHome(); }
   });
 
-  // ---------- mejoras: gatillos, racha, logros, meta, avisos, bici, progreso, respaldo ----------
+  // ---------- mejoras: gatillos, racha, logros, meta, avisos, progreso, respaldo ----------
   const prefs = () => store.get("prefs", { vib: true });
   const setPref = (k, v) => { const p = prefs(); p[k] = v; store.set("prefs", p); };
   // vibración propia de los avisos (iPhone no la permite en Safari: ahí quedan el sonido y la pantalla)
@@ -1920,12 +2053,17 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     ["ahorro100", "$100.000 ahorrados", "Un gran premio", (c) => c.s.saved >= 100000],
     ["calma60", "1 hora de calma", "60 minutos juntados", (c) => (c.s.minutes || 0) >= 60],
     ["ola", "Ola domada", "Las ganas bajaron 5 puntos o más", (c) => c.l.some((x) => x.win && x.int - x.after >= 5)],
-    ["entreno1", "Primer entreno", "Guardaste una rutina", (c) => (c.s.trains || 0) >= 1],
-    ["entreno10", "10 entrenos", "Constancia", (c) => (c.s.trains || 0) >= 10],
-    ["bici", "Rodando", "Primer paseo en bici", (c) => c.r.length >= 1],
+    ["entreno1", "Primer entreno", "Guardaste una rutina", (c) => c.w.length >= 1],
+    ["entreno10", "10 entrenos", "Constancia", (c) => c.w.length >= 10],
+    ["entreno25", "25 entrenos", "Ya es parte de tu vida", (c) => c.w.length >= 25],
+    ["semana3", "Semana de fierro", "3 entrenos en 7 días", (c) => c.w7 >= 3],
+    ["horas10", "10 horas entrenadas", "600 minutos sumados", (c) => c.sm >= 600],
     ["meta", "Meta cumplida", "Llegaste a tu monto", (c) => !!(c.g && c.s.saved - (c.g.from || 0) >= c.g.amount)]
   ];
-  const achCtx = () => ({ s: stats(), st: streaks(), l: store.get("log", []), r: store.get("rides", []), g: store.get("goal", null) });
+  const achCtx = () => {
+    const w = counted();
+    return { s: stats(), st: streaks(), l: store.get("log", []), g: store.get("goal", null), w, w7: w.filter((x) => Date.now() - x.date < 7 * 864e5).length, sm: w.reduce((a, x) => a + (x.secs || 0), 0) / 60 };
+  };
   function checkAch() {
     const have = store.get("ach", null), c = achCtx(), now = {};
     const got = ACH.filter((a) => a[3](c));
@@ -1936,10 +2074,10 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     fresh.forEach((a) => have[a[0]] = Date.now()); store.set("ach", have);
     toast("Logro: " + fresh[0][1]); buzz(30);
   }
-  function renderAch() {
-    const have = store.get("ach", {}) || {};
-    $("ach").innerHTML = ACH.map((a) => '<div class="badge' + (have[a[0]] ? " on" : "") + '"><b>' + a[1] + "</b><span>" + a[2] + "</span></div>").join("");
-  }
+  const SPORT_ACH = new Set(["entreno1", "entreno10", "entreno25", "semana3", "horas10"]);
+  const badges = (list, have) => list.map((a) => '<div class="badge' + (have[a[0]] ? " on" : "") + '"><b>' + a[1] + "</b><span>" + a[2] + "</span></div>").join("");
+  function renderAch() { $("ach").innerHTML = badges(ACH.filter((a) => !SPORT_ACH.has(a[0])), store.get("ach", {}) || {}); }
+  function renderAchD() { $("ach-d").innerHTML = badges(ACH.filter((a) => SPORT_ACH.has(a[0])), store.get("ach", {}) || {}); }
 
   // aviso a la hora difícil: sale del registro; funciona mientras la app esté abierta o en segundo plano
   const remTime = () => { const r = riskHour(), h = r ? r.hour : 22; return h * 60 - 20; };
@@ -1973,49 +2111,18 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     startSession(2, true);
   });
 
-  // bici
-  const BIKE = { estatica: "Estática", ruta: "De ruta" }, FEEL = ["", "Suave", "Normal", "Duro"];
-  let bikeDraft = { type: "estatica", min: 30, feel: 2 };
-  function renderBike() {
-    const rides = store.get("rides", []), wk7 = rides.filter((r) => Date.now() - r.t < 7 * 864e5);
-    bikeDraft.min = bikeDraft.min || 30; $("b-min").textContent = bikeDraft.min;
-    $("b-type").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.bt === bikeDraft.type)));
-    $("b-feel").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.bf === bikeDraft.feel)));
-    $("b-week").textContent = "Últimos 7 días: " + wk7.reduce((a, r) => a + r.min, 0) + " min en " + wk7.length + (wk7.length === 1 ? " paseo" : " paseos");
-    $("b-list").innerHTML = rides.length ? rides.slice(-4).reverse().map((r) => "<div><b>" + BIKE[r.type] + " · " + r.min + " min</b><span>" + new Date(r.t).toLocaleDateString("es-CL", { weekday: "short", day: "numeric", month: "short" }) + " · " + FEEL[r.feel] + "</span></div>").join("") : "<div>Cuando guardes un paseo, aparece aquí.</div>";
-    const bd = store.get("bikedays", []);
-    $("b-days").innerHTML = DAY_ORDER.map((d) => '<button data-bd="' + d + '" aria-pressed="' + bd.includes(d) + '">' + DAYS[d] + "</button>").join("");
-  }
-  seg("b-type", "bt", (v) => bikeDraft.type = v);
-  seg("b-feel", "bf", (v) => bikeDraft.feel = +v);
-  $("bike").addEventListener("click", (e) => {
-    const m = e.target.closest("[data-bm]");
-    if (m) { bikeDraft.min = Math.max(5, bikeDraft.min + +m.dataset.bm); $("b-min").textContent = bikeDraft.min; }
-    const d = e.target.closest("[data-bd]");
-    if (d) {
-      const n = +d.dataset.bd, bd = store.get("bikedays", []);
-      store.set("bikedays", bd.includes(n) ? bd.filter((x) => x !== n) : bd.concat(n));
-      d.setAttribute("aria-pressed", String(!bd.includes(n))); renderPlanner(); renderToday();
-    }
-  });
-  $("b-save").addEventListener("click", () => {
-    const r = store.get("rides", []); r.push({ t: Date.now(), type: bikeDraft.type, min: bikeDraft.min, feel: bikeDraft.feel }); store.set("rides", r.slice(-300));
-    const t = store.get("trains", {}); t[nightKey()] = true; store.set("trains", t);
-    buzz(25); toast("Paseo guardado. " + bikeDraft.min + " min en bici."); renderBike(); renderRoutines(); checkAch();
-  });
-
   // progreso por ejercicio, sacado de los entrenamientos guardados
   let progEx = "", progMetric = "kg";
   function exSeries(ex) {
-    return store.get("workouts", []).map((w) => {
+    return counted().map((w) => {
       const it = w.items.find((i) => i.ex === ex); if (!it) return null;
       const cardio = it.type === "cardio";
       return { t: w.date, cardio, kg: Math.max(0, ...it.sets.map((s) => s.kg || 0)), reps: Math.max(0, ...it.sets.map((s) => s.reps || 0)), min: cardio ? it.sets.reduce((a, s) => a + (s.min || 0), 0) : 0 };
     }).filter(Boolean);
   }
   function renderProg() {
-    const ws = store.get("workouts", []), cnt = {};
-    ws.forEach((w) => w.items.forEach((i) => cnt[i.ex] = (cnt[i.ex] || 0) + 1));
+    const cnt = {};
+    counted().forEach((w) => w.items.forEach((i) => cnt[i.ex] = (cnt[i.ex] || 0) + 1));
     const names = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]);
     if (!names.length) { $("p-ex").hidden = true; $("p-metric").hidden = true; $("p-chart").innerHTML = ""; $("p-note").textContent = "Cuando guardes entrenamientos, aquí verás cómo suben tu peso y tus reps."; return; }
     $("p-ex").hidden = false;
@@ -2077,6 +2184,271 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     location.reload();
   });
   // el primer toque abre el selector de archivos; con un archivo válido cargado, el segundo lo aplica
+
+  // ---------- deporte: resumen, semana, historial editable ----------
+  // todo entrenamiento guardado vive en "workouts"; lo que se muestra y se suma sale de ahí, así corregir o borrar uno recalcula las estadísticas
+  const allWs = () => store.get("workouts", []);
+  const counted = () => allWs().filter((w) => !w.skip);
+  const wMins = (w) => Math.max(1, Math.round((w.secs || 0) / 60));
+  const fmtDay = (t) => new Date(t).toLocaleDateString("es-CL", { weekday: "short", day: "numeric", month: "short" });
+
+  // datos de versiones anteriores: no se borra nada, solo se ordena
+  function migrate() {
+    const list = allWs(); let touch = false;
+    for (const w of list) if (!w.id) { w.id = uid(); touch = true; }
+    if (touch) store.set("workouts", list);
+    if (!store.get("mig2", false)) {
+      // antes los minutos de calma y los de entrenar se sumaban en un solo contador: se separan (los de deporte salen de los entrenamientos)
+      const st = stats(), sport = list.reduce((a, w) => a + (w.secs || 0), 0) / 60;
+      if (st.minutesAll == null) st.minutesAll = st.minutes || 0;
+      st.minutes = Math.max(0, (st.minutes || 0) - sport);
+      store.set("stats", st); store.set("mig2", true);
+    }
+  }
+
+  function renderHero(all) {
+    const mins = Math.round(all.reduce((a, w) => a + (w.secs || 0), 0) / 60), h = Math.floor(mins / 60);
+    $("sp-total").textContent = mins.toLocaleString("es-CL");
+    $("sp-sub").textContent = all.length
+      ? all.length + (all.length === 1 ? " entrenamiento" : " entrenamientos") + (h ? " · " + h + " h " + (mins % 60) + " min" : "") + ". Sigue sumando."
+      : "Guarda tu primer entrenamiento y empieza a sumar.";
+  }
+  function renderSpWeek() {
+    const tr = store.get("trains", {}), el = $("sp-week"); el.innerHTML = "";
+    const names = ["do", "lu", "ma", "mi", "ju", "vi", "sá"], base = new Date(); if (base.getHours() < 6) base.setDate(base.getDate() - 1);
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(base); d.setDate(d.getDate() - i);
+      const k = ymd(d), day = document.createElement("div");
+      day.className = "day" + (tr[k] ? " win" : "") + (i === 0 ? " today" : "");
+      day.innerHTML = "<span>" + names[d.getDay()] + "</span><i></i><b></b>";
+      day.title = tr[k] ? "Entrenaste" : "";
+      el.appendChild(day);
+    }
+  }
+  function renderHistAll() {
+    const all = allWs().slice().sort((a, b) => b.date - a.date), el = $("hist-all");
+    $("h-count").textContent = all.length ? all.length + (all.length === 1 ? " entrenamiento" : " entrenamientos") : "";
+    if (!all.length) { el.innerHTML = '<div class="list"><div>Cuando guardes un entrenamiento, aparece aquí con todos sus ejercicios, para que puedas corregirlo.</div></div>'; return; }
+    let html = "", month = "";
+    for (const w of all) {
+      const rawM = new Date(w.date).toLocaleDateString("es-CL", { month: "long", year: "numeric" }), m = rawM[0].toUpperCase() + rawM.slice(1);
+      if (m !== month) { month = m; html += '<h3 class="sub hmonth">' + esc(m) + "</h3>"; }
+      const ex = w.items.map((it) => '<span class="hrow-ex"><b>' + esc(it.ex) + "</b> " + (it.type === "cardio" ? it.sets.reduce((a, x) => a + (x.min || 0), 0) + " min" : it.sets.map((x) => x.reps + "×" + kgNum(x.kg || 0)).join(", ")) + "</span>").join("");
+      html += '<button class="hrow' + (w.skip ? " skip" : "") + '" data-we="' + esc(w.id) + '"><span class="hrow-top"><b>' + esc(w.name) + "</b><small>" + fmtDay(w.date) + '</small></span><span class="hrow-sub">' + wMins(w) + " min · " + (w.sets || 0) + " series" + (w.skip ? " · no cuenta" : "") + "</span>" + ex + "</button>";
+    }
+    el.innerHTML = html;
+  }
+  $("hist-all").addEventListener("click", (e) => { const b = e.target.closest("[data-we]"); if (b) openWEdit(b.dataset.we); });
+
+  // subpantallas de deporte
+  let spTab = "hoy";
+  function showSp(t) {
+    spTab = t;
+    [["hoy", "sp-hoy"], ["hist", "sp-hist"], ["prog", "sp-prog"]].forEach(([k, id]) => { $(id).hidden = k !== t; });
+    $("sp-nav").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.sp === t)));
+    $("page-train").scrollTop = 0;
+  }
+  $("sp-nav").addEventListener("click", (e) => { const b = e.target.closest("[data-sp]"); if (b) showSp(b.dataset.sp); });
+
+  // el día cuenta como entrenado mientras quede un entrenamiento (o paseo antiguo) ese día
+  function refreshTrainDay(k) {
+    const tr = store.get("trains", {});
+    const has = counted().some((w) => nightKey(new Date(w.date)) === k) || store.get("rides", []).some((r) => nightKey(new Date(r.t)) === k);
+    if (has) tr[k] = true; else delete tr[k];
+    store.set("trains", tr);
+  }
+  // si corriges el último peso o las reps que quedaron de "la última vez", la próxima partida usa lo corregido (salvo que ya hubiera subido por progresión)
+  function syncLast(oldW, newW) {
+    const lk = store.get("lastkg", {}), lr = store.get("lastreps", {}), others = counted().filter((w) => w.id !== oldW.id);
+    const lastOf = (w, ex) => { const it = w && w.items.find((i) => i.ex === ex && i.type !== "cardio"); return it && it.sets.length ? it.sets[it.sets.length - 1] : null; };
+    for (const it of oldW.items) {
+      if (it.type === "cardio") continue;
+      const was = lastOf(oldW, it.ex);
+      if (!was || others.some((w) => w.date > oldW.date && w.items.some((i) => i.ex === it.ex))) continue;
+      const prev = others.filter((w) => w.date <= oldW.date).sort((a, b) => b.date - a.date).map((w) => lastOf(w, it.ex)).find(Boolean);
+      const now = lastOf(newW, it.ex) || prev;
+      if (lk[it.ex] === was.kg) { if (now) lk[it.ex] = now.kg; else delete lk[it.ex]; }
+      if (lr[it.ex] === was.reps) { if (now) lr[it.ex] = now.reps; else delete lr[it.ex]; }
+    }
+    store.set("lastkg", lk); store.set("lastreps", lr);
+  }
+
+  let wed = null, wedArmed = false;
+  const numIn = (v) => { const x = parseFloat(String(v).replace(",", ".")); return isFinite(x) ? x : 0; };
+  function openWEdit(id) {
+    const w = allWs().find((x) => x.id === id); if (!w) return;
+    wed = JSON.parse(JSON.stringify(w)); wedArmed = false;
+    $("we-name").value = wed.name; $("we-date").value = ymd(new Date(wed.date)); $("we-min").value = wMins(wed);
+    $("we-inc").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String((b.dataset.inc === "1") === !wed.skip)));
+    $("we-del").textContent = "Borrar entrenamiento"; $("we-msg").textContent = "";
+    renderWEItems(); openSheet("hedit"); $("hedit").scrollTop = 0;
+  }
+  function renderWEItems() {
+    $("we-items").innerHTML = wed.items.map((it, i) => {
+      const cardio = it.type === "cardio";
+      const rows = it.sets.map((x, j) => cardio
+        ? '<div class="srow"><span>Tiempo</span><input class="num" type="number" inputmode="numeric" min="1" step="1" data-i="' + i + '" data-j="' + j + '" data-f="min" value="' + (x.min || 0) + '" aria-label="Minutos"><em>min</em><button class="x" data-ds="' + i + "." + j + '" aria-label="Quitar serie">×</button></div>'
+        : '<div class="srow"><span>Serie ' + (j + 1) + '</span><input class="num" type="number" inputmode="numeric" min="1" step="1" data-i="' + i + '" data-j="' + j + '" data-f="reps" value="' + (x.reps || 0) + '" aria-label="Repeticiones"><em>reps</em><input class="num" type="number" inputmode="decimal" min="0" step="0.5" data-i="' + i + '" data-j="' + j + '" data-f="kg" value="' + (x.kg || 0) + '" aria-label="Kilos"><em>kg</em><button class="x" data-ds="' + i + "." + j + '" aria-label="Quitar serie">×</button></div>').join("");
+      return '<div class="hex"><div class="item-top"><input class="text" data-i="' + i + '" data-f="ex" value="' + esc(it.ex) + '" maxlength="40" aria-label="Ejercicio"><button class="x" data-dx="' + i + '" aria-label="Quitar ejercicio">×</button></div>' + rows + '<button class="btn small" data-as="' + i + '">+ Serie</button></div>';
+    }).join("") || '<p class="muted">Sin ejercicios. Puedes dejarlo así o borrar el entrenamiento.</p>';
+  }
+  $("we-items").addEventListener("input", (e) => {
+    const f = e.target.dataset.f; if (!f || !wed) return;
+    const it = wed.items[+e.target.dataset.i]; if (!it) return;
+    if (f === "ex") { it.ex = e.target.value; return; }
+    const x = it.sets[+e.target.dataset.j]; if (x) x[f] = numIn(e.target.value);
+  });
+  $("we-items").addEventListener("click", (e) => {
+    if (!wed) return;
+    const ds = e.target.closest("[data-ds]"), dx = e.target.closest("[data-dx]"), as = e.target.closest("[data-as]");
+    if (ds) { const [i, j] = ds.dataset.ds.split(".").map(Number); wed.items[i].sets.splice(j, 1); renderWEItems(); }
+    else if (dx) { wed.items.splice(+dx.dataset.dx, 1); renderWEItems(); }
+    else if (as) { const it = wed.items[+as.dataset.as], last = it.sets[it.sets.length - 1]; it.sets.push(it.type === "cardio" ? { min: last ? last.min : 10 } : { reps: last ? last.reps : 10, kg: last ? last.kg : 0 }); renderWEItems(); }
+  });
+  seg("we-inc", "inc", (v) => { if (wed) wed.skip = v === "0"; });
+  $("we-save").addEventListener("click", () => {
+    if (!wed) return;
+    const list = allWs(), i = list.findIndex((x) => x.id === wed.id); if (i < 0) { closeSheets(); return; }
+    const old = list[i];
+    const items = wed.items.map((it) => ({
+      ex: String(it.ex || "").trim(), type: it.type,
+      sets: it.sets.map((x) => it.type === "cardio" ? { min: Math.max(0, Math.round(numIn(x.min))) } : { reps: Math.max(0, Math.round(numIn(x.reps))), kg: Math.max(0, Math.min(500, Math.round(numIn(x.kg) * 10) / 10)) })
+        .filter((x) => it.type === "cardio" ? x.min > 0 : x.reps > 0)
+    })).filter((it) => it.ex && it.sets.length);
+    if (!items.length) { $("we-msg").textContent = "Deja al menos un ejercicio con una serie, o borra el entrenamiento."; return; }
+    const mins = Math.max(1, Math.round(numIn($("we-min").value))), dv = $("we-date").value;
+    let date = old.date;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dv) && dv !== ymd(new Date(old.date))) { const t = new Date(old.date), [y, m, d] = dv.split("-").map(Number); date = new Date(y, m - 1, d, t.getHours(), t.getMinutes()).getTime(); }
+    const nw = Object.assign({}, old, {
+      name: $("we-name").value.trim() || old.name, date, items, skip: !!wed.skip,
+      sets: items.reduce((a, it) => a + it.sets.length, 0), secs: mins === wMins(old) ? old.secs : mins * 60
+    });
+    if (!nw.skip) delete nw.skip;
+    list[i] = nw; store.set("workouts", list);
+    refreshTrainDay(nightKey(new Date(old.date))); refreshTrainDay(nightKey(new Date(nw.date)));
+    syncLast(old, nw);
+    renderRoutines(); closeSheets(); toast("Entrenamiento actualizado");
+  });
+  $("we-del").addEventListener("click", () => {
+    if (!wed) return;
+    if (!wedArmed) { wedArmed = true; $("we-del").textContent = "Toca otra vez para borrar"; return; }
+    const list = allWs(), old = list.find((x) => x.id === wed.id); if (!old) { closeSheets(); return; }
+    store.set("workouts", list.filter((x) => x.id !== old.id));
+    refreshTrainDay(nightKey(new Date(old.date))); syncLast(old, { items: [] });
+    renderRoutines(); closeSheets(); toast("Entrenamiento borrado");
+  });
+
+  // ---------- respaldo en la nube: base D1 de Cloudflare (ver worker/index.js) ----------
+  // no hay cuentas: cada dispositivo crea un código secreto; con el mismo código en otro teléfono se recupera todo
+  const CLOUD_OK = /^https?:$/.test(location.protocol) && !/claude\.ai|claudeusercontent/.test(location.hostname);
+  const SYNC_KEY = "calma-sync-code"; // fuera del prefijo "calma:" a propósito: el código no viaja dentro del respaldo
+  const validCode = (c) => /^[a-z0-9-]{16,64}$/.test(c);
+  function newCode() {
+    const a = new Uint8Array(18); crypto.getRandomValues(a);
+    const t = Array.from(a, (b) => "abcdefghjkmnpqrstuvwxyz23456789"[b % 31]).join("");
+    return t.slice(0, 6) + "-" + t.slice(6, 12) + "-" + t.slice(12);
+  }
+  function syncCode() {
+    let c = ""; try { c = localStorage.getItem(SYNC_KEY) || ""; } catch {}
+    if (!validCode(c)) { c = newCode(); try { localStorage.setItem(SYNC_KEY, c); } catch {} }
+    return c;
+  }
+  function cfRef(code) {
+    const h = { authorization: "Bearer " + code };
+    return {
+      async get() {
+        const r = await fetch("/api/sync", { headers: h, cache: "no-store" });
+        if (r.status === 404) return { exists: false, data: () => null };
+        if (!r.ok) throw new Error("http " + r.status);
+        const d = await r.json(); return d && d.keys ? { exists: true, data: () => d } : { exists: false, data: () => null };
+      },
+      async set(v) {
+        const r = await fetch("/api/sync", { method: "PUT", headers: Object.assign({ "content-type": "application/json" }, h), body: JSON.stringify(v) });
+        if (r.status === 409) { const d = await r.json().catch(() => ({})); throw Object.assign(new Error("newer"), { newer: d.newer }); }
+        if (!r.ok) throw new Error("http " + r.status);
+      }
+    };
+  }
+  // trae lo más nuevo desde la nube y refresca la pantalla
+  function adoptRemote(d, withActive) {
+    // por si acaso: lo que había en este dispositivo queda guardado aparte antes de traer lo de la nube
+    try { localStorage.setItem("calma-antes-de-nube", JSON.stringify({ at: Date.now(), keys: mem })); } catch {}
+    for (const k in d.keys) if ((withActive || k !== "active") && typeof d.keys[k] === "string") keep(k, d.keys[k]);
+    keep("_at", String(d.at || Date.now()));
+    migrate();
+    routines = store.get("routines", null) || routines;
+    haptics = store.get("haptics", true);
+    setPrice(store.get("price:" + kind, DEFAULT_PRICE[kind]));
+    if (mode === "home") { setMode("home"); if (withActive) restoreActive(); updateTitle(); }
+  }
+  async function startCloud(ref, withActive) {
+    try {
+      const snap = await ref.get(), d = snap.exists ? snap.data() : null;
+      // un teléfono sin datos propios (almacenamiento borrado, app recién instalada) nunca debe pisar el respaldo: se trae lo de la nube sí o sí
+      const st = stats(), own = ["routines", "workouts", "trains", "lastkg", "lastreps"].some((k) => mem[k]) || (st.wins || 0) + (st.orders || 0) + (st.saved || 0) + (st.minutes || 0) + (st.minutesAll || 0) > 0;
+      if (d && d.keys && (!own || (d.at || 0) > (+mem._at || 0))) adoptRemote(d, withActive);
+      cloud.ref = ref; cloud.withActive = !!withActive; cloud.failed = false;
+      if (!d || (+mem._at || 0) > (d.at || 0)) cloud.dirty(); else cloud.okAt = Date.now();
+      return true;
+    } catch { cloud.failed = true; return false; }
+    finally { if (cloud.changed) cloud.changed(); }
+  }
+  let cloudBusy = false;
+  async function ensureCloud() {
+    if (!CLOUD_OK || cloud.ref || cloudBusy) return;
+    cloudBusy = true; try { await startCloud(cfRef(syncCode())); } finally { cloudBusy = false; }
+  }
+  cloud.onNewer = (d) => adoptRemote(d, cloud.withActive);
+  function renderCloudNote() {
+    $("cl-box").hidden = !CLOUD_OK; $("cl-off").hidden = CLOUD_OK;
+    if (!CLOUD_OK) return;
+    $("cl-code").textContent = syncCode();
+    const when = (t) => new Date(t).toLocaleString("es-CL", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false });
+    $("cl-note").textContent = cloud.ref
+      ? (cloud.failed ? "Sin conexión con la nube. Tus datos siguen aquí y se respaldan solos al volver."
+        : cloud.okAt ? "Respaldo automático activo. Último respaldo: " + when(cloud.okAt) + ". Guarda este código: con él recuperas todo en otro teléfono." : "Respaldo automático activo. Guarda este código: con él recuperas todo en otro teléfono.")
+      : (cloud.failed ? "No pude conectar con la nube. Reintento cuando vuelva la conexión." : "Conectando con la nube…");
+  }
+  cloud.changed = () => { if (!$("data").hidden) renderCloudNote(); };
+  $("open-data").addEventListener("click", () => { renderRem(); renderCloudNote(); ensureCloud(); openSheet("data"); $("data").scrollTop = 0; });
+  $("cl-copy").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(syncCode()); toast("Código copiado"); }
+    catch { const r = document.createRange(); r.selectNodeContents($("cl-code")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); toast("Selecciónalo y cópialo"); }
+  });
+  $("cl-now").addEventListener("click", async () => {
+    $("cl-now").disabled = true;
+    try {
+      if (!cloud.ref) await startCloud(cfRef(syncCode()));
+      const ok = cloud.ref ? await cloud.flush() : false;
+      toast(ok ? "Respaldo guardado en la nube" : "No pude respaldar. Revisa tu conexión.");
+    } finally { $("cl-now").disabled = false; renderCloudNote(); }
+  });
+  let useArmed = null;
+  const clMsg = (t) => { $("cl-msg").textContent = t; };
+  $("cl-in").addEventListener("input", () => { useArmed = null; $("cl-use").textContent = "Usar este código"; clMsg(""); });
+  $("cl-use").addEventListener("click", async () => {
+    if (useArmed) {
+      const { code, d } = useArmed; useArmed = null;
+      try { await cloud.flush(); } catch {}
+      try { localStorage.setItem(SYNC_KEY, code); } catch {}
+      for (const k in d.keys) if (k !== "active" && typeof d.keys[k] === "string") keep(k, d.keys[k]);
+      keep("active", "null"); keep("_at", String(d.at || Date.now()));
+      location.reload(); return;
+    }
+    const code = $("cl-in").value.trim().toLowerCase().replace(/\s+/g, "");
+    if (!validCode(code)) { clMsg("Ese código no tiene el formato correcto."); return; }
+    if (code === syncCode()) { clMsg("Ese ya es el código de este dispositivo."); return; }
+    try {
+      const snap = await cfRef(code).get();
+      if (!snap.exists) { clMsg("No encontré ningún respaldo con ese código."); return; }
+      const d = snap.data(); useArmed = { code, d };
+      clMsg("Encontré un respaldo (" + Object.keys(d.keys).length + " datos, " + new Date(d.at).toLocaleDateString("es-CL", { day: "numeric", month: "short" }) + "). Esto reemplaza lo de este dispositivo; lo de ahora queda respaldado con tu código actual (" + syncCode() + ").");
+      $("cl-use").textContent = "Toca para reemplazar";
+    } catch { clMsg("No pude conectar. Revisa tu conexión."); }
+  });
+  // al salir de la app o volver la conexión, se respalda al tiro
+  document.addEventListener("visibilitychange", () => { if (document.hidden) cloud.flush(); else ensureCloud(); });
+  addEventListener("online", () => { ensureCloud(); cloud.flush(); });
 
   // ---------- respiración ----------
   const IN = 4, HOLD = 2, OUT = 6, CYCLE = IN + HOLD + OUT;
@@ -2732,7 +3104,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   $("rain").addEventListener("click", () => toggleRain());
 
   // deslizar hacia abajo para cerrar las hojas de elegir
-  ["setup", "tedit", "stats", "skysheet", "auto"].forEach((id) => {
+  ["setup", "tedit", "stats", "skysheet", "auto", "hedit", "data"].forEach((id) => {
     const sh = $(id); let y0 = null, dy = 0;
     sh.addEventListener("pointerdown", (e) => { if (sh.scrollTop > 0 || e.target.closest("button,input,select")) return; y0 = e.clientY; dy = 0; sh.style.transition = "none"; });
     addEventListener("pointermove", (e) => { if (y0 == null) return; dy = Math.max(0, e.clientY - y0); sh.style.transform = "translateY(" + dy + "px)"; });
@@ -2743,6 +3115,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     addEventListener("pointerup", end); addEventListener("pointercancel", end);
   });
   $("e-cancel").addEventListener("click", closeSheets);
+  $("we-cancel").addEventListener("click", closeSheets);
 
   // app instalable y sin conexión (solo cuando corre en su propio dominio)
   // diagnóstico escondido: 5 toques seguidos en "Calma" muestran los tamaños que ve la app (sirve para depurar la ventana en iOS)
@@ -2781,7 +3154,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   async function requestWake() { try { wake = await navigator.wakeLock?.request("screen"); } catch {} }
   function releaseWake() { try { wake?.release(); } catch {} wake = null; }
 
-  layout(); updateSky(); firstDay(); checkAch(); setMode("home"); restoreActive(); updateTitle(); requestAnimationFrame(frame);
+  layout(); updateSky(); migrate(); firstDay(); checkAch(); setMode("home"); restoreActive(); updateTitle(); requestAnimationFrame(frame);
   loadWeather(); setInterval(loadWeather, 20 * 60e3);
 
   // pantalla de inicio: una vez por apertura, y no si vuelves a un entrenamiento o sesión en curso
@@ -2799,21 +3172,11 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
     try {
       const [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
       const id = db && user && await user.id(); if (!id) return;
-      const ref = db.doc("data/users/" + id + "/calma");
-      const snap = await ref.get(), d = snap.exists ? snap.data() : null;
-      if (d && d.keys && (d.at || 0) > (+mem._at || 0)) {
-        for (const k in d.keys) keep(k, d.keys[k]);
-        keep("_at", String(d.at));
-        if (mode === "home") {
-          routines = store.get("routines", null) || routines;
-          setPrice(store.get("price:" + kind, DEFAULT_PRICE[kind]));
-          setMode("home"); restoreActive(); updateTitle();
-        }
-      }
-      cloud.ref = ref;
-      if (!d || (+mem._at || 0) > (d.at || 0)) cloud.dirty();
+      await startCloud(db.doc("data/users/" + id + "/calma"), true);
     } catch {}
   })();
+  // nube propia: base D1 en Cloudflare, con el código de este dispositivo
+  ensureCloud();
 })();
 </script>
 </body>
