@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: a full-screen phone app. A canvas sky fills the screen and follows the local hour (dawn, day, sunset, night); the time orb sits in the middle; a dock at the bottom holds the action; setup and results open as bottom sheets. The UI glass stays dark so it reads over any sky. */
 :root {
@@ -290,7 +290,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), inset 0 0 0 1px rgba(255,190,120,0.35), 0 4px 14px rgba(255,130,50,0.28);
   transition: transform 0.38s cubic-bezier(0.3, 1.25, 0.5, 1);
 }
-.tabs:has(button[data-tab="train"][aria-selected="true"])::before { transform: translateX(100%); }
+.tabs:has(button[data-tab="calma"][aria-selected="true"])::before { transform: translateX(100%); }
 .tabs button {
   font: inherit; font-size: 0.86rem; font-weight: 650; letter-spacing: 0.005em; color: rgba(236, 240, 250, 0.72); background: none; border: 0; border-radius: 999px;
   display: flex; align-items: center; justify-content: center; gap: 7px; padding: 0 10px; cursor: pointer; transition: color 0.25s;
@@ -495,6 +495,55 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: 1.1rem; letter-spacing: 0.04em; text-align: center; padding: 12px; border-radius: 14px;
   background: rgba(0,0,0,0.3); border: 1px dashed var(--line); user-select: all; -webkit-user-select: all; word-break: break-all;
 }
+
+/* ---- arena: Entrenar en modo fallo. Negro, brasa y rojo; letras anchas e inclinadas; el vidrio se queda, pero caliente ---- */
+body.sport {
+  --night: #0a0709; --glass: rgba(30, 14, 9, 0.74); --glass-2: rgba(48, 22, 12, 0.6); --line: rgba(255, 130, 60, 0.22);
+  --moon: #fff3e8; --mist: #c9ad9a; --ember: #ff4a1c; --ember-ink: #1c0700; --sage: #ff7a1f; --sage-ink: #1c0700;
+  --lg: linear-gradient(160deg, rgba(255,150,80,0.2), rgba(255,80,20,0.04) 55%, rgba(255,150,80,0.1));
+  --lg-edge: inset 0 1px 0 rgba(255,190,140,0.4), inset 0 -1px 0 rgba(255,120,50,0.1), inset 0 0 0 1px rgba(255,120,50,0.2);
+  --orange: linear-gradient(180deg, rgba(255,255,255,0.4), rgba(255,255,255,0) 50%), linear-gradient(180deg, #ffa23d, #ff4d12);
+  --orange-edge: inset 0 1px 0 rgba(255,255,255,0.65), inset 0 -2px 8px rgba(120,20,0,0.35), 0 12px 34px rgba(255,80,20,0.45);
+}
+.sport .icon-btn, .sport .clock, .sport .card, .sport .btn:not(.go), .sport .week, .sport .toast, .sport .mini div, .sport .rcard, .sport .list, .sport .hero, .sport .hrow {
+  background: var(--lg), rgba(26, 12, 8, 0.58);
+}
+.sport .icon-btn[aria-pressed="true"] { background: var(--orange); color: var(--ember-ink); }
+.sport .page { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.sport .sheet { background: #150b08; border-top: 1px solid rgba(255, 120, 50, 0.35); }
+.sport h1, .sport h2, .sport .card h3, .sport .feature h3, .sport .rcard b, .sport .big, .sport .hero-n b, .sport .cap, .sport .reactor-slot b {
+  font-stretch: 75%; text-transform: uppercase; font-weight: 800; letter-spacing: 0.005em;
+}
+.sport .page-in h1 { font-size: 3rem; line-height: 0.92; font-style: italic; }
+.sport .sec { font-size: 1.5rem; font-style: italic; }
+.sport .kick, .sport .page-date, .sport .card .eyebrow { letter-spacing: 0.16em; font-weight: 800; }
+.sport .seg button[aria-pressed="true"], .sport .chips button[aria-pressed="true"] { background: var(--orange); color: var(--ember-ink); box-shadow: 0 4px 14px rgba(255,80,20,0.35); border-color: transparent; }
+.sport .brand i { background: var(--ember); box-shadow: 0 0 14px var(--ember); }
+.sport .card .eyebrow { color: var(--sage); }
+.sport #t-main { font-family: var(--display); font-stretch: 75%; font-weight: 800; font-size: 1.25rem; text-transform: uppercase; padding: 16px 14px; }
+.sport .big { font-size: clamp(3.4rem, 16vw, 4.8rem); font-style: italic; text-shadow: 0 2px 20px rgba(0,0,0,0.7); }
+.sport .cap { color: var(--sage); opacity: 1; letter-spacing: 0.2em; }
+.sport .breath { font-weight: 700; text-shadow: 0 2px 14px rgba(0,0,0,0.7); }
+
+.sp-btns { display: flex; gap: 8px; }
+.reactor-slot { position: relative; height: 270px; margin: -6px 0 -4px; display: grid; place-content: center; justify-items: center; gap: 4px; text-align: center; pointer-events: none; }
+.reactor-slot b { font-family: var(--display); font-size: 3.2rem; line-height: 0.9; font-style: italic; font-variant-numeric: tabular-nums; text-shadow: 0 2px 18px rgba(0,0,0,0.7); }
+.reactor-slot span { max-width: 9em; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--sage); line-height: 1.25; }
+
+/* el botón grande de "Hoy toca" late con los bajos (--k lo mueve el analizador de audio) */
+.sport .feature {
+  position: relative; overflow: hidden; background: linear-gradient(150deg, #ffb347 0%, #ff6a1a 42%, #d4200c 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 14px 40px rgba(255,70,20,calc(0.28 + 0.4 * var(--k, 0))), 0 0 calc(30px * var(--k, 0)) rgba(255,110,30,0.7);
+  transform: scale(calc(1 + 0.012 * var(--k, 0)));
+}
+.sport .feature::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(135deg, rgba(0,0,0,0.07) 0 12px, transparent 12px 24px); }
+.sport .feature.off { background: var(--lg), rgba(26, 12, 8, 0.58); box-shadow: var(--lg-edge); transform: none; }
+.sport .feature.off::after { display: none; }
+.sport .feature h3 { font-size: 2.5rem; line-height: 0.95; font-style: italic; }
+.sport .feature .kick { opacity: 0.8; }
+.sport .get { font-size: 1rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 12px 26px; position: relative; z-index: 1; }
+.sport #tcard { box-shadow: var(--lg-edge), var(--lg-drop), 0 0 calc(26px * var(--k, 0)) rgba(255,90,24,0.55); }
+@media (prefers-reduced-motion: reduce) { .sport .feature { transform: none; } }
 </style>
 </head>
 <body>
@@ -508,14 +557,14 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     <span class="s-fly" style="--a: 290deg; animation-delay: 1.4s"></span>
   </div>
   <div class="s-name">Calma</div>
-  <div class="s-sub">respira, ya pasa</div>
+  <div class="s-sub">a darlo todo</div>
 </div>
 <canvas id="sky" aria-hidden="true"></canvas>
 <div class="toast" id="toast" role="status" hidden></div>
 
 <div class="app">
   <header class="bar">
-    <div class="brand"><i></i>Calma</div>
+    <div class="brand"><i></i><span id="brand-t">Calma</span></div>
     <button class="clock" id="clock" aria-label="Elegir el cielo"><span id="clock-t"></span><span id="clock-p"></span></button>
     <button class="icon-btn" id="open-stats" aria-label="Tu registro">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 20v-8M12 20V4M19 20v-5"/></svg>
@@ -634,11 +683,16 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     <div class="sp-top">
       <div>
         <span class="page-date" id="tr-date"></span>
-        <h1>Entrenar</h1>
+        <h1 id="sp-title">Entrenar</h1>
       </div>
+      <div class="sp-btns">
+      <button class="icon-btn" id="sp-beat" aria-pressed="false" aria-label="Música con ritmo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
+      </button>
       <button class="icon-btn" id="open-data" aria-label="Ajustes y respaldo">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="3"/><circle cx="8" cy="17" r="3"/></svg>
       </button>
+      </div>
     </div>
     <div class="seg sp-nav" id="sp-nav" role="group" aria-label="Secciones de entrenar">
       <button data-sp="hoy" aria-pressed="true">Hoy</button>
@@ -647,6 +701,8 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     </div>
 
     <div class="sp-pane" id="sp-hoy">
+      <div class="reactor-slot" id="sp-reactor"><b id="rx-n">0</b><span id="rx-l">entrenos</span></div>
+      <article class="feature" id="tr-today"></article>
       <article class="hero" id="sp-hero">
         <span class="kick">Minutos entrenados</span>
         <div class="hero-n"><b id="sp-total">0</b><span>min</span></div>
@@ -657,7 +713,6 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
           <div><b id="m-mins">0</b><span>min</span></div>
         </div>
       </article>
-      <article class="feature" id="tr-today"></article>
       <h2 class="sec">Tu semana</h2>
       <div class="week" id="sp-week" aria-label="Días que entrenaste"></div>
       <div class="plan" id="plan" aria-label="Plan de la semana"></div>
@@ -688,11 +743,11 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
 </section>
 
 <nav class="tabs" id="tabs" role="tablist" aria-label="Pantallas">
-  <button role="tab" data-tab="calma" aria-selected="true">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>Calma
-  </button>
-  <button role="tab" data-tab="train" aria-selected="false">
+  <button role="tab" data-tab="train" aria-selected="true">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 7v10M4 9.5v5M17 7v10M20 9.5v5M7 12h10"/></svg>Entrenar
+  </button>
+  <button role="tab" data-tab="calma" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>Calma
   </button>
 </nav>
 
@@ -1163,17 +1218,20 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   $("open-setup").addEventListener("click", () => { openSheet("setup"); audio.init(); });
 
   // pestañas: se tocan abajo o se desliza de lado, fuera de la esfera y del carrusel
-  let tab = "calma";
+  let tab = "train";
   function showTab() {
     const train = mode === "home" && tab === "train";
     document.body.classList.toggle("tab-train", train);
     document.body.classList.toggle("sport", train || mode === "train" || mode === "tend");
     document.body.classList.toggle("has-tabs", mode === "home");
     $("tabs").hidden = mode !== "home";
+    const sport = train || mode === "train" || mode === "tend";
+    $("brand-t").textContent = sport ? "Entrenando" : "Calma";
+    if (typeof updateSky === "function" && typeof themeMeta !== "undefined") updateSky();
     $("page-train").inert = !train;
     $("tabs").querySelectorAll("button").forEach((b) => b.setAttribute("aria-selected", b.dataset.tab === tab ? "true" : "false"));
   }
-  function setTab(t) { if (t === tab) return; tab = t; if (t === "train") { renderRoutines(); $("page-train").scrollTop = 0; } showTab(); buzz(8); }
+  function setTab(t) { if (t === tab) return; tab = t; if (mode === "home" && audio.on) toggleMusic(false); if (t === "train") { renderRoutines(); $("page-train").scrollTop = 0; } showTab(); buzz(8); }
   $("tabs").addEventListener("click", (e) => { const b = e.target.closest("[data-tab]"); if (b) { audio.init(); setTab(b.dataset.tab); } });
   let swipe = null;
   addEventListener("pointerdown", (e) => {
@@ -1182,7 +1240,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   addEventListener("pointerup", (e) => {
     if (!swipe) return;
     const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y; swipe = null;
-    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) setTab(dx < 0 ? "train" : "calma");
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) setTab(dx < 0 ? "calma" : "train");
   }, true);
   $("open-stats").addEventListener("click", () => { renderTally(); renderInsights(); openSheet("stats"); $("stats").scrollTop = 0; });
   $("start").addEventListener("click", () => { extended = false; startSession(minutes); });
@@ -1518,6 +1576,8 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     const all = counted(), wk7 = all.filter((w) => Date.now() - w.date < 7 * 864e5);
     const planned = new Set(routines.flatMap((r) => r.days)).size;
     $("m-done").textContent = wk7.length + (planned ? "/" + planned : "");
+    $("rx-n").textContent = wk7.length + (planned ? "/" + planned : ""); $("rx-l").textContent = planned ? "entrenos esta semana" : "entrenos en 7 días";
+    arena.segs = planned || 7; arena.weekP = Math.min(1, wk7.length / (planned || 7));
     $("m-sets").textContent = wk7.reduce((a, w) => a + (w.sets || 0), 0);
     $("m-mins").textContent = Math.round(wk7.reduce((a, w) => a + (w.secs || 0), 0) / 60);
     renderHero(all); renderSpWeek(); renderHistAll(); renderAchD(); renderProg();
@@ -1716,7 +1776,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
       $("t-main").textContent = "Serie hecha"; $("t-alt").textContent = "Saltar ejercicio";
     } else if (wk.phase === "rest") {
       const same = wk.s < it.sets, nIt = same ? it : next, nLg = same ? lg : wk.log[wk.i + 1];
-      $("cap-top").textContent = "Descanso"; $("big").textContent = mmss(wk.left); $("breath").textContent = "Recupera. Ya vuelves";
+      $("cap-top").textContent = "Descanso"; $("big").textContent = mmss(wk.left); $("breath").textContent = "Respira. Ya viene";
       $("t-label").textContent = "Viene";
       $("t-title").textContent = nIt.ex + (same ? ", serie " + (wk.s + 1) : "");
       $("t-plan").textContent = nIt.type === "cardio" ? nIt.min + " min" : nLg.reps + " reps" + (nLg.kg ? " · " + kgNum(nLg.kg) + " kg" : "");
@@ -1856,7 +1916,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     setMode("tend");
     $("cap-top").textContent = "Entrenaste"; $("big").textContent = mmss(secs); $("breath").textContent = sets + (sets === 1 ? " serie" : " series");
     $("te-label").textContent = lastWorkout.name + " · " + Math.max(1, Math.round(secs / 60)) + " min";
-    $("te-title").textContent = early ? "Quedó a medias. Mañana la completas." : "Rutina completa. Eso es disciplina.";
+    $("te-title").textContent = early ? "Quedó a medias. Mañana la completas." : "Rutina completa. Hoy no negociaste.";
     $("te-sub").innerHTML = lastWorkout.items.map((l) => "<div><b>" + esc(l.ex) + "</b> · " + (l.type === "cardio" ? l.sets[0].min + " min" : l.sets.map((x) => x.reps + "×" + kgNum(x.kg)).join(", ") + " kg") + "</div>").join("") || "<div>Esta vez no alcanzaste a registrar series.</div>";
     const pg = (lastWorkout.prog || []).map((p) => "<div><b>Sube la próxima vez:</b> " + esc(p.ex) + " " + (p.kind === "kg" ? kgNum(p.from) + " → " + kgNum(p.to) + " kg" : p.from + " → " + p.to + " reps") + "</div>").join("");
     $("te-sub").innerHTML += pg;
@@ -2570,7 +2630,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     const h = skyHour(), name = phaseName(h);
     T = paletteAt(h);
     $("clock-p").textContent = name + (realWeather && WX.ok && WX.temp != null ? " · " + Math.round(WX.temp) + "°" : "");
-    themeMeta.content = rgb(T.top);
+    themeMeta.content = isArena() ? "#0a0709" : rgb(T.top);
     audio.bright = T.bright; audio.birds = T.birds;
     if (name !== phase) { phase = name; if (mode === "home") $("hint").textContent = homeHint(); }
   }
@@ -2825,6 +2885,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   cv.addEventListener("pointerdown", (e) => {
     pointer = { x: e.clientX, y: e.clientY, down: true, id: e.pointerId };
     audio.init();
+    if (isArena()) { if (onOrb(e.clientX, e.clientY)) { arena.kick = 1; arena.rings.push({ r: 0, a: 0.7 }); burst(e.clientX, e.clientY, 10); audio.note(110, 0.08); buzz(12); } return; }
     const hit = meteors.find((m) => m.life > 0.1 && Math.hypot(e.clientX - (m.x - m.vx * 4), e.clientY - (m.y - m.vy * 4)) < 64);
     if (hit) { catchMeteor(hit); return; }
     const pop = pops.find((p) => p.life > 0 && Math.hypot(e.clientX - p.x, e.clientY - p.y) < p.r + 22);
@@ -2843,6 +2904,166 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   const up = () => { pointer.down = false; orb.held = false; pointer.x = pointer.y = -999; };
   cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up); cv.addEventListener("pointerleave", up);
 
+  // ---------- arena: el escenario de Entrenar. El analizador de audio escucha los bajos de la música y mueve todo ----------
+  const arena = { bass: 0, slow: 0, kick: 0, lastKick: 0, rings: [], embers: [], acc: 0, bars: new Array(36).fill(0), freq: null, lvl: 0, rot: 0, segs: 7, weekP: 0, e: 0.55 };
+  const isArena = () => mode === "train" || mode === "tend" || (mode === "home" && tab === "train");
+  const pulseEls = [$("tr-today"), $("tcard")];
+  const heatRGB = (e, v) => { // de ámbar (calmado) a rojo naranja (a tope); lo más fuerte se pone casi blanco
+    const w = Math.max(0, v - 0.75) * 4;
+    return [255, Math.round(150 - 80 * e + 100 * w), Math.round(50 - 25 * e + 140 * w)];
+  };
+  function readBass(dt, t, now) {
+    const A = arena, an = audio.an, N = A.bars.length;
+    if (an && audio.on) {
+      if (!A.freq) A.freq = new Uint8Array(an.frequencyBinCount);
+      an.getByteFrequencyData(A.freq);
+      const f = A.freq;
+      A.bass = Math.min(1, (f[1] + f[2] + f[3] + f[4] * 0.5) / (3.5 * 255));
+      for (let i = 0; i < N; i++) {
+        const lo = Math.floor(Math.pow(180, i / N)), hi = Math.max(lo + 1, Math.floor(Math.pow(180, (i + 1) / N)));
+        let m = 0; for (let k = lo; k < hi; k++) if (f[k] > m) m = f[k];
+        const v = Math.pow(m / 255, 1.15);
+        A.bars[i] += (v - A.bars[i]) * (v > A.bars[i] ? 0.65 : 0.16);
+      }
+    } else {
+      // sin música: la arena respira sola, despacio
+      A.bass = 0.12 + 0.07 * Math.sin(t * 1.7);
+      for (let i = 0; i < N; i++) A.bars[i] += (0.07 + 0.05 * Math.sin(t * 2 + i * 0.55) - A.bars[i]) * 0.1;
+    }
+    A.slow += (A.bass - A.slow) * Math.min(1, dt * 3);
+    if (audio.on && A.bass > A.slow + 0.1 && A.bass > 0.42 && now - A.lastKick > 180) {
+      A.kick = 1; A.lastKick = now;
+      if (!reduced) A.rings.push({ r: 0, a: 0.65 });
+      for (let i = 0; i < (reduced ? 0 : 5); i++) spawnEmber(true);
+    }
+    A.kick *= Math.exp(-dt * 7);
+  }
+  function spawnEmber(fast) {
+    if (arena.embers.length > 150) return;
+    arena.embers.push({ x: W * (fast ? 0.15 + Math.random() * 0.7 : Math.random()), y: H + 8, vx: (Math.random() - 0.5) * 0.9, vy: -(1.6 + Math.random() * 2.6) * (fast ? 1.7 : 1), l: 4 + Math.random() * 8, a: 0.45 + Math.random() * 0.55, life: 1 });
+  }
+  function drawArena(t, dt, now) {
+    const A = arena, k = A.kick;
+    // cuánta intensidad pide el momento: serie a tope, descanso bajando, inicio a media
+    const target = mode === "train" && wk ? (wk.phase === "work" ? 1 : wk.phase === "rest" ? 0.3 : 0.65) : mode === "tend" ? 0.85 : 0.55;
+    A.e += (target - A.e) * Math.min(1, dt * 1.5); audio.energy = A.e;
+    const e = A.e;
+    readBass(dt, t, now);
+    for (const el of pulseEls) { const v = k > 0.02 ? k.toFixed(2) : "0"; if (el._k !== v) { el._k = v; el.style.setProperty("--k", v); } }
+
+    // fondo: casi negro, con un horno rojo abajo que se enciende con cada golpe de bajo
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, "#07060a"); bg.addColorStop(0.62, "#12070a"); bg.addColorStop(1, "#0b1220");
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    const hot = ctx.createRadialGradient(W / 2, H * 1.02, 0, W / 2, H * 1.02, H * 0.95);
+    hot.addColorStop(0, "rgba(255,80,24," + (0.16 + 0.26 * e + 0.32 * k).toFixed(3) + ")"); hot.addColorStop(1, "rgba(255,60,20,0)");
+    ctx.fillStyle = hot; ctx.fillRect(0, 0, W, H);
+
+    // brasas que suben; más y más rápido cuando la música pega fuerte
+    if (!reduced) {
+      A.acc += dt * (5 + 22 * e + 30 * A.bass);
+      while (A.acc >= 1) { A.acc -= 1; spawnEmber(false); }
+    }
+    ctx.lineCap = "round";
+    for (let i = A.embers.length - 1; i >= 0; i--) {
+      const m = A.embers[i]; m.x += m.vx; m.y += m.vy; m.vx += (Math.random() - 0.5) * 0.08; m.life -= dt * 0.3;
+      if (m.life <= 0 || m.y < -12) { A.embers.splice(i, 1); continue; }
+      const c = heatRGB(e, 0.4 + m.life * 0.5);
+      ctx.strokeStyle = rgba(c, m.a * Math.min(1, m.life * 1.6)); ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(m.x - m.vx * m.l * 0.6, m.y - m.vy * m.l * 0.6); ctx.stroke();
+    }
+
+    // ecualizador en el piso, de lado a lado
+    const NB = A.bars.length, bw = W / NB, maxH = H * 0.17;
+    for (let i = 0; i < NB; i++) {
+      const v = Math.min(1, A.bars[i] * 1.15), h = 3 + v * maxH, c = heatRGB(e, v);
+      ctx.fillStyle = rgba(c, 0.5 + 0.35 * v);
+      ctx.fillRect(i * bw + 1.5, H - h, bw - 3, h);
+    }
+
+    // el reactor: en Entrenar vive en el hueco de arriba; en la rutina ocupa el centro de la pantalla
+    let cx = orb.x, cy = orb.y, cr = orb.r, show = true, lvl, ring, segs;
+    if (mode === "home") {
+      const rc = $("sp-reactor").getBoundingClientRect();
+      show = rc.width > 0 && rc.bottom > -20 && rc.top < H + 20;
+      cx = rc.left + rc.width / 2; cy = rc.top + rc.height / 2; cr = rc.height * 0.44;
+      A.lvl += (A.weekP - A.lvl) * 0.06; lvl = ring = A.lvl; segs = A.segs;
+    } else {
+      A.lvl += ((mode === "tend" ? 1 : orb.level) - A.lvl) * 0.15; lvl = A.lvl;
+      ring = mode === "tend" ? 1 : (orb.ring ?? orb.level); segs = wk ? wk.totalSets : 12;
+    }
+    if (show) {
+      const R = cr * 0.66 * (1 + 0.07 * k);
+      const halo = ctx.createRadialGradient(cx, cy, R * 0.9, cx, cy, R * 2.3);
+      halo.addColorStop(0, "rgba(255,90,24," + (0.2 + 0.35 * k + 0.1 * e).toFixed(3) + ")"); halo.addColorStop(1, "rgba(255,70,20,0)");
+      ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(cx, cy, R * 2.3, 0, TAU); ctx.fill();
+
+      // ondas de choque
+      for (let i = A.rings.length - 1; i >= 0; i--) {
+        const w = A.rings[i]; w.r += dt * 1.5; w.a -= dt * 0.9;
+        if (w.a <= 0) { A.rings.splice(i, 1); continue; }
+        ctx.strokeStyle = "rgba(255,150,70," + w.a.toFixed(3) + ")"; ctx.lineWidth = 3 * w.a + 1;
+        ctx.beginPath(); ctx.arc(cx, cy, R * (1.3 + w.r * 1.1), 0, TAU); ctx.stroke();
+      }
+
+      // espectro en círculo (simétrico): los bajos arriba, los agudos abajo
+      A.rot += dt * (0.05 + 0.12 * e);
+      const M = NB * 2, r0 = R * 1.3, len = R * 0.5;
+      ctx.lineWidth = Math.max(2, (TAU * r0) / M * 0.5); ctx.lineCap = "butt";
+      for (let j = 0; j < M; j++) {
+        const v = Math.min(1, A.bars[j < NB ? j : M - 1 - j] * 1.1), a = -Math.PI / 2 + (j + 0.5) / M * TAU + A.rot * 0;
+        const c = heatRGB(e, v), l = 3 + v * len, ca = Math.cos(a), sa = Math.sin(a);
+        ctx.strokeStyle = rgba(c, 0.55 + 0.45 * v);
+        ctx.beginPath(); ctx.moveTo(cx + ca * r0, cy + sa * r0); ctx.lineTo(cx + ca * (r0 + l), cy + sa * (r0 + l)); ctx.stroke();
+      }
+
+      // anillo de avance: un tramo por serie (o por entreno de la semana); se enciende uno cada vez que cumples
+      const rr = R * 1.14, circ = TAU * rr, seg = segs > 1 && segs <= 40;
+      ctx.lineCap = "butt"; ctx.lineWidth = 6;
+      if (seg) ctx.setLineDash([circ / segs - 5, 5]);
+      ctx.strokeStyle = "rgba(255,140,70,0.16)"; ctx.beginPath(); ctx.arc(cx, cy, rr, -Math.PI / 2, -Math.PI / 2 + TAU - 0.001); ctx.stroke();
+      if (ring > 0.001) {
+        ctx.strokeStyle = "#ff7a1f"; ctx.shadowColor = "rgba(255,100,20,0.9)"; ctx.shadowBlur = 10 + 14 * k;
+        ctx.beginPath(); ctx.arc(cx, cy, rr, -Math.PI / 2, -Math.PI / 2 + TAU * Math.min(1, ring)); ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+      ctx.setLineDash([]);
+
+      // núcleo: oscuro, con el "combustible" subiendo en picos afilados
+      ctx.save();
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU);
+      const core = ctx.createRadialGradient(cx - R * 0.3, cy - R * 0.35, 0, cx, cy, R);
+      core.addColorStop(0, "#2a120b"); core.addColorStop(1, "#0c0605");
+      ctx.fillStyle = core; ctx.fill(); ctx.clip();
+      const lv = Math.max(0.03, lvl), surface = cy + R - lv * 2 * R, amp = (2 + 9 * A.bass + 5 * k) * (reduced ? 0.3 : 1);
+      ctx.beginPath(); ctx.moveTo(cx - R, cy + R);
+      for (let x = -R; x <= R; x += 5) ctx.lineTo(cx + x, surface + Math.sin(x * 0.09 + t * 3.2) * amp * 0.6 + Math.sin(x * 0.23 - t * 5.5) * amp * 0.4);
+      ctx.lineTo(cx + R, cy + R); ctx.closePath();
+      const fuel = ctx.createLinearGradient(0, surface, 0, cy + R);
+      fuel.addColorStop(0, e > 0.6 ? "#ffb347" : "#ffd27a"); fuel.addColorStop(0.5, e > 0.6 ? "#ff5a14" : "#ff9a3a"); fuel.addColorStop(1, "#a81806");
+      ctx.fillStyle = fuel; ctx.globalAlpha = 0.92; ctx.fill(); ctx.globalAlpha = 1;
+      const shine = ctx.createLinearGradient(0, cy - R, 0, cy);
+      shine.addColorStop(0, "rgba(255,255,255," + (0.1 + 0.12 * k).toFixed(3) + ")"); shine.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = shine; ctx.fillRect(cx - R, cy - R, R * 2, R);
+      ctx.restore();
+      ctx.lineWidth = 2.5; ctx.strokeStyle = "rgba(255,150,80," + (0.45 + 0.4 * k).toFixed(3) + ")";
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.stroke();
+    }
+
+    // chispas de los toques y de cada serie cumplida
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const s = sparks[i]; s.x += s.vx; s.y += s.vy; s.life -= 0.02;
+      if (s.life <= 0) { sparks.splice(i, 1); continue; }
+      ctx.fillStyle = "rgba(255,170,90," + s.life.toFixed(3) + ")"; ctx.fillRect(s.x - 1.5, s.y - 1.5, 3, 3);
+    }
+    // golpe de luz en los bordes con cada bajo
+    if (k > 0.03) {
+      const vg = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.35, W / 2, H / 2, Math.max(W, H) * 0.75);
+      vg.addColorStop(0, "rgba(255,60,10,0)"); vg.addColorStop(1, "rgba(255,70,20," + (0.34 * k * (reduced ? 0.4 : 1)).toFixed(3) + ")");
+      ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+    }
+  }
+
   let lastPhase = "", secAcc = 0;
   function frame(now) {
     requestAnimationFrame(frame);
@@ -2850,7 +3071,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     const t = now / 1000;
 
     tick();
-    const counting = running && (mode === "session" || (mode === "train" && wk && wk.phase !== "work"));
+    const counting = running && mode === "session";
     if (counting) {
       // cada segundo llega una luciérnaga a la esfera
       secAcc += dt;
@@ -2862,6 +3083,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
       orb.ring = extended ? p : null;
     }
     if (mode === "train" && wk && wk.phase !== "work") orb.level = Math.min(1, 1 - wk.left / wk.span);
+    if (isArena()) { drawArena(t, dt, now); return; }
 
     const b = mode === "session" ? breathAt((now - sessionStart) / 1000) : { phase: "", v: 0.5 + 0.5 * Math.sin(t * 0.5) };
     if (mode === "session" && b.phase !== lastPhase) {
@@ -3021,7 +3243,14 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
       if (this.ctx) return;
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
       const c = this.ctx = new AC();
-      this.master = c.createGain(); this.master.gain.value = 0.7; this.master.connect(c.destination);
+      this.master = c.createGain(); this.master.gain.value = 0.7;
+      // compresor para que el beat no sature, y un analizador que "escucha" los bajos para mover la animación
+      const comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.knee.value = 12; comp.ratio.value = 5; comp.attack.value = 0.004; comp.release.value = 0.2;
+      this.master.connect(comp); comp.connect(c.destination);
+      this.an = c.createAnalyser(); this.an.fftSize = 1024; this.an.smoothingTimeConstant = 0.45; this.master.connect(this.an);
+      this.drive = c.createGain(); this.drive.gain.value = 0; this.drive.connect(this.master);
+      const hb = c.createBuffer(1, c.sampleRate, c.sampleRate), hd = hb.getChannelData(0); for (let i = 0; i < hd.length; i++) hd[i] = Math.random() * 2 - 1;
+      this.hbuf = hb;
       this.music = c.createGain(); this.music.gain.value = 0; this.music.connect(this.master);
       const len = c.sampleRate * 4, ir = c.createBuffer(2, len, c.sampleRate);
       for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3); }
@@ -3072,8 +3301,53 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
         o.connect(g); g.connect(this.music); g.connect(this.verb); o.start(t0); o.stop(t0 + 0.12);
       }
     },
-    start() {
-      this.init(); if (!this.ctx) return; this.ctx.resume(); this.on = true;
+    // música de entrenar: bombo, bajo y hi-hats generados en vivo; la energía sube en la serie y baja en el descanso
+    energy: 0.55, style: "calm", step: 0, nextT: 0,
+    kickAt(t, v) {
+      const c = this.ctx, o = c.createOscillator(), g = c.createGain(); o.type = "sine";
+      o.frequency.setValueAtTime(165, t); o.frequency.exponentialRampToValueAtTime(46, t + 0.11);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.42);
+      o.connect(g); g.connect(this.drive); o.start(t); o.stop(t + 0.45);
+    },
+    bassAt(t, f, v, e) {
+      const c = this.ctx, len = 0.2, g = c.createGain(), lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 4;
+      lp.frequency.setValueAtTime(260 + 700 * e, t); lp.frequency.exponentialRampToValueAtTime(110, t + len);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + len + 0.05);
+      lp.connect(g); g.connect(this.drive);
+      for (const [type, m, k] of [["sawtooth", 1, 0.7], ["sine", 1, 1.1]]) {
+        const o = c.createOscillator(); o.type = type; o.frequency.value = f * m;
+        const og = c.createGain(); og.gain.value = k; o.connect(og); og.connect(lp); o.start(t); o.stop(t + len + 0.08);
+      }
+    },
+    noiseAt(t, type, freq, v, dur) {
+      const c = this.ctx, s = c.createBufferSource(); s.buffer = this.hbuf;
+      const f = c.createBiquadFilter(); f.type = type; f.frequency.value = freq; if (type === "bandpass") f.Q.value = 0.8;
+      const g = c.createGain(); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      s.connect(f); f.connect(g); g.connect(this.drive); s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.02);
+    },
+    hit(step, t) {
+      const e = this.energy, s = step % 16, bar = (step >> 4) % 4, root = [55, 55, 43.65, 49][bar];
+      if (s % 4 === 0 && (e > 0.5 || s % 8 === 0)) this.kickAt(t, 0.5 + 0.4 * e);
+      if (s % 4 === 2 || (e > 0.7 && s % 8 === 7)) this.bassAt(t, root * (s % 8 === 6 ? 2 : 1), 0.16 + 0.08 * e, e);
+      if ((s % 4 === 2 && e > 0.3) || (s % 2 === 1 && e > 0.8)) this.noiseAt(t, "highpass", 7000, 0.04 + 0.05 * e, 0.045);
+      if ((s === 4 || s === 12) && e > 0.5) this.noiseAt(t, "bandpass", 1500, 0.16, 0.13);
+    },
+    sched() {
+      const c = this.ctx; if (!c || !this.on) return;
+      if (this.nextT < c.currentTime - 0.5) this.nextT = c.currentTime + 0.05; // la pestaña estuvo dormida: no recuperes los golpes perdidos
+      while (this.nextT < c.currentTime + 0.14) {
+        this.hit(this.step, this.nextT);
+        this.nextT += 60 / (96 + 32 * this.energy) / 4; this.step = (this.step + 1) % 64;
+      }
+    },
+    start(style = "calm") {
+      this.init(); if (!this.ctx) return; this.ctx.resume(); this.on = true; this.style = style;
+      if (style === "drive") {
+        this.drive.gain.setTargetAtTime(0.9, this.ctx.currentTime, 0.15);
+        this.step = 0; this.nextT = this.ctx.currentTime + 0.1; this.sched();
+        this.driveTimer = setInterval(() => this.sched(), 30);
+        return;
+      }
       this.music.gain.setTargetAtTime(1, this.ctx.currentTime, 1);
       this.playChord(); this.chordTimer = setInterval(() => this.playChord(), 8000);
       const loop = () => {
@@ -3084,15 +3358,17 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     },
     stop() {
       if (!this.ctx) return; this.on = false;
-      clearInterval(this.chordTimer); clearTimeout(this.chimeTimer);
+      clearInterval(this.chordTimer); clearTimeout(this.chimeTimer); clearInterval(this.driveTimer);
+      this.drive.gain.setTargetAtTime(0, this.ctx.currentTime, 0.2);
       this.music.gain.setTargetAtTime(0, this.ctx.currentTime, 0.8);
     }
   };
   function toggleMusic(force) {
-    const want = force ?? !audio.on;
-    if (want && !audio.on) audio.start(); else if (!want && audio.on) audio.stop();
+    const want = force ?? !audio.on, st = isArena() ? "drive" : "calm";
+    if (want && audio.on && audio.style !== st) { audio.stop(); audio.start(st); }
+    else if (want && !audio.on) audio.start(st); else if (!want && audio.on) audio.stop();
     if (force === false && audio.rainOn) toggleRain(false);
-    $("music").setAttribute("aria-pressed", audio.on ? "true" : "false");
+    ["music", "sp-beat"].forEach((id) => $(id).setAttribute("aria-pressed", audio.on ? "true" : "false"));
   }
   function toggleRain(force) {
     audio.init(); if (!audio.ctx) return; audio.ctx.resume();
@@ -3101,6 +3377,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     $("rain").setAttribute("aria-pressed", audio.rainOn ? "true" : "false");
   }
   $("music").addEventListener("click", () => toggleMusic());
+  $("sp-beat").addEventListener("click", () => { audio.init(); toggleMusic(); });
   $("rain").addEventListener("click", () => toggleRain());
 
   // deslizar hacia abajo para cerrar las hojas de elegir
@@ -3120,9 +3397,9 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   // app instalable y sin conexión (solo cuando corre en su propio dominio)
   // diagnóstico escondido: 5 toques seguidos en "Calma" muestran los tamaños que ve la app (sirve para depurar la ventana en iOS)
   (function () {
-    const brand = document.querySelector(".brand");
-    if (!brand) return;
-    const APP_VERSION = "calma-v28"; // igual que VERSION en sw.js
+    const brands = [document.querySelector(".brand"), document.getElementById("sp-title")].filter(Boolean);
+    if (!brands.length) return;
+    const APP_VERSION = "calma-v29"; // igual que VERSION en sw.js
     let taps = 0, last = 0, box = null, probe = null, cached = "…";
     (window.caches ? caches.keys() : Promise.resolve([])).then((k) => { cached = k.filter((n) => /^calma-v/.test(n)).join(", ") || "sin caché"; paint(); }).catch(() => {});
     function read() {
@@ -3136,7 +3413,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
         "standalone " + navigator.standalone + " display-mode " + (["standalone", "fullscreen", "minimal-ui", "browser"].find((m) => matchMedia("(display-mode: " + m + ")").matches) || "?"), navigator.userAgent.replace(/^Mozilla\/5.0 /, "")].join("\n");
     }
     function paint() { if (box) box.textContent = read(); }
-    brand.addEventListener("click", () => {
+    brands.forEach((brand) => brand.addEventListener("click", () => {
       const now = Date.now(); taps = now - last < 700 ? taps + 1 : 1; last = now;
       if (taps < 5) return;
       taps = 0;
@@ -3144,7 +3421,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
       box = document.createElement("pre");
       box.style.cssText = "position:fixed;left:8px;right:8px;top:90px;z-index:99;margin:0;padding:10px;border-radius:12px;background:rgba(0,0,0,0.86);color:#9ff;font:11px/1.35 ui-monospace,monospace;white-space:pre-wrap;word-break:break-all;pointer-events:none";
       document.body.appendChild(box); paint();
-    });
+    }));
     addEventListener("resize", paint);
   })();
 
