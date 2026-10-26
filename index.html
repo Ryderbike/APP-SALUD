@@ -279,23 +279,29 @@ p { margin: 0; }
 
 button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
 
-/* pestañas: Calma y Entrenar son dos pantallas; barra clásica de iOS pegada abajo, ancho completo, con vidrio y espacio para la barra de inicio */
+/* pestañas: Calma y Entrenar son dos pantallas; cápsula de vidrio flotante (como iOS 26) con un indicador que se desliza de una a otra */
 .tabs {
-  position: fixed; z-index: 3; left: 0; right: 0; bottom: 0; box-sizing: border-box;
-  display: flex; justify-content: center; gap: 6px;
-  padding: 8px max(12px, calc((100% - 420px) / 2)) calc(6px + env(safe-area-inset-bottom, 0px));
-  /* abajo termina en el mismo color que el fondo de la página (#0b1220): iOS pinta la zona bajo la ventana con ese color y así se ve como parte de la barra */
-  background: linear-gradient(180deg, #1c2640 0%, #121a2e 45%, #0b1220 100%);
-  border-top: 1px solid rgba(255,255,255,0.14);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 -10px 28px rgba(0,0,0,0.25);
+  position: fixed; z-index: 3; left: 0; right: 0; margin: 0 auto; bottom: max(10px, calc(env(safe-area-inset-bottom, 0px) - 4px));
+  width: min(300px, calc(100% - 40px)); height: 54px; box-sizing: border-box; padding: 4px; border-radius: 999px;
+  display: grid; grid-template-columns: 1fr 1fr; isolation: isolate;
+  background: linear-gradient(160deg, rgba(255,255,255,0.26), rgba(255,255,255,0.07) 55%, rgba(255,255,255,0.14)), rgba(18, 26, 46, 0.46);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), inset 0 0 0 1px rgba(255,255,255,0.14), 0 12px 32px rgba(0,0,0,0.32);
+  backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
 }
+.tabs::before {
+  content: ""; position: absolute; z-index: -1; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,205,150,0.55), rgba(255,138,70,0.34));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), inset 0 0 0 1px rgba(255,190,120,0.35), 0 4px 14px rgba(255,130,50,0.28);
+  transition: transform 0.38s cubic-bezier(0.3, 1.25, 0.5, 1);
+}
+.tabs:has(button[data-tab="train"][aria-selected="true"])::before { transform: translateX(100%); }
 .tabs button {
-  flex: 1; max-width: 170px; font: inherit; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.01em; color: var(--mist); background: none; border: 0; border-radius: 16px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 4px; cursor: pointer; transition: background 0.2s, color 0.2s;
+  font: inherit; font-size: 0.86rem; font-weight: 650; letter-spacing: 0.005em; color: rgba(236, 240, 250, 0.72); background: none; border: 0; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center; gap: 7px; padding: 0 10px; cursor: pointer; transition: color 0.25s;
 }
-.tabs svg { width: 24px; height: 24px; flex: 0 0 auto; }
-.tabs button[aria-selected="true"] { color: #ffb066; background: radial-gradient(70% 80% at 50% 30%, rgba(255,176,102,0.3), rgba(255,176,102,0) 75%); }
-body.has-tabs .app { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+.tabs svg { width: 20px; height: 20px; flex: 0 0 auto; }
+.tabs button[aria-selected="true"] { color: #fff2e2; }
+body.has-tabs .app { padding-bottom: calc(max(10px, calc(env(safe-area-inset-bottom, 0px) - 4px)) + 54px + 14px); }
 .app { transition: opacity 0.25s ease; }
 body.tab-train .app { opacity: 0; }
 .page {
@@ -310,7 +316,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 .mini span { font-size: 0.72rem; color: var(--mist); font-weight: 600; }
 .page-in {
   max-width: 480px; margin: 0 auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;
-  padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(92px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(96px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
 }
 .page-date { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mist); }
 .page-in h1 { font-size: 2.2rem; font-weight: 700; line-height: 1.1; }
@@ -2743,6 +2749,34 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   $("e-cancel").addEventListener("click", closeSheets);
 
   // app instalable y sin conexión (solo cuando corre en su propio dominio)
+  // diagnóstico escondido: 5 toques seguidos en "Calma" muestran los tamaños que ve la app (sirve para depurar la ventana en iOS)
+  (function () {
+    const brand = document.querySelector(".brand");
+    if (!brand) return;
+    let taps = 0, last = 0, box = null, probe = null;
+    function read() {
+      probe = probe || Object.assign(document.createElement("div"), { style: "position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)" });
+      if (!probe.isConnected) document.body.appendChild(probe);
+      const c = getComputedStyle(probe), vv = window.visualViewport;
+      const sky = document.getElementById("sky").getBoundingClientRect(), tb = document.getElementById("tabs").getBoundingClientRect();
+      return ["inner " + innerWidth + "x" + innerHeight, "outer " + outerWidth + "x" + outerHeight, "screen " + screen.width + "x" + screen.height + " dpr " + devicePixelRatio,
+        "visualViewport " + (vv ? Math.round(vv.width) + "x" + Math.round(vv.height) : "n/a"), "html client " + document.documentElement.clientWidth + "x" + document.documentElement.clientHeight,
+        "safe t" + c.paddingTop + " r" + c.paddingRight + " b" + c.paddingBottom + " l" + c.paddingLeft, "sky bottom " + Math.round(sky.bottom) + " tabs bottom " + Math.round(tb.bottom),
+        "standalone " + navigator.standalone + " display-mode " + (["standalone", "fullscreen", "minimal-ui", "browser"].find((m) => matchMedia("(display-mode: " + m + ")").matches) || "?"), navigator.userAgent.replace(/^Mozilla\/5.0 /, "")].join("\n");
+    }
+    function paint() { if (box) box.textContent = read(); }
+    brand.addEventListener("click", () => {
+      const now = Date.now(); taps = now - last < 700 ? taps + 1 : 1; last = now;
+      if (taps < 5) return;
+      taps = 0;
+      if (box) { box.remove(); box = null; return; }
+      box = document.createElement("pre");
+      box.style.cssText = "position:fixed;left:8px;right:8px;top:90px;z-index:99;margin:0;padding:10px;border-radius:12px;background:rgba(0,0,0,0.86);color:#9ff;font:11px/1.35 ui-monospace,monospace;white-space:pre-wrap;word-break:break-all;pointer-events:none";
+      document.body.appendChild(box); paint();
+    });
+    addEventListener("resize", paint);
+  })();
+
   if ("serviceWorker" in navigator && location.protocol === "https:" && !/claude\.ai|claudeusercontent/.test(location.hostname)) {
     try { navigator.serviceWorker.register("sw.js").catch(() => {}); } catch {}
   }
