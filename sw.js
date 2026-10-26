@@ -1,6 +1,6 @@
 // Guarda la app en el teléfono para que abra sin conexión.
 // Sube VERSION cada vez que publiques cambios, así el teléfono descarga lo nuevo.
-const VERSION = "calma-v16";
+const VERSION = "calma-v17";
 const FILES = [
   "./",
   "index.html",
@@ -25,7 +25,7 @@ self.addEventListener("activate", (e) => {
 
 // Primero la red (para ver cambios), y si no hay conexión, lo guardado.
 self.addEventListener("fetch", (e) => {
-  if (e.request.method !== "GET") return;
+  if (e.request.method !== "GET" || new URL(e.request.url).pathname.startsWith("/api/")) return; // la API de respaldo nunca se guarda en caché
   e.respondWith(
     fetch(e.request)
       .then((res) => {
