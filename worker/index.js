@@ -137,7 +137,7 @@ async function readJson(req, max = 4096) {
 
 function readUsername(v) {
   const s = typeof v === "string" ? v.trim().toLowerCase() : "";
-  if (!/^[a-z0-9._-]{3,24}$/.test(s)) throw new HttpError(400, "El usuario debe tener entre 3 y 24 letras, números, punto, guion o guion bajo");
+  if (!/^[a-z0-9._@+-]{3,40}$/.test(s)) throw new HttpError(400, "El usuario debe tener entre 3 y 40 caracteres: letras, números y . _ - @ +");
   return s;
 }
 function readPassword(v) {
