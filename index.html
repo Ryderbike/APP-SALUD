@@ -3122,7 +3122,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   (function () {
     const brand = document.querySelector(".brand");
     if (!brand) return;
-    const APP_VERSION = "stillfit-v31"; // igual que VERSION en sw.js
+    const APP_VERSION = "stillfit-v32"; // igual que VERSION en sw.js
     let taps = 0, last = 0, box = null, probe = null, cached = "…";
     (window.caches ? caches.keys() : Promise.resolve([])).then((k) => { cached = k.filter((n) => /^(calma|stillfit)-v/.test(n)).join(", ") || "sin caché"; paint(); }).catch(() => {});
     function read() {
