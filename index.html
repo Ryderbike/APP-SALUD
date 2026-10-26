@@ -3122,13 +3122,15 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   (function () {
     const brand = document.querySelector(".brand");
     if (!brand) return;
-    let taps = 0, last = 0, box = null, probe = null;
+    const APP_VERSION = "calma-v28"; // igual que VERSION en sw.js
+    let taps = 0, last = 0, box = null, probe = null, cached = "…";
+    (window.caches ? caches.keys() : Promise.resolve([])).then((k) => { cached = k.filter((n) => /^calma-v/.test(n)).join(", ") || "sin caché"; paint(); }).catch(() => {});
     function read() {
       probe = probe || Object.assign(document.createElement("div"), { style: "position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)" });
       if (!probe.isConnected) document.body.appendChild(probe);
       const c = getComputedStyle(probe), vv = window.visualViewport;
       const sky = document.getElementById("sky").getBoundingClientRect(), tb = document.getElementById("tabs").getBoundingClientRect();
-      return ["inner " + innerWidth + "x" + innerHeight, "outer " + outerWidth + "x" + outerHeight, "screen " + screen.width + "x" + screen.height + " dpr " + devicePixelRatio,
+      return ["versión " + APP_VERSION + " · caché " + cached, "inner " + innerWidth + "x" + innerHeight, "outer " + outerWidth + "x" + outerHeight, "screen " + screen.width + "x" + screen.height + " dpr " + devicePixelRatio,
         "visualViewport " + (vv ? Math.round(vv.width) + "x" + Math.round(vv.height) : "n/a"), "html client " + document.documentElement.clientWidth + "x" + document.documentElement.clientHeight,
         "safe t" + c.paddingTop + " r" + c.paddingRight + " b" + c.paddingBottom + " l" + c.paddingLeft, "sky bottom " + Math.round(sky.bottom) + " tabs bottom " + Math.round(tb.bottom),
         "standalone " + navigator.standalone + " display-mode " + (["standalone", "fullscreen", "minimal-ui", "browser"].find((m) => matchMedia("(display-mode: " + m + ")").matches) || "?"), navigator.userAgent.replace(/^Mozilla\/5.0 /, "")].join("\n");
