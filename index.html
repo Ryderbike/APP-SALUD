@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: a full-screen phone app. A canvas sky fills the screen and follows the local hour (dawn, day, sunset, night); the time orb sits in the middle; a dock at the bottom holds the action; setup and results open as bottom sheets. The UI glass stays dark so it reads over any sky. */
 :root {
@@ -290,7 +290,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), inset 0 0 0 1px rgba(255,190,120,0.35), 0 4px 14px rgba(255,130,50,0.28);
   transition: transform 0.38s cubic-bezier(0.3, 1.25, 0.5, 1);
 }
-.tabs:has(button[data-tab="train"][aria-selected="true"])::before { transform: translateX(100%); }
+.tabs:has(button[data-tab="calma"][aria-selected="true"])::before { transform: translateX(100%); }
 .tabs button {
   font: inherit; font-size: 0.86rem; font-weight: 650; letter-spacing: 0.005em; color: rgba(236, 240, 250, 0.72); background: none; border: 0; border-radius: 999px;
   display: flex; align-items: center; justify-content: center; gap: 7px; padding: 0 10px; cursor: pointer; transition: color 0.25s;
@@ -495,6 +495,33 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: 1.1rem; letter-spacing: 0.04em; text-align: center; padding: 12px; border-radius: 14px;
   background: rgba(0,0,0,0.3); border: 1px dashed var(--line); user-select: all; -webkit-user-select: all; word-break: break-all;
 }
+
+/* ---- Entrenar: el mismo oficio de Calma (vidrio líquido, escena viva, naranjo brillante, Bricolage), con paleta propia:
+   brasa y vino oscuro en vez del cielo azul. La escena se calienta en la serie y se enfría en el descanso. ---- */
+body.sport {
+  --night: #140a0e; --glass: rgba(46, 18, 16, 0.6); --glass-2: rgba(70, 28, 22, 0.5); --line: rgba(255, 190, 150, 0.16);
+  --moon: #fff3ea; --mist: #d2ab98;
+  --warm-glass: rgba(52, 20, 16, 0.42);
+  --lg: linear-gradient(160deg, rgba(255,226,200,0.22), rgba(255,190,150,0.05) 55%, rgba(255,210,180,0.12));
+}
+.sport .icon-btn, .sport .clock, .sport .card, .sport .btn:not(.go), .sport .week, .sport .toast, .sport .mini div, .sport .rcard, .sport .list, .sport .hrow { background: var(--lg), var(--warm-glass); }
+.sport .icon-btn[aria-pressed="true"] { background: var(--orange); color: var(--ember-ink); }
+.sport .hero, .sport .feature.off { background: var(--lg), rgba(52, 20, 16, 0.55); }
+.sport .page { background: linear-gradient(180deg, rgba(20, 10, 14, 0.1), rgba(20, 10, 14, 0.45)); backdrop-filter: none; -webkit-backdrop-filter: none; }
+.sport .sheet { background: #1e0f10; }
+.sport .seg { background: rgba(0, 0, 0, 0.3); }
+.sport .seg button[aria-pressed="true"] { background: var(--moon); color: #2b1100; }
+.sport .pd b { background: rgba(255,150,90,0.16); }
+.sport .hero-row div { background: rgba(0,0,0,0.25); }
+.sport .feature { filter: brightness(calc(1 + 0.08 * var(--k, 0))); }
+.sport #tcard { box-shadow: var(--lg-edge), var(--lg-drop), 0 0 calc(24px * var(--k, 0)) rgba(255,140,60,0.35); }
+.sport .big { text-shadow: 0 2px 22px rgba(0,0,0,0.5); }
+
+.sp-btns { display: flex; gap: 8px; }
+.reactor-slot { position: relative; height: 250px; margin: -8px 0 -8px; display: grid; place-content: center; justify-items: center; gap: 2px; text-align: center; pointer-events: none; text-shadow: 0 2px 18px rgba(0,0,0,0.45); }
+.reactor-slot b { font-family: var(--display); font-weight: 700; font-size: 2.9rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.reactor-slot span { max-width: 8em; line-height: 1.25; font-size: 0.75rem; font-weight: 600; color: var(--moon); opacity: 0.8; }
+@media (prefers-reduced-motion: reduce) { .sport .feature { filter: none; } }
 </style>
 </head>
 <body>
@@ -508,14 +535,14 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     <span class="s-fly" style="--a: 290deg; animation-delay: 1.4s"></span>
   </div>
   <div class="s-name">Calma</div>
-  <div class="s-sub">respira, ya pasa</div>
+  <div class="s-sub"></div>
 </div>
 <canvas id="sky" aria-hidden="true"></canvas>
 <div class="toast" id="toast" role="status" hidden></div>
 
 <div class="app">
   <header class="bar">
-    <div class="brand"><i></i>Calma</div>
+    <div class="brand"><i></i><span id="brand-t">Calma</span></div>
     <button class="clock" id="clock" aria-label="Elegir el cielo"><span id="clock-t"></span><span id="clock-p"></span></button>
     <button class="icon-btn" id="open-stats" aria-label="Tu registro">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 20v-8M12 20V4M19 20v-5"/></svg>
@@ -634,11 +661,19 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     <div class="sp-top">
       <div>
         <span class="page-date" id="tr-date"></span>
-        <h1>Entrenar</h1>
+        <h1 id="sp-title">Entrenar</h1>
       </div>
+      <div class="sp-btns">
+      <button class="icon-btn" id="sp-beat" aria-pressed="false" aria-label="Música con ritmo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
+      </button>
+      <button class="icon-btn" id="sp-mic" aria-pressed="false" aria-label="Escuchar la música del ambiente">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+      </button>
       <button class="icon-btn" id="open-data" aria-label="Ajustes y respaldo">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="3"/><circle cx="8" cy="17" r="3"/></svg>
       </button>
+      </div>
     </div>
     <div class="seg sp-nav" id="sp-nav" role="group" aria-label="Secciones de entrenar">
       <button data-sp="hoy" aria-pressed="true">Hoy</button>
@@ -647,6 +682,8 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     </div>
 
     <div class="sp-pane" id="sp-hoy">
+      <div class="reactor-slot" id="sp-reactor"><b id="rx-n">0</b><span id="rx-l">entrenos</span></div>
+      <article class="feature" id="tr-today"></article>
       <article class="hero" id="sp-hero">
         <span class="kick">Minutos entrenados</span>
         <div class="hero-n"><b id="sp-total">0</b><span>min</span></div>
@@ -657,7 +694,6 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
           <div><b id="m-mins">0</b><span>min</span></div>
         </div>
       </article>
-      <article class="feature" id="tr-today"></article>
       <h2 class="sec">Tu semana</h2>
       <div class="week" id="sp-week" aria-label="Días que entrenaste"></div>
       <div class="plan" id="plan" aria-label="Plan de la semana"></div>
@@ -688,11 +724,11 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
 </section>
 
 <nav class="tabs" id="tabs" role="tablist" aria-label="Pantallas">
-  <button role="tab" data-tab="calma" aria-selected="true">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>Calma
-  </button>
-  <button role="tab" data-tab="train" aria-selected="false">
+  <button role="tab" data-tab="train" aria-selected="true">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 7v10M4 9.5v5M17 7v10M20 9.5v5M7 12h10"/></svg>Entrenar
+  </button>
+  <button role="tab" data-tab="calma" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>Calma
   </button>
 </nav>
 
@@ -1163,17 +1199,20 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   $("open-setup").addEventListener("click", () => { openSheet("setup"); audio.init(); });
 
   // pestañas: se tocan abajo o se desliza de lado, fuera de la esfera y del carrusel
-  let tab = "calma";
+  let tab = "train";
   function showTab() {
     const train = mode === "home" && tab === "train";
     document.body.classList.toggle("tab-train", train);
     document.body.classList.toggle("sport", train || mode === "train" || mode === "tend");
     document.body.classList.toggle("has-tabs", mode === "home");
     $("tabs").hidden = mode !== "home";
+    const sport = train || mode === "train" || mode === "tend";
+    $("brand-t").textContent = sport ? "Entrenando" : "Calma";
+    if (typeof updateSky === "function" && typeof themeMeta !== "undefined") updateSky();
     $("page-train").inert = !train;
     $("tabs").querySelectorAll("button").forEach((b) => b.setAttribute("aria-selected", b.dataset.tab === tab ? "true" : "false"));
   }
-  function setTab(t) { if (t === tab) return; tab = t; if (t === "train") { renderRoutines(); $("page-train").scrollTop = 0; } showTab(); buzz(8); }
+  function setTab(t) { if (t === tab) return; tab = t; if (mode === "home" && audio.on) toggleMusic(false); if (mode === "home" && audio.micOn) setMic(false); if (t === "train") { renderRoutines(); $("page-train").scrollTop = 0; } showTab(); buzz(8); }
   $("tabs").addEventListener("click", (e) => { const b = e.target.closest("[data-tab]"); if (b) { audio.init(); setTab(b.dataset.tab); } });
   let swipe = null;
   addEventListener("pointerdown", (e) => {
@@ -1182,7 +1221,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   addEventListener("pointerup", (e) => {
     if (!swipe) return;
     const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y; swipe = null;
-    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) setTab(dx < 0 ? "train" : "calma");
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) setTab(dx < 0 ? "calma" : "train");
   }, true);
   $("open-stats").addEventListener("click", () => { renderTally(); renderInsights(); openSheet("stats"); $("stats").scrollTop = 0; });
   $("start").addEventListener("click", () => { extended = false; startSession(minutes); });
@@ -1501,8 +1540,8 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     $("tr-date").textContent = new Date().toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long" });
     $("tr-today").className = "feature" + (r ? "" : " off");
     $("tr-today").innerHTML = r
-      ? '<span class="kick">Hoy toca. Sin excusas</span><h3>' + esc(r.name) + "</h3><p>" + r.items.length + " ejercicios · ~" + estMin(r) + " min</p><p>" + esc(r.items.map((i) => i.ex).join(", ")) + '</p><button class="get" data-go="' + r.id + '">Entrenar ahora</button>'
-      : '<span class="kick">Hoy</span><h3>Día libre</h3><p>Descansa. Y si el cuerpo pide más, elige una rutina de abajo y dale.</p>';
+      ? '<span class="kick">Hoy toca</span><h3>' + esc(r.name) + "</h3><p>" + r.items.length + " ejercicios · ~" + estMin(r) + " min</p><p>" + esc(r.items.map((i) => i.ex).join(", ")) + '</p><button class="get" data-go="' + r.id + '">Entrenar ahora</button>'
+      : '<span class="kick">Hoy</span><h3>Día libre</h3><p>Descansa, o elige una rutina de abajo.</p>';
   }
   function renderPlanner() {
     $("plan").innerHTML = DAY_ORDER.map((d) => {
@@ -1518,6 +1557,8 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     const all = counted(), wk7 = all.filter((w) => Date.now() - w.date < 7 * 864e5);
     const planned = new Set(routines.flatMap((r) => r.days)).size;
     $("m-done").textContent = wk7.length + (planned ? "/" + planned : "");
+    $("rx-n").textContent = wk7.length + (planned ? "/" + planned : ""); $("rx-l").textContent = planned ? "entrenos esta semana" : "entrenos en 7 días";
+    arena.segs = planned || 7; arena.weekP = Math.min(1, wk7.length / (planned || 7));
     $("m-sets").textContent = wk7.reduce((a, w) => a + (w.sets || 0), 0);
     $("m-mins").textContent = Math.round(wk7.reduce((a, w) => a + (w.secs || 0), 0) / 60);
     renderHero(all); renderSpWeek(); renderHistAll(); renderAchD(); renderProg();
@@ -1682,7 +1723,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
       log: r.items.map((it) => ({ ex: it.ex, type: it.type, sets: [], reps: lastReps[it.ex] ?? it.reps, kg: lastKg[it.ex] ?? it.kg, reps0: lastReps[it.ex] ?? it.reps, kg0: lastKg[it.ex] ?? it.kg })) };
     orb.level = 0; orb.base = 0; orb.ring = 0;
     setMode("train"); enterItem();
-    $("hint").textContent = "Anota lo que levantaste de verdad: toca el número y escríbelo. Descansa lo justo y vuelve.";
+    $("hint").textContent = "Toca el número para anotar lo que levantaste.";
     $("hint").style.opacity = 1; setTimeout(() => $("hint").style.opacity = 0, 7000);
     running = true; setPauseIcon();
     if (!audio.on) toggleMusic(true);
@@ -1716,7 +1757,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
       $("t-main").textContent = "Serie hecha"; $("t-alt").textContent = "Saltar ejercicio";
     } else if (wk.phase === "rest") {
       const same = wk.s < it.sets, nIt = same ? it : next, nLg = same ? lg : wk.log[wk.i + 1];
-      $("cap-top").textContent = "Descanso"; $("big").textContent = mmss(wk.left); $("breath").textContent = "Recupera. Ya vuelves";
+      $("cap-top").textContent = "Descanso"; $("big").textContent = mmss(wk.left); $("breath").textContent = same ? "Serie " + (wk.s + 1) + " de " + it.sets : "Cambio de ejercicio";
       $("t-label").textContent = "Viene";
       $("t-title").textContent = nIt.ex + (same ? ", serie " + (wk.s + 1) : "");
       $("t-plan").textContent = nIt.type === "cardio" ? nIt.min + " min" : nLg.reps + " reps" + (nLg.kg ? " · " + kgNum(nLg.kg) + " kg" : "");
@@ -1856,7 +1897,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     setMode("tend");
     $("cap-top").textContent = "Entrenaste"; $("big").textContent = mmss(secs); $("breath").textContent = sets + (sets === 1 ? " serie" : " series");
     $("te-label").textContent = lastWorkout.name + " · " + Math.max(1, Math.round(secs / 60)) + " min";
-    $("te-title").textContent = early ? "Quedó a medias. Mañana la completas." : "Rutina completa. Eso es disciplina.";
+    $("te-title").textContent = early ? "Quedó a medias. Mañana la completas." : "Rutina completa.";
     $("te-sub").innerHTML = lastWorkout.items.map((l) => "<div><b>" + esc(l.ex) + "</b> · " + (l.type === "cardio" ? l.sets[0].min + " min" : l.sets.map((x) => x.reps + "×" + kgNum(x.kg)).join(", ") + " kg") + "</div>").join("") || "<div>Esta vez no alcanzaste a registrar series.</div>";
     const pg = (lastWorkout.prog || []).map((p) => "<div><b>Sube la próxima vez:</b> " + esc(p.ex) + " " + (p.kind === "kg" ? kgNum(p.from) + " → " + kgNum(p.to) + " kg" : p.from + " → " + p.to + " reps") + "</div>").join("");
     $("te-sub").innerHTML += pg;
@@ -2210,8 +2251,8 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     const mins = Math.round(all.reduce((a, w) => a + (w.secs || 0), 0) / 60), h = Math.floor(mins / 60);
     $("sp-total").textContent = mins.toLocaleString("es-CL");
     $("sp-sub").textContent = all.length
-      ? all.length + (all.length === 1 ? " entrenamiento" : " entrenamientos") + (h ? " · " + h + " h " + (mins % 60) + " min" : "") + ". Sigue sumando."
-      : "Guarda tu primer entrenamiento y empieza a sumar.";
+      ? all.length + (all.length === 1 ? " entrenamiento" : " entrenamientos") + (h ? " · " + h + " h " + (mins % 60) + " min" : "")+"."
+      : "Guarda tu primer entrenamiento.";
   }
   function renderSpWeek() {
     const tr = store.get("trains", {}), el = $("sp-week"); el.innerHTML = "";
@@ -2570,7 +2611,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     const h = skyHour(), name = phaseName(h);
     T = paletteAt(h);
     $("clock-p").textContent = name + (realWeather && WX.ok && WX.temp != null ? " · " + Math.round(WX.temp) + "°" : "");
-    themeMeta.content = rgb(T.top);
+    themeMeta.content = isArena() ? "#160a10" : rgb(T.top);
     audio.bright = T.bright; audio.birds = T.birds;
     if (name !== phase) { phase = name; if (mode === "home") $("hint").textContent = homeHint(); }
   }
@@ -2825,6 +2866,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   cv.addEventListener("pointerdown", (e) => {
     pointer = { x: e.clientX, y: e.clientY, down: true, id: e.pointerId };
     audio.init();
+    if (isArena()) { if (onOrb(e.clientX, e.clientY)) { arena.kick = 1; arena.rings.push({ r: 0, a: 0.7 }); burst(e.clientX, e.clientY, 10); audio.note(110, 0.08); buzz(12); } return; }
     const hit = meteors.find((m) => m.life > 0.1 && Math.hypot(e.clientX - (m.x - m.vx * 4), e.clientY - (m.y - m.vy * 4)) < 64);
     if (hit) { catchMeteor(hit); return; }
     const pop = pops.find((p) => p.life > 0 && Math.hypot(e.clientX - p.x, e.clientY - p.y) < p.r + 22);
@@ -2843,6 +2885,185 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   const up = () => { pointer.down = false; orb.held = false; pointer.x = pointer.y = -999; };
   cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up); cv.addEventListener("pointerleave", up);
 
+  // ---------- arena: el escenario de Entrenar. El analizador de audio escucha los bajos de la música y mueve todo ----------
+  const arena = { bass: 0, slow: 0, kick: 0, lastKick: 0, rings: [], bands: new Array(20).fill(0), freq: null, lvl: 0, segs: 7, weekP: 0, e: 0.55 };
+  const isArena = () => mode === "train" || mode === "tend" || (mode === "home" && tab === "train");
+  const pulseEls = [$("tr-today"), $("tcard")];
+  function readBass(dt, t, now) {
+    const A = arena, mic = audio.micOn && audio.micAn, an = mic ? audio.micAn : audio.an, live = !!(mic || (an && audio.on));
+    if (live) {
+      if (!A.freq) A.freq = new Uint8Array(an.frequencyBinCount);
+      an.getByteFrequencyData(A.freq);
+      const f = A.freq;
+      if (mic) { // el micrófono llega bajito: se normaliza contra el pico reciente para que el anillo se mueva con cualquier volumen
+        let pk = 0; for (let j = 1; j < 120; j++) if (f[j] > pk) pk = f[j];
+        A.peak = Math.max(pk, (A.peak || 0) * Math.exp(-dt * 0.35), 60);
+        const g = 200 / A.peak; for (let j = 0; j < 120; j++) f[j] = Math.min(255, f[j] * g);
+      }
+      A.bass = Math.min(1, (f[1] + f[2] + f[3] + f[4] * 0.5) / (3.5 * 255));
+      // bandas de graves a agudos (escala logarítmica, como se oye); los agudos se refuerzan porque suenan más suave
+      const N = A.bands.length;
+      for (let i = 0; i < N; i++) {
+        const lo = Math.floor(Math.pow(160, i / N)), hi = Math.max(lo + 1, Math.floor(Math.pow(160, (i + 1) / N)));
+        let m = 0; for (let j = lo; j < hi; j++) if (f[j] > m) m = f[j];
+        const v = Math.min(1, (m / 255) * (1 + 1.2 * i / N));
+        A.bands[i] += (v - A.bands[i]) * (v > A.bands[i] ? 0.5 : 0.12);
+      }
+    } else {
+      A.bass = 0.1 + 0.05 * Math.sin(t * 1.7); // sin música: respira sola, casi quieto
+      for (let i = 0; i < A.bands.length; i++) A.bands[i] += (0.06 + 0.04 * Math.sin(t * 1.3 + i * 0.7) - A.bands[i]) * 0.08;
+    }
+    A.slow += (A.bass - A.slow) * Math.min(1, dt * 3);
+    if (live && A.bass > A.slow + 0.1 && A.bass > 0.42 && now - A.lastKick > 180) {
+      A.kick = 1; A.lastKick = now;
+    }
+    A.kick *= Math.exp(-dt * 7);
+  }
+  // escena de Entrenar: como el cielo de Calma, pero de brasa. Cada momento tiene su paleta y la escena se acerca de a poco
+  const ARENA_PAL = {
+    idle: { top: [22, 10, 16], mid: [48, 16, 20], low: [104, 34, 18], glow: [255, 128, 60] },
+    work: { top: [24, 8, 12], mid: [64, 16, 16], low: [150, 44, 16], glow: [255, 104, 40] },
+    rest: { top: [14, 12, 26], mid: [38, 20, 42], low: [92, 36, 52], glow: [255, 160, 120] },
+    done: { top: [26, 12, 10], mid: [70, 28, 12], low: [170, 90, 20], glow: [255, 180, 70] }
+  };
+  let AP = JSON.parse(JSON.stringify(ARENA_PAL.idle));
+  const dust = Array.from({ length: 46 }, () => ({ x: Math.random(), y: Math.random(), s: 0.6 + Math.random() * 1.8, sp: 0.006 + Math.random() * 0.02, ph: Math.random() * 6.3 }));
+  const tubeBubbles = Array.from({ length: 9 }, () => ({ a: Math.random(), sp: 0.03 + Math.random() * 0.05, o: (Math.random() - 0.5) * 0.5, s: 0.8 + Math.random() * 1.4 }));
+  // el anillo es un tubo de vidrio que se llena de líquido naranja, hermano de la esfera de Calma
+  function glassRing(cx, cy, r, w, p, t, dt, k) {
+    p = Math.max(0, Math.min(1, p));
+    // tubo vacío: vidrio con brillo arriba y borde fino
+    ctx.lineCap = "butt"; ctx.lineWidth = w;
+    ctx.strokeStyle = "rgba(255,230,210,0.07)"; ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.stroke();
+    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = "rgba(255,235,220,0.22)"; ctx.beginPath(); ctx.arc(cx, cy, r + w / 2, 0, TAU); ctx.stroke();
+    ctx.strokeStyle = "rgba(255,235,220,0.14)"; ctx.beginPath(); ctx.arc(cx, cy, r - w / 2, 0, TAU); ctx.stroke();
+    // líquido
+    if (p > 0.004) {
+      const a0 = -Math.PI / 2, a1 = a0 + TAU * p;
+      const g = ctx.createConicGradient ? ctx.createConicGradient(a0, cx, cy) : null;
+      if (g) { g.addColorStop(0, "#ff6a2b"); g.addColorStop(Math.max(0.05, p * 0.6), "#ff9a4a"); g.addColorStop(Math.max(0.06, p), "#ffd29e"); g.addColorStop(1, "#ffd29e"); }
+      ctx.lineCap = "round"; ctx.lineWidth = w - 5;
+      ctx.shadowColor = "rgba(255,130,50,0.75)"; ctx.shadowBlur = 10 + 22 * k;
+      ctx.strokeStyle = g || "#ff9a4a"; ctx.beginPath(); ctx.arc(cx, cy, r, a0, a1); ctx.stroke();
+      ctx.shadowBlur = 0;
+      // brillo especular a lo largo del líquido
+      ctx.lineWidth = 2; ctx.strokeStyle = "rgba(255,248,236," + (0.4 + 0.3 * k).toFixed(3) + ")";
+      ctx.beginPath(); ctx.arc(cx, cy, r - w * 0.2, a0 + 0.04, Math.max(a0 + 0.05, a1 - 0.04)); ctx.stroke();
+      // burbujas que viajan por dentro, más rápido cuando pega el bajo
+      if (!reduced) for (const b of tubeBubbles) {
+        b.a = (b.a + dt * b.sp * (1 + 2 * k)) % 1;
+        const ang = a0 + TAU * p * b.a, rr = r + b.o * (w - 8);
+        ctx.fillStyle = "rgba(255,246,230,0.55)"; ctx.beginPath(); ctx.arc(cx + Math.cos(ang) * rr, cy + Math.sin(ang) * rr, b.s, 0, TAU); ctx.fill();
+      }
+    }
+    // reflejo del vidrio arriba a la izquierda
+    ctx.lineCap = "round"; ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,0.28)";
+    ctx.beginPath(); ctx.arc(cx, cy, r + w * 0.28, Math.PI * 1.08, Math.PI * 1.32); ctx.stroke();
+  }
+  // borde de luz alrededor del anillo: ondula con lo que suena (graves arriba, agudos abajo, igual a ambos lados)
+  function soundRim(cx, cy, r0, amp, k) {
+    const B = arena.bands, N = B.length, P = 120, pts = [];
+    for (let i = 0; i < P; i++) {
+      const a = -Math.PI / 2 + i / P * TAU, x = Math.abs(Math.sin(i / P * TAU)); // graves arriba y abajo, agudos a los lados
+      const fi = x * (N - 1), j = Math.floor(fi), fr = fi - j, at = (q) => B[Math.max(0, Math.min(N - 1, q))];
+      const v = ((at(j - 1) + at(j) * 2 + at(j + 1)) * (1 - fr) + (at(j) + at(j + 1) * 2 + at(j + 2)) * fr) / 4 * (0.7 + 0.3 * x);
+      const rr = r0 + 2 + v * amp + 1.5 * Math.sin(i / P * TAU * 3 + performance.now() / 700);
+      pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]);
+    }
+    ctx.beginPath();
+    for (let i = 0; i <= P; i++) {
+      const p0 = pts[i % P], p1 = pts[(i + 1) % P], mx = (p0[0] + p1[0]) / 2, my = (p0[1] + p1[1]) / 2;
+      if (i === 0) ctx.moveTo(mx, my); else ctx.quadraticCurveTo(p0[0], p0[1], mx, my);
+    }
+    ctx.closePath();
+    ctx.save();
+    ctx.arc(cx, cy, r0, 0, TAU, true); // hueco: se pinta solo lo que sobresale del anillo
+    const g = ctx.createRadialGradient(cx, cy, r0, cx, cy, r0 + amp);
+    g.addColorStop(0, "rgba(255,150,70," + (0.32 + 0.25 * k).toFixed(3) + ")"); g.addColorStop(1, "rgba(255,120,50,0.04)");
+    ctx.fillStyle = g; ctx.fill("evenodd");
+    ctx.restore();
+    ctx.beginPath();
+    for (let i = 0; i <= P; i++) {
+      const p0 = pts[i % P], p1 = pts[(i + 1) % P], mx = (p0[0] + p1[0]) / 2, my = (p0[1] + p1[1]) / 2;
+      if (i === 0) ctx.moveTo(mx, my); else ctx.quadraticCurveTo(p0[0], p0[1], mx, my);
+    }
+    ctx.closePath();
+    ctx.lineWidth = 1.6; ctx.strokeStyle = "rgba(255,214,170," + (0.55 + 0.35 * k).toFixed(3) + ")"; ctx.stroke();
+  }
+  function drawArena(t, dt, now) {
+    const A = arena;
+    const target = mode === "train" && wk ? (wk.phase === "work" ? 1 : wk.phase === "rest" ? 0.3 : 0.65) : mode === "tend" ? 0.85 : 0.55;
+    A.e += (target - A.e) * Math.min(1, dt * 1.5); audio.energy = A.e;
+    readBass(dt, t, now);
+    const k = A.kick;
+    for (const el of pulseEls) { const v = k > 0.02 ? k.toFixed(2) : "0"; if (el._k !== v) { el._k = v; el.style.setProperty("--k", v); } }
+
+    // paleta: serie caliente, descanso morado frío, final dorado
+    const want = ARENA_PAL[mode === "tend" ? "done" : mode === "train" && wk ? (wk.phase === "rest" ? "rest" : "work") : "idle"];
+    const f = 1 - Math.exp(-dt * 1.4);
+    for (const key in AP) AP[key] = AP[key].map((v, i) => v + (want[key][i] - v) * f);
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, rgb(AP.top)); bg.addColorStop(0.55, rgb(AP.mid)); bg.addColorStop(1, rgb(AP.low));
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    // horno abajo: respira con el bajo
+    const hot = ctx.createRadialGradient(W / 2, H * 1.05, 0, W / 2, H * 1.05, H * 0.75);
+    hot.addColorStop(0, rgba(AP.glow, 0.28 + 0.22 * k)); hot.addColorStop(1, rgba(AP.glow, 0));
+    ctx.fillStyle = hot; ctx.fillRect(0, 0, W, H);
+    // rayos de luz que entran en diagonal, como sol de tarde en un gimnasio
+    if (!reduced) {
+      ctx.save(); ctx.globalCompositeOperation = "lighter";
+      for (let i = 0; i < 3; i++) {
+        const x = W * (0.1 + i * 0.32) + Math.sin(t * 0.07 + i * 2) * 30, wd = W * (0.12 + 0.05 * i);
+        const ray = ctx.createLinearGradient(x, 0, x + wd, H * 0.9);
+        ray.addColorStop(0, rgba(AP.glow, 0.05 + 0.02 * Math.sin(t * 0.3 + i))); ray.addColorStop(1, rgba(AP.glow, 0));
+        ctx.fillStyle = ray; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + wd, 0); ctx.lineTo(x + wd + W * 0.35, H * 0.9); ctx.lineTo(x + W * 0.35, H * 0.9); ctx.closePath(); ctx.fill();
+      }
+      ctx.restore();
+    }
+    // polvo en suspensión que brilla en la luz; con cada golpe de bajo se enciende
+    for (const d of dust) {
+      if (!reduced) { d.y -= d.sp * dt * (1 + A.e); d.x += Math.sin(t * 0.6 + d.ph) * 0.0004; if (d.y < -0.02) { d.y = 1.02; d.x = Math.random(); } }
+      const x = d.x * W, y = d.y * H, a = (0.25 + 0.35 * (0.5 + 0.5 * Math.sin(t * 1.5 + d.ph))) * (0.7 + 0.6 * k);
+      const g = ctx.createRadialGradient(x, y, 0, x, y, d.s * 4);
+      g.addColorStop(0, "rgba(255,214,170," + Math.min(1, a).toFixed(3) + ")"); g.addColorStop(1, "rgba(255,214,170,0)");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, d.s * 4, 0, TAU); ctx.fill();
+    }
+
+    // el anillo: en Entrenar vive en el hueco de arriba; en la rutina ocupa el centro de la pantalla
+    let cx = orb.x, cy = orb.y, cr = orb.r, show = true, p;
+    const it = wk && wk.r.items[wk.i];
+    if (mode === "home") {
+      const rc = $("sp-reactor").getBoundingClientRect();
+      show = rc.width > 0 && rc.bottom > -20 && rc.top < H + 20;
+      cx = rc.left + rc.width / 2; cy = rc.top + rc.height / 2; cr = rc.height * 0.44;
+      A.lvl += (A.weekP - A.lvl) * 0.06; p = A.lvl;
+    } else if (mode === "tend" || !it) { A.lvl += (1 - A.lvl) * 0.15; p = A.lvl; }
+    else {
+      // en la serie cuenta el avance de la rutina; en el descanso o el cardio, el tiempo que va
+      A.lvl += ((orb.ring ?? 0) - A.lvl) * 0.15;
+      p = wk.phase === "work" ? A.lvl : orb.level;
+    }
+    if (show) {
+      const R = cr * 0.84 * (1 + 0.035 * k), w = R * 0.17;
+      const halo = ctx.createRadialGradient(cx, cy, R * 0.5, cx, cy, R * 1.8);
+      halo.addColorStop(0, rgba(AP.glow, 0.1 + 0.16 * k)); halo.addColorStop(1, rgba(AP.glow, 0));
+      ctx.fillStyle = halo; ctx.fillRect(cx - R * 1.8, cy - R * 1.8, R * 3.6, R * 3.6);
+      // interior de vidrio oscuro para que el número se lea siempre
+      const inner = ctx.createRadialGradient(cx - R * 0.25, cy - R * 0.3, 0, cx, cy, R - w / 2);
+      inner.addColorStop(0, "rgba(255,230,210,0.08)"); inner.addColorStop(1, "rgba(10,4,6,0.35)");
+      ctx.fillStyle = inner; ctx.beginPath(); ctx.arc(cx, cy, R - w / 2, 0, TAU); ctx.fill();
+      soundRim(cx, cy, R, cr * 0.16, k);
+      glassRing(cx, cy, R - w / 2, w, p, t, dt, k);
+    }
+    // chispas de los toques y de cada serie cumplida
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const s = sparks[i]; s.x += s.vx; s.y += s.vy; s.vy += 0.05; s.life -= 0.02;
+      if (s.life <= 0) { sparks.splice(i, 1); continue; }
+      ctx.fillStyle = "rgba(255,225,180," + s.life.toFixed(3) + ")"; ctx.beginPath(); ctx.arc(s.x, s.y, 1.8, 0, TAU); ctx.fill();
+    }
+  }
+
   let lastPhase = "", secAcc = 0;
   function frame(now) {
     requestAnimationFrame(frame);
@@ -2850,7 +3071,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     const t = now / 1000;
 
     tick();
-    const counting = running && (mode === "session" || (mode === "train" && wk && wk.phase !== "work"));
+    const counting = running && mode === "session";
     if (counting) {
       // cada segundo llega una luciérnaga a la esfera
       secAcc += dt;
@@ -2862,6 +3083,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
       orb.ring = extended ? p : null;
     }
     if (mode === "train" && wk && wk.phase !== "work") orb.level = Math.min(1, 1 - wk.left / wk.span);
+    if (isArena()) { drawArena(t, dt, now); return; }
 
     const b = mode === "session" ? breathAt((now - sessionStart) / 1000) : { phase: "", v: 0.5 + 0.5 * Math.sin(t * 0.5) };
     if (mode === "session" && b.phase !== lastPhase) {
@@ -3021,7 +3243,14 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
       if (this.ctx) return;
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
       const c = this.ctx = new AC();
-      this.master = c.createGain(); this.master.gain.value = 0.7; this.master.connect(c.destination);
+      this.master = c.createGain(); this.master.gain.value = 0.7;
+      // compresor para que el beat no sature, y un analizador que "escucha" los bajos para mover la animación
+      const comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.knee.value = 12; comp.ratio.value = 5; comp.attack.value = 0.004; comp.release.value = 0.2;
+      this.master.connect(comp); comp.connect(c.destination);
+      this.an = c.createAnalyser(); this.an.fftSize = 1024; this.an.smoothingTimeConstant = 0.45; this.master.connect(this.an);
+      this.drive = c.createGain(); this.drive.gain.value = 0; this.drive.connect(this.master);
+      const hb = c.createBuffer(1, c.sampleRate, c.sampleRate), hd = hb.getChannelData(0); for (let i = 0; i < hd.length; i++) hd[i] = Math.random() * 2 - 1;
+      this.hbuf = hb;
       this.music = c.createGain(); this.music.gain.value = 0; this.music.connect(this.master);
       const len = c.sampleRate * 4, ir = c.createBuffer(2, len, c.sampleRate);
       for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3); }
@@ -3072,8 +3301,53 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
         o.connect(g); g.connect(this.music); g.connect(this.verb); o.start(t0); o.stop(t0 + 0.12);
       }
     },
-    start() {
-      this.init(); if (!this.ctx) return; this.ctx.resume(); this.on = true;
+    // música de entrenar: bombo, bajo y hi-hats generados en vivo; la energía sube en la serie y baja en el descanso
+    energy: 0.55, style: "calm", step: 0, nextT: 0,
+    kickAt(t, v) {
+      const c = this.ctx, o = c.createOscillator(), g = c.createGain(); o.type = "sine";
+      o.frequency.setValueAtTime(165, t); o.frequency.exponentialRampToValueAtTime(46, t + 0.11);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.42);
+      o.connect(g); g.connect(this.drive); o.start(t); o.stop(t + 0.45);
+    },
+    bassAt(t, f, v, e) {
+      const c = this.ctx, len = 0.2, g = c.createGain(), lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 4;
+      lp.frequency.setValueAtTime(260 + 700 * e, t); lp.frequency.exponentialRampToValueAtTime(110, t + len);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + len + 0.05);
+      lp.connect(g); g.connect(this.drive);
+      for (const [type, m, k] of [["sawtooth", 1, 0.7], ["sine", 1, 1.1]]) {
+        const o = c.createOscillator(); o.type = type; o.frequency.value = f * m;
+        const og = c.createGain(); og.gain.value = k; o.connect(og); og.connect(lp); o.start(t); o.stop(t + len + 0.08);
+      }
+    },
+    noiseAt(t, type, freq, v, dur) {
+      const c = this.ctx, s = c.createBufferSource(); s.buffer = this.hbuf;
+      const f = c.createBiquadFilter(); f.type = type; f.frequency.value = freq; if (type === "bandpass") f.Q.value = 0.8;
+      const g = c.createGain(); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      s.connect(f); f.connect(g); g.connect(this.drive); s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.02);
+    },
+    hit(step, t) {
+      const e = this.energy, s = step % 16, bar = (step >> 4) % 4, root = [55, 55, 43.65, 49][bar];
+      if (s % 4 === 0 && (e > 0.5 || s % 8 === 0)) this.kickAt(t, 0.5 + 0.4 * e);
+      if (s % 4 === 2 || (e > 0.7 && s % 8 === 7)) this.bassAt(t, root * (s % 8 === 6 ? 2 : 1), 0.16 + 0.08 * e, e);
+      if ((s % 4 === 2 && e > 0.3) || (s % 2 === 1 && e > 0.8)) this.noiseAt(t, "highpass", 7000, 0.04 + 0.05 * e, 0.045);
+      if ((s === 4 || s === 12) && e > 0.5) this.noiseAt(t, "bandpass", 1500, 0.16, 0.13);
+    },
+    sched() {
+      const c = this.ctx; if (!c || !this.on) return;
+      if (this.nextT < c.currentTime - 0.5) this.nextT = c.currentTime + 0.05; // la pestaña estuvo dormida: no recuperes los golpes perdidos
+      while (this.nextT < c.currentTime + 0.14) {
+        this.hit(this.step, this.nextT);
+        this.nextT += 60 / (96 + 32 * this.energy) / 4; this.step = (this.step + 1) % 64;
+      }
+    },
+    start(style = "calm") {
+      this.init(); if (!this.ctx) return; this.ctx.resume(); this.on = true; this.style = style;
+      if (style === "drive") {
+        this.drive.gain.setTargetAtTime(0.9, this.ctx.currentTime, 0.15);
+        this.step = 0; this.nextT = this.ctx.currentTime + 0.1; this.sched();
+        this.driveTimer = setInterval(() => this.sched(), 30);
+        return;
+      }
       this.music.gain.setTargetAtTime(1, this.ctx.currentTime, 1);
       this.playChord(); this.chordTimer = setInterval(() => this.playChord(), 8000);
       const loop = () => {
@@ -3082,17 +3356,35 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
       };
       this.chimeTimer = setTimeout(loop, 3000);
     },
+    async micStart() {
+      this.init(); if (!this.ctx) return false;
+      try {
+        this.ctx.resume();
+        this.micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+      } catch (e) { return false; }
+      const src = this.ctx.createMediaStreamSource(this.micStream);
+      this.micAn = this.ctx.createAnalyser(); this.micAn.fftSize = 1024; this.micAn.smoothingTimeConstant = 0.45;
+      src.connect(this.micAn); // solo se analiza, nunca se reproduce
+      this.micSrc = src; this.micOn = true; return true;
+    },
+    micStop() {
+      this.micOn = false;
+      if (this.micStream) this.micStream.getTracks().forEach((t) => t.stop());
+      this.micStream = null; this.micAn = null;
+    },
     stop() {
       if (!this.ctx) return; this.on = false;
-      clearInterval(this.chordTimer); clearTimeout(this.chimeTimer);
+      clearInterval(this.chordTimer); clearTimeout(this.chimeTimer); clearInterval(this.driveTimer);
+      this.drive.gain.setTargetAtTime(0, this.ctx.currentTime, 0.2);
       this.music.gain.setTargetAtTime(0, this.ctx.currentTime, 0.8);
     }
   };
   function toggleMusic(force) {
-    const want = force ?? !audio.on;
-    if (want && !audio.on) audio.start(); else if (!want && audio.on) audio.stop();
+    const want = force ?? !audio.on, st = isArena() ? "drive" : "calm";
+    if (want && audio.on && audio.style !== st) { audio.stop(); audio.start(st); }
+    else if (want && !audio.on) audio.start(st); else if (!want && audio.on) audio.stop();
     if (force === false && audio.rainOn) toggleRain(false);
-    $("music").setAttribute("aria-pressed", audio.on ? "true" : "false");
+    ["music", "sp-beat"].forEach((id) => $(id).setAttribute("aria-pressed", audio.on ? "true" : "false"));
   }
   function toggleRain(force) {
     audio.init(); if (!audio.ctx) return; audio.ctx.resume();
@@ -3101,6 +3393,16 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     $("rain").setAttribute("aria-pressed", audio.rainOn ? "true" : "false");
   }
   $("music").addEventListener("click", () => toggleMusic());
+  $("sp-beat").addEventListener("click", () => { if (audio.micOn) setMic(false); audio.init(); toggleMusic(); });
+  // modo escuchar: el anillo reacciona a la música que suena afuera (Spotify, parlante, etc.) usando el micrófono
+  async function setMic(on) {
+    if (on) {
+      if (audio.on) toggleMusic(false);
+      if (!(await audio.micStart())) { toast("No pude usar el micrófono. Revisa el permiso del navegador."); return; }
+    } else audio.micStop();
+    $("sp-mic").setAttribute("aria-pressed", audio.micOn ? "true" : "false");
+  }
+  $("sp-mic").addEventListener("click", () => setMic(!audio.micOn));
   $("rain").addEventListener("click", () => toggleRain());
 
   // deslizar hacia abajo para cerrar las hojas de elegir
@@ -3120,9 +3422,9 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   // app instalable y sin conexión (solo cuando corre en su propio dominio)
   // diagnóstico escondido: 5 toques seguidos en "Calma" muestran los tamaños que ve la app (sirve para depurar la ventana en iOS)
   (function () {
-    const brand = document.querySelector(".brand");
-    if (!brand) return;
-    const APP_VERSION = "calma-v28"; // igual que VERSION en sw.js
+    const brands = [document.querySelector(".brand"), document.getElementById("sp-title")].filter(Boolean);
+    if (!brands.length) return;
+    const APP_VERSION = "calma-v30"; // igual que VERSION en sw.js
     let taps = 0, last = 0, box = null, probe = null, cached = "…";
     (window.caches ? caches.keys() : Promise.resolve([])).then((k) => { cached = k.filter((n) => /^calma-v/.test(n)).join(", ") || "sin caché"; paint(); }).catch(() => {});
     function read() {
@@ -3136,7 +3438,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
         "standalone " + navigator.standalone + " display-mode " + (["standalone", "fullscreen", "minimal-ui", "browser"].find((m) => matchMedia("(display-mode: " + m + ")").matches) || "?"), navigator.userAgent.replace(/^Mozilla\/5.0 /, "")].join("\n");
     }
     function paint() { if (box) box.textContent = read(); }
-    brand.addEventListener("click", () => {
+    brands.forEach((brand) => brand.addEventListener("click", () => {
       const now = Date.now(); taps = now - last < 700 ? taps + 1 : 1; last = now;
       if (taps < 5) return;
       taps = 0;
@@ -3144,7 +3446,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
       box = document.createElement("pre");
       box.style.cssText = "position:fixed;left:8px;right:8px;top:90px;z-index:99;margin:0;padding:10px;border-radius:12px;background:rgba(0,0,0,0.86);color:#9ff;font:11px/1.35 ui-monospace,monospace;white-space:pre-wrap;word-break:break-all;pointer-events:none";
       document.body.appendChild(box); paint();
-    });
+    }));
     addEventListener("resize", paint);
   })();
 
