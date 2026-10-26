@@ -2962,7 +2962,6 @@ body.sport {
     A.slow += (A.bass - A.slow) * Math.min(1, dt * 3);
     if (audio.on && A.bass > A.slow + 0.1 && A.bass > 0.42 && now - A.lastKick > 180) {
       A.kick = 1; A.lastKick = now;
-      if (!reduced) A.rings.push({ r: 0, a: 0.5 });
     }
     A.kick *= Math.exp(-dt * 7);
   }
@@ -2974,7 +2973,7 @@ body.sport {
     const g = ctx.createConicGradient ? ctx.createConicGradient(-Math.PI / 2, cx, cy) : null;
     let stroke = "rgb(" + c1 + ")";
     if (g) { g.addColorStop(0, "rgb(" + c0 + ")"); g.addColorStop(Math.max(0.02, p), "rgb(" + c1 + ")"); g.addColorStop(1, "rgb(" + c1 + ")"); stroke = g; }
-    ctx.strokeStyle = stroke; ctx.shadowColor = "rgba(" + c1 + ",0.55)"; ctx.shadowBlur = 6 + 18 * k;
+    ctx.strokeStyle = stroke; ctx.shadowColor = "rgba(" + c1 + ",0.55)"; ctx.shadowBlur = 4 + 12 * k;
     ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + TAU * p); ctx.stroke(); ctx.shadowBlur = 0;
   }
   function drawArena(t, dt, now) {
@@ -3004,18 +3003,12 @@ body.sport {
       rings = [A.lvl, (wk.i + (wk.phase === "work" ? setsP : Math.min(1, setsP))) / wk.r.items.length, wk.phase === "work" ? setsP : orb.level];
     }
     if (show) {
-      const R = cr * 0.95 * (1 + 0.012 * k), n = rings.length, w = n === 1 ? R * 0.17 : R * 0.105, gap = n === 1 ? 0 : 3.5;
+      const R = cr * 0.95 * (1 + 0.012 * k), n = rings.length, w = n === 1 ? R * 0.15 : R * 0.1, gap = n === 1 ? 0 : 4;
       // un pulso suave de luz detrás, que sigue al bajo
       const glow = ctx.createRadialGradient(cx, cy, R * 0.4, cx, cy, R * 1.9);
       glow.addColorStop(0, "rgba(255,159,10," + (0.03 + 0.1 * k).toFixed(3) + ")"); glow.addColorStop(1, "rgba(255,159,10,0)");
       ctx.fillStyle = glow; ctx.fillRect(cx - R * 1.9, cy - R * 1.9, R * 3.8, R * 3.8);
-      for (let i = A.rings.length - 1; i >= 0; i--) {
-        const q = A.rings[i]; q.r += dt * 1.3; q.a -= dt * 1.3;
-        if (q.a <= 0) { A.rings.splice(i, 1); continue; }
-        ctx.strokeStyle = "rgba(255,159,10," + (q.a * 0.5).toFixed(3) + ")"; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.arc(cx, cy, R + 6 + q.r * R * 0.35, 0, TAU); ctx.stroke();
-      }
-      const cols = [["255,92,48", "255,159,10"], ["255,159,10", "255,214,10"], ["255,214,10", "255,236,140"]];
+      const cols = [["255,95,20", "255,159,10"], ["255,95,20", "255,159,10"], ["255,95,20", "255,159,10"]]; // un solo tono: el de los botones
       for (let i = 0; i < n; i++) ringPath(cx, cy, R - w / 2 - i * (w + gap), w, rings[i], cols[i][0], cols[i][1], k);
     }
     // chispas de los toques y de cada serie cumplida
