@@ -137,11 +137,11 @@ async function readJson(req, max = 4096) {
 
 function readUsername(v) {
   const s = typeof v === "string" ? v.trim().toLowerCase() : "";
-  if (!/^[a-z0-9_-]{3,24}$/.test(s)) throw new HttpError(400, "El usuario debe tener entre 3 y 24 letras, números, guion o guion bajo");
+  if (!/^[a-z0-9._-]{3,24}$/.test(s)) throw new HttpError(400, "El usuario debe tener entre 3 y 24 letras, números, punto, guion o guion bajo");
   return s;
 }
 function readPassword(v) {
-  if (typeof v !== "string" || v.length < 10 || v.length > 200) throw new HttpError(400, "La contraseña debe tener entre 10 y 200 caracteres");
+  if (typeof v !== "string" || v.length < 8 || v.length > 200) throw new HttpError(400, "La contraseña debe tener entre 8 y 200 caracteres");
   return v;
 }
 

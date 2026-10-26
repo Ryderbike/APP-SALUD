@@ -2640,7 +2640,7 @@ body.arena {
   function setAcMode(m) {
     acMode = m;
     $("ac-title").textContent = m === "signup" ? "Crea tu cuenta" : "Entra a tu cuenta";
-    $("ac-sub").textContent = m === "signup" ? "Elige un usuario y una contraseña de al menos 10 caracteres. Tus datos de ahora se guardan en la cuenta sin perder nada. Sin correo no se puede recuperar la contraseña: anótala bien (tu código anterior y el archivo de respaldo siguen sirviendo)." : "Tus datos se traen de la nube y, antes de reemplazar algo, lo de este teléfono queda guardado aparte.";
+    $("ac-sub").textContent = m === "signup" ? "Elige un usuario y una contraseña de al menos 8 caracteres. Tus datos de ahora se guardan en la cuenta sin perder nada. Sin correo no se puede recuperar la contraseña: anótala bien (tu código anterior y el archivo de respaldo siguen sirviendo)." : "Tus datos se traen de la nube y, antes de reemplazar algo, lo de este teléfono queda guardado aparte.";
     $("ac-go").textContent = m === "signup" ? "Crear cuenta" : "Entrar";
     $("ac-pass").autocomplete = m === "signup" ? "new-password" : "current-password";
     $("ac-swap").textContent = m === "signup" ? "Ya tengo cuenta" : "¿No tienes cuenta? Crear una";
