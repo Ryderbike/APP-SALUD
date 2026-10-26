@@ -2923,6 +2923,9 @@ body.arena {
     rest: { top: [14, 12, 28], mid: [40, 20, 46], low: [96, 38, 58], glow: [255, 150, 120] },
     done: { top: [28, 12, 10], mid: [76, 30, 12], low: [180, 96, 20], glow: [255, 184, 72] }
   };
+  // el color de fondo avanza con la rutina: de vino oscuro al partir a naranjo encendido y dorado cerca del final
+  const WORK_END = { top: [38, 14, 8], mid: [112, 44, 10], low: [226, 128, 26], glow: [255, 200, 84] };
+  const workPal = (p) => { const q = Math.pow(Math.max(0, Math.min(1, p)), 0.9), o = {}; for (const key in WORK_END) o[key] = ARENA_PAL.work[key].map((v, i) => v + (WORK_END[key][i] - v) * q); return o; };
   let AP = JSON.parse(JSON.stringify(ARENA_PAL.work)), arenaKick = 0, arenaPrev = 0;
   const arenaWaves = [];
   const embers = Array.from({ length: 56 }, () => ({ x: Math.random(), y: Math.random(), s: 0.8 + Math.random() * 2.2, sp: 0.02 + Math.random() * 0.05, ph: Math.random() * 6.3 }));
@@ -2930,13 +2933,13 @@ body.arena {
   function drawArena(t, dt, now) {
     const phase = mode === "tend" ? "done" : wk && wk.phase === "rest" ? "rest" : "work";
     // en el descanso el fondo se va calentando a medida que se acaba el tiempo, y en los últimos 10 s late con cada segundo
+    const prog = wk ? Math.min(1, wk.doneSets / wk.totalSets) : 1, WP = workPal(prog);
     const resting = phase === "rest" && wk, rl = resting ? wkLeft() : 99, u = resting ? Math.max(0, Math.min(1, 1 - rl / wk.span)) : 0;
     const urg = resting ? Math.max(0, Math.min(1, (10 - rl) / 10)) : 0, secPulse = urg > 0 && running ? Math.exp(-((rl % 1 > 0 ? 1 - (rl % 1) : 0) * 5)) * (0.4 + 0.6 * urg) : 0;
-    const want = resting ? Object.fromEntries(Object.keys(ARENA_PAL.rest).map((key) => [key, ARENA_PAL.rest[key].map((v, i) => v + (ARENA_PAL.work[key][i] - v) * u * u)])) : ARENA_PAL[phase], f = 1 - Math.exp(-dt * (resting ? 4 : 1.6));
+    const want = resting ? Object.fromEntries(Object.keys(ARENA_PAL.rest).map((key) => [key, ARENA_PAL.rest[key].map((v, i) => v + (WP[key][i] - v) * u * u)])) : phase === "work" ? WP : ARENA_PAL[phase], f = 1 - Math.exp(-dt * (resting ? 4 : 1.6));
     for (const key in AP) AP[key] = AP[key].map((v, i) => v + (want[key][i] - v) * f);
     arenaKick *= Math.exp(-dt * 3.2); const k = arenaKick;
     const kv = k > 0.02 ? k.toFixed(2) : "0"; if (arenaPrev !== kv) { arenaPrev = kv; $("tcard").style.setProperty("--k", kv); }
-    const prog = wk ? Math.min(1, wk.doneSets / wk.totalSets) : 1;
     const bg = ctx.createLinearGradient(0, 0, 0, H);
     bg.addColorStop(0, rgb(AP.top)); bg.addColorStop(0.55, rgb(AP.mid)); bg.addColorStop(1, rgb(AP.low));
     ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
@@ -3270,7 +3273,7 @@ body.arena {
   (function () {
     const brand = document.querySelector(".brand");
     if (!brand) return;
-    const APP_VERSION = "stillfit-v34"; // igual que VERSION en sw.js
+    const APP_VERSION = "stillfit-v35"; // igual que VERSION en sw.js
     let taps = 0, last = 0, box = null, probe = null, cached = "…";
     (window.caches ? caches.keys() : Promise.resolve([])).then((k) => { cached = k.filter((n) => /^(calma|stillfit)-v/.test(n)).join(", ") || "sin caché"; paint(); }).catch(() => {});
     function read() {
