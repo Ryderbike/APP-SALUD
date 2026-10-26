@@ -926,12 +926,41 @@ body.arena {
   <button class="link" id="we-cancel">Volver sin guardar</button>
 </section>
 
+<!-- hoja: cuenta (iniciar sesión / crear cuenta) -->
+<section class="sheet" id="acct" hidden aria-label="Cuenta">
+  <div class="grab"></div>
+  <h2 id="ac-title">Entra a tu cuenta</h2>
+  <form class="q" id="ac-form" method="post" action="/">
+    <p class="muted" id="ac-sub"></p>
+    <input class="text" id="ac-user" name="username" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Usuario" maxlength="24">
+    <input class="text" id="ac-pass" name="password" type="password" autocomplete="current-password" placeholder="Contraseña" maxlength="200">
+    <p class="muted" id="ac-msg" role="alert"></p>
+    <button class="btn go" id="ac-go" type="submit">Entrar</button>
+  </form>
+  <div class="q" id="ac-choice" hidden>
+    <p class="muted" id="ac-ctext"></p>
+    <button class="btn go" id="ac-use-remote"></button>
+    <button class="btn" id="ac-use-local">Quedarme con lo de este teléfono</button>
+  </div>
+  <button class="link" id="ac-swap"></button>
+  <button class="link" id="ac-later">Ahora no</button>
+</section>
+
 <!-- hoja: ajustes y respaldo -->
 <section class="sheet" id="data" hidden aria-label="Ajustes y respaldo">
   <div class="grab"></div>
   <h2>Ajustes y respaldo</h2>
 
-  <h3 class="sub">Respaldo en la nube</h3>
+  <h3 class="sub">Cuenta</h3>
+  <div class="q" id="ac-box">
+    <p class="muted" id="ac-note"></p>
+    <div class="row">
+      <button class="btn go" id="ac-open">Iniciar sesión</button>
+      <button class="btn" id="ac-out" hidden>Cerrar sesión</button>
+    </div>
+  </div>
+
+  <h3 class="sub" id="cl-title">Código de respaldo</h3>
   <div class="q" id="cl-box">
     <p class="muted" id="cl-note"></p>
     <div class="code" id="cl-code"></div>
@@ -1056,6 +1085,7 @@ body.arena {
   };
   const cloud = {
     ref: null, timer: 0, busy: false, again: false, okAt: 0, failed: false, withActive: false, onNewer: null, changed: null,
+    onAuth: null,
     dirty() { if (!this.ref) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.flush(), 1200); },
     async flush() {
       clearTimeout(this.timer);
@@ -1064,7 +1094,7 @@ body.arena {
       this.busy = true; let ok = false;
       const keys = {}; for (const k in mem) if (k !== "_at") keys[k] = mem[k];
       try { await this.ref.set({ at: +mem._at || 0, keys }); ok = true; this.okAt = Date.now(); this.failed = false; }
-      catch (e) { this.failed = true; if (e && e.newer && this.onNewer) this.onNewer(e.newer); }
+      catch (e) { this.failed = true; if (e && e.newer && this.onNewer) this.onNewer(e.newer); if (e && e.auth && this.onAuth) this.onAuth(); }
       this.busy = false;
       if (this.again) { this.again = false; this.flush(); }
       if (this.changed) this.changed();
@@ -1203,7 +1233,7 @@ body.arena {
   }
 
   // ---------- pantallas ----------
-  const SHEETS = ["setup", "end", "tedit", "tend", "stats", "skysheet", "auto", "hedit", "data"];
+  const SHEETS = ["setup", "end", "tedit", "tend", "stats", "skysheet", "auto", "hedit", "data", "acct"];
   function openSheet(id) { $("scrim").hidden = false; SHEETS.forEach((s) => $(s).hidden = s !== id); }
   function closeSheets() { $("scrim").hidden = true; SHEETS.forEach((s) => $(s).hidden = true); }
   // las hojas de elegir se cierran tocando afuera, con Escape o deslizando; las de resultado piden una respuesta
@@ -2443,17 +2473,20 @@ body.arena {
     if (!validCode(c)) { c = newCode(); try { localStorage.setItem(SYNC_KEY, c); } catch {} }
     return c;
   }
+  // con código: respaldo del dispositivo. Sin código: la cuenta (cookie de sesión que el navegador manda solo)
   function cfRef(code) {
-    const h = { authorization: "Bearer " + code };
+    const h = code ? { authorization: "Bearer " + code } : {};
     return {
       async get() {
         const r = await fetch("/api/sync", { headers: h, cache: "no-store" });
+        if (r.status === 401 && !code) throw Object.assign(new Error("auth"), { auth: true });
         if (r.status === 404) return { exists: false, data: () => null };
         if (!r.ok) throw new Error("http " + r.status);
         const d = await r.json(); return d && d.keys ? { exists: true, data: () => d } : { exists: false, data: () => null };
       },
       async set(v) {
         const r = await fetch("/api/sync", { method: "PUT", headers: Object.assign({ "content-type": "application/json" }, h), body: JSON.stringify(v) });
+        if (r.status === 401 && !code) throw Object.assign(new Error("auth"), { auth: true });
         if (r.status === 409) { const d = await r.json().catch(() => ({})); throw Object.assign(new Error("newer"), { newer: d.newer }); }
         if (!r.ok) throw new Error("http " + r.status);
       }
@@ -2462,7 +2495,11 @@ body.arena {
   // trae lo más nuevo desde la nube y refresca la pantalla
   function adoptRemote(d, withActive) {
     // por si acaso: lo que había en este dispositivo queda guardado aparte antes de traer lo de la nube
-    try { localStorage.setItem("calma-antes-de-nube", JSON.stringify({ at: Date.now(), keys: mem })); } catch {}
+    try {
+      const prev = localStorage.getItem("calma-antes-de-nube");
+      if (prev) localStorage.setItem("calma-antes-de-nube-2", prev); // se conservan las dos últimas copias
+      localStorage.setItem("calma-antes-de-nube", JSON.stringify({ at: Date.now(), keys: mem }));
+    } catch {}
     for (const k in d.keys) if ((withActive || k !== "active") && typeof d.keys[k] === "string") keep(k, d.keys[k]);
     keep("_at", String(d.at || Date.now()));
     migrate();
@@ -2471,11 +2508,23 @@ body.arena {
     setPrice(store.get("price:" + kind, DEFAULT_PRICE[kind]));
     if (mode === "home") { setMode("home"); if (withActive) restoreActive(); updateTitle(); }
   }
+  // ¿este dispositivo tiene datos propios? (si no, nunca debe pisar un respaldo)
+  function hasOwn() {
+    const st = stats();
+    return ["routines", "workouts", "trains", "lastkg", "lastreps"].some((k) => mem[k]) || (st.wins || 0) + (st.orders || 0) + (st.saved || 0) + (st.minutes || 0) + (st.minutesAll || 0) > 0;
+  }
+  const sameData = (d) => {
+    const a = {}, b = d.keys || {};
+    for (const k in mem) if (k !== "_at" && k !== "active") a[k] = mem[k];
+    const bb = {}; for (const k in b) if (k !== "active") bb[k] = b[k];
+    const ka = Object.keys(a).sort(), kb = Object.keys(bb).sort();
+    return ka.length === kb.length && ka.every((k, i) => k === kb[i] && a[k] === bb[k]);
+  };
   async function startCloud(ref, withActive) {
     try {
       const snap = await ref.get(), d = snap.exists ? snap.data() : null;
       // un teléfono sin datos propios (almacenamiento borrado, app recién instalada) nunca debe pisar el respaldo: se trae lo de la nube sí o sí
-      const st = stats(), own = ["routines", "workouts", "trains", "lastkg", "lastreps"].some((k) => mem[k]) || (st.wins || 0) + (st.orders || 0) + (st.saved || 0) + (st.minutes || 0) + (st.minutesAll || 0) > 0;
+      const own = hasOwn();
       if (d && d.keys && (!own || (d.at || 0) > (+mem._at || 0))) adoptRemote(d, withActive);
       cloud.ref = ref; cloud.withActive = !!withActive; cloud.failed = false;
       if (!d || (+mem._at || 0) > (d.at || 0)) cloud.dirty(); else cloud.okAt = Date.now();
@@ -2483,15 +2532,61 @@ body.arena {
     } catch { cloud.failed = true; return false; }
     finally { if (cloud.changed) cloud.changed(); }
   }
+  // ---------- cuenta: usuario + contraseña (sesión en una cookie HttpOnly; ver worker/index.js) ----------
+  const USER_KEY = "calma-user", LINKED_KEY = "calma-linked", OFFER_KEY = "calma-acct-offered"; // fuera del prefijo "calma:", no viajan en el respaldo
+  const lsGet = (k) => { try { return localStorage.getItem(k) || ""; } catch { return ""; } };
+  const lsSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
+  let account; // undefined: sin consultar · null: sin sesión · "nombre": con sesión
+  let pending = null; // elección pendiente al unir este teléfono con una cuenta que ya tiene datos
+  let expired = false;
+  const fmtDate = (t) => t ? new Date(t).toLocaleString("es-CL", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false }) : "sin fecha";
+  async function authFetch(path, body) {
+    const r = await fetch("/api/auth/" + path, { method: body ? "POST" : "GET", headers: body ? { "content-type": "application/json" } : {}, body: body ? JSON.stringify(body) : undefined, cache: "no-store" });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw Object.assign(new Error(j.error || "No pude conectar"), { status: r.status });
+    return j;
+  }
+  // une este teléfono con la cuenta sin perder nada: lo que haya en un lado y en otro queda a salvo
+  async function linkAccount(name) {
+    const acc = cfRef(null);
+    try {
+      const a = await acc.get();
+      let ld = null; try { const l = await cfRef(syncCode()).get(); ld = l.exists ? l.data() : null; } catch {}
+      const ad = a.exists ? a.data() : null, first = lsGet(LINKED_KEY) !== name, own = hasOwn(), localAt = +mem._at || 0;
+      const remote = ad ? { label: "tu cuenta", d: ad } : (ld && first ? { label: "el respaldo anterior de este teléfono", d: ld } : null);
+      const finish = (push) => { lsSet(LINKED_KEY, name); cloud.ref = acc; cloud.withActive = false; cloud.failed = false; expired = false; if (push) cloud.dirty(); else cloud.okAt = Date.now(); };
+      if (!remote) { finish(own); return "ok"; }
+      if (!own) { adoptRemote(remote.d, false); finish(!ad); return "ok"; }
+      if (!first) { if ((remote.d.at || 0) > localAt) { adoptRemote(remote.d, false); finish(false); } else finish(!sameData(remote.d)); return "ok"; }
+      if (sameData(remote.d)) { finish(!ad); return "ok"; }
+      pending = { name, remote, finish, localAt };
+      return "choose";
+    } catch { cloud.failed = true; return "fail"; }
+    finally { if (cloud.changed) cloud.changed(); }
+  }
   let cloudBusy = false;
   async function ensureCloud() {
-    if (!CLOUD_OK || cloud.ref || cloudBusy) return;
-    cloudBusy = true; try { await startCloud(cfRef(syncCode())); } finally { cloudBusy = false; }
+    if (!CLOUD_OK || cloud.ref || cloudBusy || pending) return;
+    cloudBusy = true;
+    try {
+      if (account === undefined) {
+        try { account = (await authFetch("me")).user || null; if (!account) lsSet(USER_KEY, null); else lsSet(USER_KEY, account); }
+        catch { cloud.failed = true; if (cloud.changed) cloud.changed(); return; }
+      }
+      if (account) await linkAccount(account); else await startCloud(cfRef(syncCode()));
+    } finally { cloudBusy = false; }
   }
+  cloud.onAuth = () => { cloud.ref = null; account = undefined; expired = true; lsSet(USER_KEY, null); ensureCloud(); };
   cloud.onNewer = (d) => adoptRemote(d, cloud.withActive);
   function renderCloudNote() {
-    $("cl-box").hidden = !CLOUD_OK; $("cl-off").hidden = CLOUD_OK;
-    if (!CLOUD_OK) return;
+    $("cl-box").hidden = !CLOUD_OK || !!account; $("cl-title").hidden = $("cl-box").hidden; $("cl-off").hidden = CLOUD_OK;
+    $("ac-box").hidden = !CLOUD_OK; $("ac-open").hidden = !!account; $("ac-out").hidden = !account;
+    if (CLOUD_OK) {
+      $("ac-note").textContent = account
+        ? "Sesión iniciada como " + account + ". " + (pending ? "Falta elegir qué datos conservar." : cloud.failed ? "Sin conexión con la nube: tus datos siguen aquí y se respaldan solos al volver." : cloud.okAt ? "Todo se guarda solo en tu cuenta. Último respaldo: " + fmtDate(cloud.okAt) + "." : "Conectando con tu cuenta…") + " Tu código anterior sigue funcionando si cierras sesión."
+        : (expired ? "Tu sesión venció. Vuelve a iniciar sesión para seguir guardando en tu cuenta. " : "") + "Con una cuenta, todos tus cambios se guardan solos y recuperas todo entrando desde cualquier teléfono.";
+    }
+    if (!CLOUD_OK || account) return;
     $("cl-code").textContent = syncCode();
     const when = (t) => new Date(t).toLocaleString("es-CL", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false });
     $("cl-note").textContent = cloud.ref
@@ -2537,8 +2632,74 @@ body.arena {
     } catch { clMsg("No pude conectar. Revisa tu conexión."); }
   });
   // al salir de la app o volver la conexión, se respalda al tiro
-  document.addEventListener("visibilitychange", () => { if (document.hidden) cloud.flush(); else ensureCloud(); });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) cloud.flush(); else { ensureCloud(); cloud.flush(); } }); // al volver, un PUT sirve de revisión: si la nube tiene algo más nuevo, se trae
   addEventListener("online", () => { ensureCloud(); cloud.flush(); });
+
+  // hoja de cuenta
+  let acMode = "login";
+  function setAcMode(m) {
+    acMode = m;
+    $("ac-title").textContent = m === "signup" ? "Crea tu cuenta" : "Entra a tu cuenta";
+    $("ac-sub").textContent = m === "signup" ? "Elige un usuario y una contraseña de al menos 10 caracteres. Tus datos de ahora se guardan en la cuenta sin perder nada. Sin correo no se puede recuperar la contraseña: anótala bien (tu código anterior y el archivo de respaldo siguen sirviendo)." : "Tus datos se traen de la nube y, antes de reemplazar algo, lo de este teléfono queda guardado aparte.";
+    $("ac-go").textContent = m === "signup" ? "Crear cuenta" : "Entrar";
+    $("ac-pass").autocomplete = m === "signup" ? "new-password" : "current-password";
+    $("ac-swap").textContent = m === "signup" ? "Ya tengo cuenta" : "¿No tienes cuenta? Crear una";
+    $("ac-msg").textContent = "";
+  }
+  function openAcct(m) {
+    pending = null; setAcMode(m); $("ac-form").hidden = false; $("ac-choice").hidden = true; $("ac-swap").hidden = false;
+    $("ac-later").textContent = "Ahora no"; $("ac-user").value = lsGet(USER_KEY) || ""; $("ac-pass").value = "";
+    openSheet("acct");
+  }
+  function showChoice() {
+    const r = pending.remote;
+    $("ac-form").hidden = true; $("ac-choice").hidden = false; $("ac-swap").hidden = true; $("ac-later").textContent = "Decidir después";
+    $("ac-title").textContent = "¿Qué datos conservas?";
+    $("ac-ctext").textContent = "Hay datos distintos en " + r.label + " (" + fmtDate(r.d.at) + ") y en este teléfono (" + fmtDate(pending.localAt) + "). Lo que no elijas no se borra: queda en una copia aparte.";
+    $("ac-use-remote").textContent = "Usar lo de " + r.label;
+  }
+  $("ac-open").addEventListener("click", () => openAcct(lsGet(USER_KEY) || !hasOwn() ? "login" : "signup"));
+  $("ac-swap").addEventListener("click", () => setAcMode(acMode === "signup" ? "login" : "signup"));
+  $("ac-later").addEventListener("click", () => { closeSheets(); if (pending) { renderCloudNote(); toast("Sigues sin cuenta vinculada: elige cuando quieras en Ajustes"); } });
+  $("ac-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const msg = $("ac-msg"); msg.textContent = "";
+    const username = $("ac-user").value.trim(), password = $("ac-pass").value;
+    if (!username || !password) { msg.textContent = "Escribe tu usuario y tu contraseña."; return; }
+    $("ac-go").disabled = true;
+    try {
+      try { await cloud.flush(); } catch {} // lo último se respalda con el código antes de cambiar de cuenta
+      const j = await authFetch(acMode === "signup" ? "signup" : "login", { username, password });
+      account = j.user; lsSet(USER_KEY, account); $("ac-pass").value = ""; cloud.ref = null; cloud.okAt = 0;
+      const r = await linkAccount(account);
+      if (r === "choose") { showChoice(); return; }
+      closeSheets(); renderCloudNote();
+      toast(r === "ok" ? "Sesión iniciada como " + account : "Sesión iniciada. Reintento conectar con la nube…");
+    } catch (err) { msg.textContent = err.status ? err.message : "No pude conectar. Revisa tu conexión."; }
+    finally { $("ac-go").disabled = false; }
+  });
+  $("ac-use-remote").addEventListener("click", () => {
+    if (!pending) return; const p = pending; pending = null;
+    adoptRemote(p.remote.d, false); p.finish(p.remote.label !== "tu cuenta");
+    closeSheets(); renderCloudNote(); toast("Datos traídos de " + p.remote.label);
+  });
+  $("ac-use-local").addEventListener("click", () => {
+    if (!pending) return; const p = pending; pending = null;
+    keep("_at", String(Date.now())); // lo de este teléfono pasa a ser lo más nuevo; lo anterior de la cuenta queda como copia anterior en el servidor
+    p.finish(true); closeSheets(); renderCloudNote(); toast("Se guardó lo de este teléfono en tu cuenta");
+  });
+  $("ac-out").addEventListener("click", async () => {
+    $("ac-out").disabled = true;
+    try {
+      try { await cloud.flush(); } catch {}
+      await authFetch("logout", {});
+      // al salir, lo de este teléfono es la verdad: se respalda con el código y nada se trae de vuelta (así un respaldo viejo no revierte cambios)
+      account = null; lsSet(USER_KEY, null); expired = false; pending = null;
+      keep("_at", String(Date.now())); cloud.ref = cfRef(syncCode()); cloud.withActive = false; cloud.failed = false; cloud.dirty();
+      toast("Sesión cerrada. Tus datos siguen en este teléfono.");
+    } catch { toast("No pude cerrar la sesión. Revisa tu conexión."); }
+    finally { $("ac-out").disabled = false; renderCloudNote(); ensureCloud(); }
+  });
 
   // ---------- respiración ----------
   const IN = 4, HOLD = 2, OUT = 6, CYCLE = IN + HOLD + OUT;
@@ -3366,8 +3527,14 @@ body.arena {
       await startCloud(db.doc("data/users/" + id + "/calma"), true);
     } catch {}
   })();
-  // nube propia: base D1 en Cloudflare, con el código de este dispositivo
+  // nube propia: base D1 en Cloudflare, con la cuenta (o, si no hay, con el código de este dispositivo)
   ensureCloud();
+  // se ofrece crear cuenta / entrar una sola vez, al abrir por primera vez (en un teléfono sin datos, directo a "entrar")
+  if (CLOUD_OK && !lsGet(OFFER_KEY)) setTimeout(async () => {
+    await ensureCloud();
+    if (account || pending || mode !== "home" || !$("scrim").hidden || lsGet(OFFER_KEY)) return;
+    lsSet(OFFER_KEY, "1"); openAcct(hasOwn() ? "signup" : "login");
+  }, 3500);
 })();
 </script>
 </body>
