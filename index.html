@@ -496,37 +496,43 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   background: rgba(0,0,0,0.3); border: 1px dashed var(--line); user-select: all; -webkit-user-select: all; word-break: break-all;
 }
 
-/* ---- Entrenar: un solo lenguaje. Negro cálido, superficies lisas con borde fino, un único acento (brasa) para la acción y el avance.
-   Tipografía: Bricolage condensada para números y títulos; etiquetas chicas en mayúscula. Radios: 20 tarjetas, 14 controles, píldora en selectores. Sin sombras ni brillos. ---- */
+/* ---- Entrenar, a la iOS: negro puro, grupos en gris oscuro del sistema, tipografía del sistema (SF en iPhone), controles segmentados y botones llenos.
+   Un solo acento naranja; los anillos de actividad cuentan el avance. Sin sombras, sin mayúsculas forzadas. ---- */
 body.sport {
-  --night: #0c0a09; --surface: #151210; --surface-2: #1e1a17; --hair: rgba(255,255,255,0.08);
-  --glass: #151210; --glass-2: #1e1a17; --line: rgba(255,255,255,0.08);
-  --moon: #f4eee8; --mist: #8f867e; --accent: #ff5a1f; --ember: #ff5a1f; --ember-ink: #160600; --sage: #ff5a1f; --sage-ink: #160600;
+  --night: #000; --surface: #1c1c1e; --surface-2: #2c2c2e; --hair: rgba(84,84,88,0.5);
+  --glass: #1c1c1e; --glass-2: #2c2c2e; --line: rgba(84,84,88,0.5);
+  --moon: #fff; --mist: #8e8e93; --accent: #ff9f0a; --ember: #ff9f0a; --ember-ink: #000; --sage: #ff9f0a; --sage-ink: #000;
   --lg: none; --lg-edge: none; --lg-drop: none; --orange: var(--accent); --orange-edge: none;
+  --body: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", sans-serif;
+  --display: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+  font-family: var(--body);
 }
-.sport .icon-btn, .sport .clock, .sport .card, .sport .btn:not(.go), .sport .week, .sport .toast, .sport .mini div, .sport .rcard, .sport .list, .sport .hero, .sport .panel, .sport .tile {
-  background: var(--surface); border: 1px solid var(--hair); box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none;
+.sport .icon-btn, .sport .clock, .sport .card, .sport .btn:not(.go), .sport .week, .sport .toast, .sport .mini div, .sport .rcard, .sport .list, .sport .hero, .sport .panel, .sport .tile, .sport .feature {
+  background: var(--surface); border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none;
 }
-.sport .icon-btn { border-radius: 14px; }
-.sport .card, .sport .hero, .sport .rcard, .sport .panel, .sport .list, .sport .feature { border-radius: 20px; }
-.sport .btn:not(.go) { background: var(--surface-2); border-radius: 14px; }
-.sport .cta, .sport .cta.sage, .sport .btn.go, .sport .icon-btn[aria-pressed="true"] { background: var(--accent); color: var(--ember-ink); border: 0; box-shadow: none; border-radius: 14px; }
-.sport .icon-btn[aria-pressed="true"] { color: var(--ember-ink); }
+.sport .icon-btn { border-radius: 50%; background: var(--surface-2); }
+.sport .card, .sport .hero, .sport .rcard, .sport .panel, .sport .list, .sport .feature { border-radius: 22px; }
+.sport .btn:not(.go) { background: var(--surface-2); border-radius: 14px; font-weight: 600; }
+.sport .cta, .sport .cta.sage, .sport .btn.go, .sport .icon-btn[aria-pressed="true"] { background: var(--accent); color: #000; border: 0; box-shadow: none; border-radius: 14px; font-weight: 600; }
+.sport .icon-btn[aria-pressed="true"] { color: #000; }
 .sport .page { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
-.sport .sheet { background: var(--surface); border: 0; border-top: 1px solid var(--hair); border-radius: 24px 24px 0 0; box-shadow: none; }
-.sport .scrim { background: rgba(0, 0, 0, 0.68); }
-.sport .grab { background: rgba(255,255,255,0.18); }
-.sport .seg, .sport .stepper { background: var(--night); border-radius: 14px; }
-.sport .seg button { color: var(--mist); }
-.sport .seg button[aria-pressed="true"] { background: var(--moon); color: var(--night); box-shadow: none; }
-.sport .chips button { background: transparent; border: 1px solid var(--hair); color: var(--mist); }
-.sport .chips button[aria-pressed="true"] { background: var(--moon); color: var(--night); border-color: var(--moon); box-shadow: none; }
-.sport .text, .sport .panel select, .sport .how-top select, .sport .item select, .sport input.num, .sport .item, .sport .hex, .sport .code { background: var(--night); border: 1px solid var(--hair); }
-.sport .stepper button { background: var(--surface-2); border: 0; }
+.sport .sheet { background: var(--surface); border: 0; border-radius: 28px 28px 0 0; box-shadow: none; }
+.sport .scrim { background: rgba(0, 0, 0, 0.55); }
+.sport .grab { background: rgba(235,235,245,0.3); }
+.sport .seg { background: var(--surface); border-radius: 10px; padding: 2px; gap: 0; }
+.sport .sheet .seg, .sport .panel .seg { background: var(--surface-2); }
+.sport .seg button { color: var(--moon); font-weight: 500; border-radius: 8px; padding: 8px 4px; }
+.sport .seg button[aria-pressed="true"] { background: #636366; color: #fff; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+.sport .stepper { background: var(--surface-2); border-radius: 12px; }
+.sport .chips button { background: var(--surface-2); border: 0; color: var(--moon); font-weight: 500; }
+.sport .chips button[aria-pressed="true"] { background: var(--accent); color: #000; border-color: transparent; box-shadow: none; }
+.sport .text, .sport .panel select, .sport .how-top select, .sport .item select, .sport input.num, .sport .item, .sport .hex, .sport .code { background: var(--surface-2); border: 0; }
+.sport .panel .text, .sport .sheet .text { background: var(--surface-2); }
+.sport .stepper button { background: #3a3a3c; border: 0; }
 .sport .item { border-radius: 14px; }
-.sport .how-stage { background: var(--night); border: 1px solid var(--hair); }
-.sport .badge { background: transparent; }
-.sport .badge.on { background: transparent; border-color: var(--accent); }
+.sport .how-stage { background: var(--night); border: 0; }
+.sport .badge { background: var(--surface); border: 0; opacity: 0.5; }
+.sport .badge.on { opacity: 1; background: var(--surface); }
 .sport .badge.on b { color: var(--accent); }
 .sport .brow i::after, .sport .prog i { background: var(--accent); }
 .sport .segbar i.on { background: var(--moon); }
@@ -534,56 +540,53 @@ body.sport {
 .sport .tag, .sport .r-info em { color: var(--mist); }
 .sport .brand i { background: var(--accent); box-shadow: none; }
 
-/* tipografía */
-.sport h1, .sport .card h3, .sport .feature h3, .sport .rcard b, .sport .big, .sport .hero-n b, .sport .reactor-slot b, .sport .sheet h2 {
-  font-stretch: 75%; text-transform: uppercase; font-weight: 800; letter-spacing: 0; font-style: normal;
+/* tipografía: una familia, pesos y tamaños con jerarquía; números redondeados */
+.sport h1, .sport h2, .sport h3, .sport .sheet h2 { font-family: var(--body); font-stretch: 100%; text-transform: none; letter-spacing: -0.02em; font-weight: 700; font-style: normal; }
+.sport .page-in h1 { font-size: 2.1rem; line-height: 1.1; }
+.sport .page-date { font-family: var(--body); font-size: 0.8rem; font-weight: 600; letter-spacing: 0; text-transform: uppercase; color: var(--mist); }
+.sport .sec { font-family: var(--body); font-size: 1.3rem; font-weight: 700; letter-spacing: -0.01em; color: var(--moon); text-transform: none; margin: 8px 0 -4px; }
+.sport .sub { font-family: var(--body); font-size: 1.05rem; font-weight: 700; text-transform: none; letter-spacing: -0.01em; margin: 4px 0 0; }
+.sport .kick, .sport .card .eyebrow, .sport .hmonth, .sport .cap {
+  font-family: var(--body); font-size: 0.8rem; font-weight: 600; letter-spacing: 0; text-transform: none; font-style: normal; color: var(--mist); opacity: 1;
 }
-.sport .page-in h1 { font-size: 2.6rem; line-height: 0.95; }
-.sport .sec, .sport .sub, .sport .cap, .sport .kick, .sport .page-date, .sport .card .eyebrow, .sport .reactor-slot span, .sport .hmonth {
-  font-family: var(--body); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-style: normal; color: var(--mist);
-}
-.sport .sec { margin: 6px 0 -2px; }
-.sport .sub { margin: 4px 0 0; }
-.sport .cap { opacity: 1; }
-.sport .card .eyebrow { color: var(--mist); }
-.sport .card .eyebrow > span:first-child, .sport .hero .kick { color: var(--accent); }
-.sport .reactor-slot span { color: var(--moon); opacity: 0.8; }
-.sport .hero-n b { font-size: clamp(3.2rem, 16vw, 4.2rem); }
-.sport .page-in { gap: 16px; }
-.sport .sp-pane { gap: 16px; }
-.sport .big { font-size: clamp(3.4rem, 16vw, 4.6rem); text-shadow: none; }
-.sport .breath { font-weight: 600; font-size: 1rem; color: var(--mist); text-shadow: none; }
-.sport #t-main { font-family: var(--display); font-stretch: 75%; font-weight: 800; font-size: 1.2rem; text-transform: uppercase; padding: 16px 14px; }
-.sport #t-title { font-size: 1.25rem; line-height: 1.05; }
+.sport .card .eyebrow > span:first-child, .sport .hero .kick, .sport .feature .kick { color: var(--accent); opacity: 1; }
+.sport .card h3, .sport .rcard b, .sport .feature h3 { font-family: var(--body); text-transform: none; font-stretch: 100%; letter-spacing: -0.015em; font-weight: 700; }
+.sport .card h3 { font-size: 1.2rem; line-height: 1.2; }
+.sport .big, .sport .hero-n b, .sport .reactor-slot b, .sport .hero-row b { font-family: var(--display); font-stretch: 100%; text-transform: none; font-weight: 700; letter-spacing: -0.02em; font-style: normal; font-variant-numeric: tabular-nums; }
+.sport .big { font-size: clamp(2.8rem, 13vw, 3.6rem); text-shadow: none; }
+.sport .breath { font-family: var(--body); font-weight: 500; font-size: 0.95rem; color: var(--mist); text-shadow: none; }
+.sport .page-in, .sport .sp-pane { gap: 16px; }
+.sport .hero-n b { font-size: clamp(3rem, 15vw, 3.8rem); }
+.sport #t-main { font-family: var(--body); font-size: 1.05rem; font-weight: 600; padding: 15px 14px; border-radius: 14px; }
+.sport .hero .kick { font-weight: 600; }
 
-/* listas planas en vez de tarjetas iguales */
-.sport .hrow { background: none; border: 0; border-bottom: 1px solid var(--hair); border-radius: 0; padding: 14px 0; margin-top: 0; box-shadow: none; }
-.sport .hrow-top b { font-size: 1.1rem; }
-.sport .week { background: none; border: 0; padding: 0; }
-.sport .day i { border-color: var(--hair); }
+/* listas como en Ajustes de iOS */
+.sport .hrow { background: none; border: 0; border-bottom: 0.5px solid var(--hair); border-radius: 0; padding: 14px 0; margin-top: 0; box-shadow: none; }
+.sport .hrow-top b { font-size: 1.05rem; font-weight: 600; }
+.sport .week { background: none; padding: 0; }
+.sport .day i { border: 1.5px solid #3a3a3c; }
 .sport .day.win i { background: var(--accent); border-color: var(--accent); box-shadow: none; }
-.sport .day.today span { color: var(--moon); }
-.sport .day.today i { outline: 1px solid var(--moon); }
-.sport .pd b { background: var(--surface-2); color: var(--moon); }
-.sport .pd b.off { background: none; border: 1px solid var(--hair); color: var(--mist); }
-.sport .pd.today b { outline: 1px solid var(--accent); }
+.sport .day.today span { color: var(--accent); }
+.sport .day.today i { outline: none; }
+.sport .pd b { background: var(--surface); color: var(--moon); }
+.sport .pd b.off { background: none; border: 1px solid #2c2c2e; color: var(--mist); }
+.sport .pd.today b { outline: 1.5px solid var(--accent); }
 .sport .see { color: var(--accent); }
-.sport .hero-row div { background: var(--night); }
-.sport .rcard .get.soft-get { background: var(--surface-2); color: var(--moon); }
+.sport .hero-row div { background: var(--surface-2); border-radius: 14px; }
+.sport .rcard .get.soft-get { background: var(--surface-2); color: var(--accent); }
 
 .sp-btns { display: flex; gap: 8px; }
-.reactor-slot { position: relative; height: 250px; margin: -8px 0 -8px; display: grid; place-content: center; justify-items: center; gap: 6px; text-align: center; pointer-events: none; }
-.reactor-slot b { font-family: var(--display); font-size: 3rem; line-height: 0.9; font-variant-numeric: tabular-nums; }
-.reactor-slot span { max-width: 9em; line-height: 1.3; }
+.reactor-slot { position: relative; height: 250px; margin: -8px 0 -8px; display: grid; place-content: center; justify-items: center; gap: 2px; text-align: center; pointer-events: none; }
+.reactor-slot b { font-size: 2.8rem; line-height: 1; }
+.reactor-slot span { max-width: 8em; line-height: 1.25; font-family: var(--body); font-size: 0.75rem; font-weight: 600; color: var(--mist); text-transform: none; letter-spacing: 0; opacity: 1; }
 
-/* "Hoy toca": el único bloque lleno de color; late con los bajos (--k lo mueve el analizador de audio) */
-.sport .feature { background: var(--accent); color: var(--ember-ink); box-shadow: none; padding: 22px; filter: brightness(calc(1 + 0.1 * var(--k, 0))); }
-.sport .feature.off { background: var(--surface); color: var(--moon); border: 1px solid var(--hair); filter: none; }
-.sport .feature .kick { color: inherit; opacity: 0.7; }
-.sport .feature h3 { font-size: 2.4rem; line-height: 0.95; }
-.sport .feature p { opacity: 0.8; }
-.sport .get { background: var(--night); color: var(--moon); box-shadow: none; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 12px 22px; }
-@media (prefers-reduced-motion: reduce) { .sport .feature { filter: none; } }
+/* "Hoy toca": tarjeta del sistema con botón lleno; el botón late con los bajos (--k lo mueve el analizador de audio) */
+.sport .feature { color: var(--moon); padding: 20px; gap: 6px; filter: none; }
+.sport .feature.off { border: 0; }
+.sport .feature h3 { font-size: 1.9rem; line-height: 1.1; }
+.sport .feature p { opacity: 1; color: var(--mist); font-size: 0.95rem; }
+.sport .get { background: var(--accent); color: #000; box-shadow: 0 0 calc(22px * var(--k, 0)) rgba(255,159,10,0.7); font-size: 1rem; font-weight: 600; letter-spacing: 0; text-transform: none; padding: 12px 24px; margin-top: 12px; }
+.sport .get.soft-get { box-shadow: none; margin-top: 0; }
 </style>
 </head>
 <body>
@@ -2945,116 +2948,81 @@ body.sport {
   cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up); cv.addEventListener("pointerleave", up);
 
   // ---------- arena: el escenario de Entrenar. El analizador de audio escucha los bajos de la música y mueve todo ----------
-  const arena = { bass: 0, slow: 0, kick: 0, lastKick: 0, rings: [], bars: new Array(48).fill(0), freq: null, lvl: 0, rot: 0, segs: 7, weekP: 0, e: 0.55 };
+  const arena = { bass: 0, slow: 0, kick: 0, lastKick: 0, rings: [], freq: null, lvl: 0, segs: 7, weekP: 0, e: 0.55 };
   const isArena = () => mode === "train" || mode === "tend" || (mode === "home" && tab === "train");
   const pulseEls = [$("tr-today"), $("tcard")];
   function readBass(dt, t, now) {
-    const A = arena, an = audio.an, N = A.bars.length;
+    const A = arena, an = audio.an;
     if (an && audio.on) {
       if (!A.freq) A.freq = new Uint8Array(an.frequencyBinCount);
       an.getByteFrequencyData(A.freq);
       const f = A.freq;
       A.bass = Math.min(1, (f[1] + f[2] + f[3] + f[4] * 0.5) / (3.5 * 255));
-      for (let i = 0; i < N; i++) {
-        const lo = Math.floor(Math.pow(180, i / N)), hi = Math.max(lo + 1, Math.floor(Math.pow(180, (i + 1) / N)));
-        let m = 0; for (let k = lo; k < hi; k++) if (f[k] > m) m = f[k];
-        const v = Math.min(1, Math.pow(m / 255, 1.15) * (1 + 1.4 * i / N)); // los agudos suenan más flojos: se compensa para que el anillo no quede cojo
-        A.bars[i] += (v - A.bars[i]) * (v > A.bars[i] ? 0.65 : 0.16);
-      }
-    } else {
-      // sin música: la arena respira sola, despacio
-      A.bass = 0.12 + 0.07 * Math.sin(t * 1.7);
-      for (let i = 0; i < N; i++) A.bars[i] += (0.07 + 0.05 * Math.sin(t * 2 + i * 0.55) - A.bars[i]) * 0.1;
-    }
+    } else A.bass = 0.1 + 0.05 * Math.sin(t * 1.7); // sin música: respira sola, casi quieto
     A.slow += (A.bass - A.slow) * Math.min(1, dt * 3);
     if (audio.on && A.bass > A.slow + 0.1 && A.bass > 0.42 && now - A.lastKick > 180) {
       A.kick = 1; A.lastKick = now;
-      if (!reduced) A.rings.push({ r: 0, a: 0.65 });
+      if (!reduced) A.rings.push({ r: 0, a: 0.5 });
     }
     A.kick *= Math.exp(-dt * 7);
+  }
+  // anillos de actividad, como en Fitness: cada uno es un avance distinto y se llena con borde redondo
+  function ringPath(cx, cy, r, w, p, c0, c1, k) {
+    ctx.lineWidth = w; ctx.lineCap = "round";
+    ctx.strokeStyle = "rgba(" + c1 + ",0.13)"; ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.stroke();
+    p = Math.max(0, Math.min(1, p)); if (p < 0.004) return;
+    const g = ctx.createConicGradient ? ctx.createConicGradient(-Math.PI / 2, cx, cy) : null;
+    let stroke = "rgb(" + c1 + ")";
+    if (g) { g.addColorStop(0, "rgb(" + c0 + ")"); g.addColorStop(Math.max(0.02, p), "rgb(" + c1 + ")"); g.addColorStop(1, "rgb(" + c1 + ")"); stroke = g; }
+    ctx.strokeStyle = stroke; ctx.shadowColor = "rgba(" + c1 + ",0.55)"; ctx.shadowBlur = 6 + 18 * k;
+    ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + TAU * p); ctx.stroke(); ctx.shadowBlur = 0;
   }
   function drawArena(t, dt, now) {
     const A = arena, k = A.kick;
     // cuánta intensidad pide el momento: serie a tope, descanso bajando, inicio a media
     const target = mode === "train" && wk ? (wk.phase === "work" ? 1 : wk.phase === "rest" ? 0.3 : 0.65) : mode === "tend" ? 0.85 : 0.55;
     A.e += (target - A.e) * Math.min(1, dt * 1.5); audio.energy = A.e;
-    const e = A.e;
     readBass(dt, t, now);
     for (const el of pulseEls) { const v = k > 0.02 ? k.toFixed(2) : "0"; if (el._k !== v) { el._k = v; el.style.setProperty("--k", v); } }
 
-    // fondo liso; solo respira un resplandor bajo la esfera cuando pega el bajo
-    const bg = ctx.createLinearGradient(0, 0, 0, H);
-    bg.addColorStop(0, "#0c0a09"); bg.addColorStop(0.88, "#0c0a09"); bg.addColorStop(1, "#0b1220");
-    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-
-    // ecualizador pegado al piso, bajo la barra de pestañas
-    const NB = A.bars.length, bw = W / NB, maxH = H * 0.07;
-    for (let i = 0; i < NB; i++) {
-      const v = Math.min(1, A.bars[i] * 1.15), h = 2 + v * maxH;
-      ctx.fillStyle = "rgba(255,90,31," + (0.16 + 0.34 * v).toFixed(3) + ")";
-      ctx.fillRect(i * bw + 1, H - h, bw - 2, h);
-    }
+    ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
+    const bg = ctx.createLinearGradient(0, H * 0.9, 0, H); bg.addColorStop(0, "rgba(11,18,32,0)"); bg.addColorStop(1, "#0b1220");
+    ctx.fillStyle = bg; ctx.fillRect(0, H * 0.9, W, H * 0.1);
 
     // el reactor: en Entrenar vive en el hueco de arriba; en la rutina ocupa el centro de la pantalla
-    let cx = orb.x, cy = orb.y, cr = orb.r, show = true, lvl, ring, segs;
+    let cx = orb.x, cy = orb.y, cr = orb.r, show = true, rings;
+    const it = wk && wk.r.items[wk.i];
     if (mode === "home") {
       const rc = $("sp-reactor").getBoundingClientRect();
       show = rc.width > 0 && rc.bottom > -20 && rc.top < H + 20;
       cx = rc.left + rc.width / 2; cy = rc.top + rc.height / 2; cr = rc.height * 0.44;
-      A.lvl += (A.weekP - A.lvl) * 0.06; lvl = ring = A.lvl; segs = A.segs;
-    } else {
-      A.lvl += ((mode === "tend" ? 1 : orb.level) - A.lvl) * 0.15; lvl = A.lvl;
-      ring = mode === "tend" ? 1 : (orb.ring ?? orb.level); segs = wk ? wk.totalSets : 12;
+      A.lvl += (A.weekP - A.lvl) * 0.06; rings = [A.lvl];
+    } else if (mode === "tend" || !it) { A.lvl += (1 - A.lvl) * 0.15; rings = [1, 1, 1]; }
+    else {
+      const setsP = it.type === "cardio" ? 0 : wk.s / it.sets;
+      A.lvl += ((orb.ring ?? 0) - A.lvl) * 0.15;
+      rings = [A.lvl, (wk.i + (wk.phase === "work" ? setsP : Math.min(1, setsP))) / wk.r.items.length, wk.phase === "work" ? setsP : orb.level];
     }
     if (show) {
-      const R = cr * 0.64 * (1 + 0.05 * k);
-      const glow = ctx.createRadialGradient(cx, cy, R, cx, cy, R * 2.4);
-      glow.addColorStop(0, "rgba(255,90,31," + (0.05 + 0.2 * k).toFixed(3) + ")"); glow.addColorStop(1, "rgba(255,90,31,0)");
-      ctx.fillStyle = glow; ctx.fillRect(cx - R * 2.4, cy - R * 2.4, R * 4.8, R * 4.8);
-
-      // una onda por golpe de bajo, fina
+      const R = cr * 0.95 * (1 + 0.012 * k), n = rings.length, w = n === 1 ? R * 0.17 : R * 0.105, gap = n === 1 ? 0 : 3.5;
+      // un pulso suave de luz detrás, que sigue al bajo
+      const glow = ctx.createRadialGradient(cx, cy, R * 0.4, cx, cy, R * 1.9);
+      glow.addColorStop(0, "rgba(255,159,10," + (0.03 + 0.1 * k).toFixed(3) + ")"); glow.addColorStop(1, "rgba(255,159,10,0)");
+      ctx.fillStyle = glow; ctx.fillRect(cx - R * 1.9, cy - R * 1.9, R * 3.8, R * 3.8);
       for (let i = A.rings.length - 1; i >= 0; i--) {
-        const w = A.rings[i]; w.r += dt * 1.4; w.a -= dt * 1.1;
-        if (w.a <= 0) { A.rings.splice(i, 1); continue; }
-        ctx.strokeStyle = "rgba(255,90,31," + (w.a * 0.6).toFixed(3) + ")"; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.arc(cx, cy, R * (1.35 + w.r), 0, TAU); ctx.stroke();
+        const q = A.rings[i]; q.r += dt * 1.3; q.a -= dt * 1.3;
+        if (q.a <= 0) { A.rings.splice(i, 1); continue; }
+        ctx.strokeStyle = "rgba(255,159,10," + (q.a * 0.5).toFixed(3) + ")"; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(cx, cy, R + 6 + q.r * R * 0.35, 0, TAU); ctx.stroke();
       }
-
-      // espectro: una sola vuelta, graves arriba a la derecha y agudos cerrando; una muesca marca el comienzo
-      const M = NB, r0 = R * 1.32, len = R * 0.5, gap = 0.12;
-      ctx.lineWidth = 2.2; ctx.lineCap = "butt";
-      for (let j = 0; j < M; j++) {
-        const v = Math.min(1, A.bars[j] * 1.1), a = -Math.PI / 2 + gap + (j + 0.5) / M * (TAU - gap * 2), l = 2 + v * len, ca = Math.cos(a), sa = Math.sin(a);
-        ctx.strokeStyle = v > 0.85 ? "#f4eee8" : "rgba(255,90,31," + (0.35 + 0.65 * v).toFixed(3) + ")";
-        ctx.beginPath(); ctx.moveTo(cx + ca * r0, cy + sa * r0); ctx.lineTo(cx + ca * (r0 + l), cy + sa * (r0 + l)); ctx.stroke();
-      }
-
-      // anillo de avance: un tramo por serie (en Inicio, por entreno de la semana); se enciende uno cada vez que cumples
-      const rr = R * 1.14, circ = TAU * rr, seg = segs > 1 && segs <= 40;
-      ctx.lineCap = "butt"; ctx.lineWidth = 4;
-      if (seg) ctx.setLineDash([circ / segs - 4, 4]);
-      ctx.strokeStyle = "rgba(255,255,255,0.1)"; ctx.beginPath(); ctx.arc(cx, cy, rr, -Math.PI / 2, -Math.PI / 2 + TAU - 0.001); ctx.stroke();
-      if (ring > 0.001) { ctx.strokeStyle = "#ff5a1f"; ctx.beginPath(); ctx.arc(cx, cy, rr, -Math.PI / 2, -Math.PI / 2 + TAU * Math.min(1, ring)); ctx.stroke(); }
-      ctx.setLineDash([]);
-
-      // núcleo liso; el nivel sube con un borde apenas vivo
-      ctx.save();
-      ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fillStyle = "#0c0a09"; ctx.fill(); ctx.clip();
-      const lv = Math.max(0.02, lvl), surface = cy + R - lv * 2 * R, amp = (1 + 4 * A.bass + 3 * k) * (reduced ? 0.3 : 1);
-      ctx.beginPath(); ctx.moveTo(cx - R, cy + R);
-      for (let x = -R; x <= R; x += 6) ctx.lineTo(cx + x, surface + Math.sin(x * 0.06 + t * 2.4) * amp);
-      ctx.lineTo(cx + R, cy + R); ctx.closePath();
-      ctx.fillStyle = "rgba(255,90,31," + (0.55 + 0.45 * e).toFixed(3) + ")"; ctx.fill();
-      ctx.restore();
-      ctx.lineWidth = 1; ctx.strokeStyle = "rgba(255,255,255,0.16)";
-      ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.stroke();
+      const cols = [["255,92,48", "255,159,10"], ["255,159,10", "255,214,10"], ["255,214,10", "255,236,140"]];
+      for (let i = 0; i < n; i++) ringPath(cx, cy, R - w / 2 - i * (w + gap), w, rings[i], cols[i][0], cols[i][1], k);
     }
-
     // chispas de los toques y de cada serie cumplida
     for (let i = sparks.length - 1; i >= 0; i--) {
       const s = sparks[i]; s.x += s.vx; s.y += s.vy; s.life -= 0.025;
       if (s.life <= 0) { sparks.splice(i, 1); continue; }
-      ctx.fillStyle = "rgba(255,90,31," + s.life.toFixed(3) + ")"; ctx.fillRect(s.x - 1, s.y - 1, 2, 2);
+      ctx.fillStyle = "rgba(255,159,10," + s.life.toFixed(3) + ")"; ctx.beginPath(); ctx.arc(s.x, s.y, 1.5, 0, TAU); ctx.fill();
     }
   }
 
