@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Calma</title>
+<title>Stillfit</title>
 <meta name="theme-color" content="#0b1220">
 <meta name="description" content="Una app para dejar pasar las ganas de comer dulce o pedir delivery, a cualquier hora del día.">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Calma">
+<meta name="apple-mobile-web-app-title" content="Stillfit">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -441,7 +441,7 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 .s-wrap { position: relative; }
 .s-fly { position: absolute; left: 50%; top: 50%; margin: -2.5px; width: 5px; height: 5px; border-radius: 50%; background: #ffd9a8; box-shadow: 0 0 10px 3px rgba(255,190,118,0.7); opacity: 0; animation: s-orbit 3s ease-in-out infinite; }
 .s-name { font-family: var(--display); font-weight: 700; font-size: 2.4rem; letter-spacing: -0.02em; animation: s-up 0.8s ease-out 0.5s both; }
-.s-sub { font-size: 0.95rem; color: var(--mist); margin-top: -14px; animation: s-up 0.8s ease-out 0.85s both; }
+.s-sub { font-size: 0.95rem; color: var(--mist); margin-top: -14px; max-width: 80vw; text-align: center; text-wrap: balance; animation: s-up 0.8s ease-out 0.85s both; }
 @keyframes s-pop { from { transform: scale(0.6); opacity: 0; } }
 @keyframes s-glow { 50% { box-shadow: 0 0 0 14px rgba(255,190,118,0), 0 0 90px rgba(255,170,90,0.55), inset 0 0 24px rgba(255,255,255,0.08); } }
 @keyframes s-fill { to { height: 66%; } }
@@ -507,15 +507,15 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     <span class="s-fly" style="--a: 200deg; animation-delay: 0.9s"></span>
     <span class="s-fly" style="--a: 290deg; animation-delay: 1.4s"></span>
   </div>
-  <div class="s-name">Calma</div>
-  <div class="s-sub">respira, ya pasa</div>
+  <div class="s-name">Stillfit</div>
+  <div class="s-sub"></div>
 </div>
 <canvas id="sky" aria-hidden="true"></canvas>
 <div class="toast" id="toast" role="status" hidden></div>
 
 <div class="app">
   <header class="bar">
-    <div class="brand"><i></i>Calma</div>
+    <div class="brand"><i></i>Stillfit</div>
     <button class="clock" id="clock" aria-label="Elegir el cielo"><span id="clock-t"></span><span id="clock-p"></span></button>
     <button class="icon-btn" id="open-stats" aria-label="Tu registro">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 20v-8M12 20V4M19 20v-5"/></svg>
@@ -2101,7 +2101,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     const at = (((remTime() % 1440) + 1440) % 1440), key = nightKey();
     if (rem.last === key || m < at || m > at + 90 || mode !== "home") return;
     rem.last = key; store.set("rem", rem);
-    toast("Se acerca tu hora difícil. Aquí estoy."); notify("Calma", "Se acerca tu hora difícil. Si te dan ganas, aquí estoy.", "calma-rem");
+    toast("Se acerca tu hora difícil. Aquí estoy."); notify("Stillfit", "Se acerca tu hora difícil. Si te dan ganas, aquí estoy.", "calma-rem");
     $("hint").textContent = "Se acerca tu hora difícil. Si llegan las ganas, toca \"Lo necesito ya\"."; $("hint").style.opacity = 1;
   }
 
@@ -2152,13 +2152,13 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   seg("p-metric", "pm", (v) => { progMetric = v; renderProg(); });
 
   // respaldo: todo lo guardado, en un archivo
-  function backupName() { return "calma-respaldo-" + ymd(new Date()) + ".json"; }
+  function backupName() { return "stillfit-respaldo-" + ymd(new Date()) + ".json"; }
   $("bk-out").addEventListener("click", async () => {
     const keys = {}; for (const k in mem) if (k !== "_at" && k !== "active") keys[k] = mem[k];
-    const text = JSON.stringify({ app: "calma", v: 1, at: Date.now(), keys }, null, 1);
+    const text = JSON.stringify({ app: "stillfit", v: 1, at: Date.now(), keys }, null, 1);
     const file = new File([text], backupName(), { type: "application/json" });
     try {
-      if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: "Respaldo de Calma" }); $("bk-note").textContent = "Respaldo listo."; return; }
+      if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: "Respaldo de Stillfit" }); $("bk-note").textContent = "Respaldo listo."; return; }
     } catch (err) { if (err && err.name === "AbortError") return; }
     const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
@@ -2169,11 +2169,11 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
     const f = e.target.files[0]; e.target.value = ""; if (!f) return;
     try {
       const d = JSON.parse(await f.text());
-      if (!d || d.app !== "calma" || !d.keys || typeof d.keys !== "object") throw 0;
+      if (!d || (d.app !== "calma" && d.app !== "stillfit") || !d.keys || typeof d.keys !== "object") throw 0;
       importArmed = d.keys;
       const n = Object.keys(d.keys).length;
       $("bk-note").textContent = "Archivo válido (" + n + " datos). Esto reemplaza lo que tienes ahora."; $("bk-in").textContent = "Toca para reemplazar";
-    } catch { importArmed = null; $("bk-note").textContent = "Ese archivo no es un respaldo de Calma."; }
+    } catch { importArmed = null; $("bk-note").textContent = "Ese archivo no es un respaldo de Stillfit."; }
   });
   $("bk-in").addEventListener("click", async () => {
     if (!importArmed) { $("bk-file").click(); return; }
@@ -3118,13 +3118,13 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   $("we-cancel").addEventListener("click", closeSheets);
 
   // app instalable y sin conexión (solo cuando corre en su propio dominio)
-  // diagnóstico escondido: 5 toques seguidos en "Calma" muestran los tamaños que ve la app (sirve para depurar la ventana en iOS)
+  // diagnóstico escondido: 5 toques seguidos en "Stillfit" muestran los tamaños que ve la app (sirve para depurar la ventana en iOS)
   (function () {
     const brand = document.querySelector(".brand");
     if (!brand) return;
-    const APP_VERSION = "calma-v28"; // igual que VERSION en sw.js
+    const APP_VERSION = "stillfit-v32"; // igual que VERSION en sw.js
     let taps = 0, last = 0, box = null, probe = null, cached = "…";
-    (window.caches ? caches.keys() : Promise.resolve([])).then((k) => { cached = k.filter((n) => /^calma-v/.test(n)).join(", ") || "sin caché"; paint(); }).catch(() => {});
+    (window.caches ? caches.keys() : Promise.resolve([])).then((k) => { cached = k.filter((n) => /^(calma|stillfit)-v/.test(n)).join(", ") || "sin caché"; paint(); }).catch(() => {});
     function read() {
       probe = probe || Object.assign(document.createElement("div"), { style: "position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)" });
       if (!probe.isConnected) document.body.appendChild(probe);
@@ -3162,6 +3162,19 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   // pantalla de inicio: una vez por apertura, y no si vuelves a un entrenamiento o sesión en curso
   (() => {
     const sp = $("splash");
+    // frase al azar en cada apertura (nunca la misma dos veces seguidas)
+    const frases = [
+      "Cabeza fría, cuerpo fuerte.", "Lo importante es el camino.", "Tú puedes con esto.",
+      "No controlas lo que pasa, sí cómo respondes.", "Pequeños pasos, todos los días.",
+      "La disciplina es libertad.", "El obstáculo es el camino.", "Hoy te debes una buena versión de ti.",
+      "No hace falta ganas, hace falta empezar.", "Cada repetición cuenta.", "Aguanta un poco más.",
+      "Más fuerte que la excusa.", "Lo que haces hoy lo agradece tu yo de mañana.", "Constancia antes que intensidad.",
+      "La calma también se entrena.", "Sufre ahora, vive fuerte después.", "Un día a la vez.",
+      "Eres lo que repites cada día.", "No tienes que ser perfecto, tienes que volver.", "Tu mente decide, tu cuerpo sigue."
+    ];
+    let fi = Math.floor(Math.random() * frases.length);
+    try { const last = +localStorage.getItem("calma:frase"); if (fi === last) fi = (fi + 1) % frases.length; localStorage.setItem("calma:frase", String(fi)); } catch {}
+    sp.querySelector(".s-sub").textContent = frases[fi];
     let seen = false; try { seen = sessionStorage.getItem("calma:splash") === "1"; sessionStorage.setItem("calma:splash", "1"); } catch {}
     if (seen || reduced || mode !== "home") { sp.remove(); return; }
     sp.addEventListener("click", () => sp.classList.add("bye"));
