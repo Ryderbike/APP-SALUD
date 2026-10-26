@@ -2929,7 +2929,10 @@ body.arena {
   function arenaPulse(x, y) { arenaKick = 1; arenaWaves.push({ x, y, r: 10, a: 0.7 }); }
   function drawArena(t, dt, now) {
     const phase = mode === "tend" ? "done" : wk && wk.phase === "rest" ? "rest" : "work";
-    const want = ARENA_PAL[phase], f = 1 - Math.exp(-dt * 1.6);
+    // en el descanso el fondo se va calentando a medida que se acaba el tiempo, y en los últimos 10 s late con cada segundo
+    const resting = phase === "rest" && wk, rl = resting ? wkLeft() : 99, u = resting ? Math.max(0, Math.min(1, 1 - rl / wk.span)) : 0;
+    const urg = resting ? Math.max(0, Math.min(1, (10 - rl) / 10)) : 0, secPulse = urg > 0 && running ? Math.exp(-((rl % 1 > 0 ? 1 - (rl % 1) : 0) * 5)) * (0.4 + 0.6 * urg) : 0;
+    const want = resting ? Object.fromEntries(Object.keys(ARENA_PAL.rest).map((key) => [key, ARENA_PAL.rest[key].map((v, i) => v + (ARENA_PAL.work[key][i] - v) * u * u)])) : ARENA_PAL[phase], f = 1 - Math.exp(-dt * (resting ? 4 : 1.6));
     for (const key in AP) AP[key] = AP[key].map((v, i) => v + (want[key][i] - v) * f);
     arenaKick *= Math.exp(-dt * 3.2); const k = arenaKick;
     const kv = k > 0.02 ? k.toFixed(2) : "0"; if (arenaPrev !== kv) { arenaPrev = kv; $("tcard").style.setProperty("--k", kv); }
@@ -2947,12 +2950,12 @@ body.arena {
     // horno abajo: late más rápido cuanto más avanzas, y se enciende con cada serie hecha
     const per = 1.5 - 0.6 * prog, ph = (t % per) / per;
     const beat = reduced ? 0 : Math.exp(-(((ph - 0.05) / 0.07) ** 2)) + 0.5 * Math.exp(-(((ph - 0.3) / 0.09) ** 2));
-    const inten = (phase === "work" ? 0.5 : phase === "rest" ? 0.22 : 0.6) + 0.18 * beat + 0.4 * k;
+    const inten = (phase === "work" ? 0.5 : phase === "rest" ? 0.22 + 0.28 * u : 0.6) + 0.18 * beat + 0.4 * k + 0.45 * secPulse;
     const hot = ctx.createRadialGradient(W / 2, H * 1.04, 0, W / 2, H * 1.04, H * (0.62 + 0.08 * beat + 0.12 * k));
     hot.addColorStop(0, rgba(AP.glow, inten)); hot.addColorStop(1, rgba(AP.glow, 0));
     ctx.fillStyle = hot; ctx.fillRect(0, 0, W, H);
     // brasas que suben
-    const sp = (phase === "work" ? 1.8 : phase === "rest" ? 0.6 : 1.2) * (1 + 1.5 * k);
+    const sp = (phase === "work" ? 1.8 : phase === "rest" ? 0.6 + 1.2 * u : 1.2) * (1 + 1.5 * k + urg);
     for (const e of embers) {
       e.y -= e.sp * sp * dt; if (e.y < -0.05) { e.y = 1.05; e.x = Math.random(); }
       const x = (e.x + Math.sin(t * 0.6 + e.ph) * 0.02) * W, y = e.y * H, a = (0.3 + 0.5 * (0.5 + 0.5 * Math.sin(t * 3 + e.ph))) * Math.min(1, e.y * 1.6 + 0.2);
@@ -2965,6 +2968,12 @@ body.arena {
       const w = arenaWaves[i]; w.r += dt * 900; w.a -= dt * 0.9;
       if (w.a <= 0) { arenaWaves.splice(i, 1); continue; }
       ctx.lineWidth = 3; ctx.strokeStyle = rgba([255, 190, 120], w.a); ctx.beginPath(); ctx.arc(w.x, w.y, w.r, 0, TAU); ctx.stroke();
+    }
+    // últimos segundos: el borde de la pantalla se enciende con cada segundo
+    if (secPulse > 0.01) {
+      const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.35, W / 2, H / 2, Math.max(W, H) * 0.75);
+      g.addColorStop(0, "rgba(255,120,50,0)"); g.addColorStop(1, "rgba(255,120,50," + (0.35 * secPulse).toFixed(3) + ")");
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
     }
     // sombra abajo para que el panel se lea
     const shade = ctx.createLinearGradient(0, H * 0.6, 0, H);
@@ -3261,7 +3270,7 @@ body.arena {
   (function () {
     const brand = document.querySelector(".brand");
     if (!brand) return;
-    const APP_VERSION = "stillfit-v33"; // igual que VERSION en sw.js
+    const APP_VERSION = "stillfit-v34"; // igual que VERSION en sw.js
     let taps = 0, last = 0, box = null, probe = null, cached = "…";
     (window.caches ? caches.keys() : Promise.resolve([])).then((k) => { cached = k.filter((n) => /^(calma|stillfit)-v/.test(n)).join(", ") || "sin caché"; paint(); }).catch(() => {});
     function read() {
