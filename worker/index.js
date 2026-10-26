@@ -39,14 +39,19 @@ async function handleSync(request, env) {
   }
 
   if (request.method === "PUT") {
+    if (+request.headers.get("content-length") > MAX_BYTES) return json({ error: "demasiado grande" }, 413); // antes de leer el cuerpo
     const text = await request.text();
     if (text.length > MAX_BYTES) return json({ error: "demasiado grande" }, 413);
     let body;
     try { body = JSON.parse(text); } catch { return json({ error: "JSON inválido" }, 400); }
     if (!body || typeof body.keys !== "object" || body.keys === null || Array.isArray(body.keys)) return json({ error: "datos inválidos" }, 400);
     const keys = {};
-    for (const [k, v] of Object.entries(body.keys)) if (typeof v === "string" && k !== "_at" && k !== "active") keys[k] = v;
-    const at = Math.max(0, Math.floor(+body.at || 0)) || Date.now();
+    const entries = Object.entries(body.keys);
+    if (entries.length > 500) return json({ error: "demasiados datos" }, 400);
+    for (const [k, v] of entries) if (typeof v === "string" && /^[\w:.-]{1,80}$/.test(k) && k !== "_at" && k !== "active") keys[k] = v;
+    // una fecha en el futuro bloquearía todos los respaldos siguientes ("gana lo más nuevo"), así que se limita a ahora
+    const now = Date.now();
+    const at = Math.min(Math.max(0, Math.floor(+body.at || 0)) || now, now + 60000);
     // solo gana lo más nuevo: un teléfono con datos viejos no pisa un respaldo reciente
     const res = await env.DB.prepare(
       "INSERT INTO backups (id, at, data, updated) VALUES (?1, ?2, ?3, ?4) ON CONFLICT(id) DO UPDATE SET at = ?2, data = ?3, updated = ?4 WHERE excluded.at >= backups.at"

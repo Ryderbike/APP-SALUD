@@ -306,7 +306,7 @@ body.has-tabs .app { padding-bottom: calc(max(10px, calc(env(safe-area-inset-bot
 body.tab-train .app { opacity: 0; }
 .page {
   position: fixed; inset: 0; z-index: 2; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
-  background: rgba(11, 18, 32, 0.97); opacity: 0; transform: translateY(10px); visibility: hidden;
+  background: linear-gradient(180deg, rgba(11, 18, 32, 0.42), rgba(11, 18, 32, 0.78)); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); opacity: 0; transform: translateY(10px); visibility: hidden;
   transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s 0.25s;
 }
 body.tab-train .page { opacity: 1; transform: none; visibility: visible; transition: opacity 0.25s ease, transform 0.25s ease; }
@@ -456,19 +456,11 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
 
 @media (prefers-reduced-motion: reduce) { .card.swap, .sheet { animation: none; } .app, .page { transition: none; } .splash { display: none; } }
 
-/* ---- deporte: su propia cara, más intensa que Calma ---- */
+/* ---- deporte: mismo vidrio, naranjo y cielo que Calma ---- */
 html, body { touch-action: manipulation; }
 input, select, textarea { font-size: 16px; } /* iOS acerca la pantalla al escribir si la letra es menor a 16px */
-body.sport {
-  --sage: #ff7a45; --sage-ink: #240800; --ember: #ff4a36; --ember-ink: #240800;
-  --orange: linear-gradient(180deg, rgba(255,255,255,0.34), rgba(255,255,255,0) 52%), linear-gradient(180deg, #ff8a4c, #e5301f);
-  --orange-edge: inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -2px 8px rgba(120,10,0,0.35), 0 12px 30px rgba(255,70,40,0.38);
-}
-body.sport h1, body.sport .sec, body.sport .feature h3, body.sport .hero-n b, body.sport .cap, body.sport .big { text-transform: uppercase; font-weight: 800; letter-spacing: 0.01em; }
-body.sport h1 { font-style: italic; }
-body.sport .page { background: radial-gradient(120% 55% at 50% 0%, rgba(150, 25, 10, 0.5), transparent 70%), rgba(11, 14, 26, 0.97); }
 .sp-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.sp-nav button { font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; }
+.sp-nav button { font-weight: 650; font-size: 0.88rem; }
 .sp-pane { display: flex; flex-direction: column; gap: 12px; }
 .hero { border-radius: 24px; padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 6px; background: var(--lg), rgba(20, 28, 48, 0.55); box-shadow: var(--lg-edge), var(--lg-drop); backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%); }
 .hero .kick { color: var(--sage); opacity: 1; }
@@ -641,18 +633,18 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
 </section>
 
 <!-- pantalla: deporte (Hoy, Historial y Progreso) -->
-<section class="page" id="page-train" aria-label="Deporte" inert>
+<section class="page" id="page-train" aria-label="Entrenar" inert>
   <div class="page-in">
     <div class="sp-top">
       <div>
         <span class="page-date" id="tr-date"></span>
-        <h1>Deporte</h1>
+        <h1>Entrenar</h1>
       </div>
       <button class="icon-btn" id="open-data" aria-label="Ajustes y respaldo">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="3"/><circle cx="8" cy="17" r="3"/></svg>
       </button>
     </div>
-    <div class="seg sp-nav" id="sp-nav" role="group" aria-label="Secciones de deporte">
+    <div class="seg sp-nav" id="sp-nav" role="group" aria-label="Secciones de entrenar">
       <button data-sp="hoy" aria-pressed="true">Hoy</button>
       <button data-sp="hist" aria-pressed="false">Historial</button>
       <button data-sp="prog" aria-pressed="false">Progreso</button>
@@ -700,11 +692,11 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
 </section>
 
 <nav class="tabs" id="tabs" role="tablist" aria-label="Pantallas">
-  <button role="tab" data-tab="train" aria-selected="true">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 7v10M4 9.5v5M17 7v10M20 9.5v5M7 12h10"/></svg>Deporte
-  </button>
-  <button role="tab" data-tab="calma" aria-selected="false">
+  <button role="tab" data-tab="calma" aria-selected="true">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>Calma
+  </button>
+  <button role="tab" data-tab="train" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 7v10M4 9.5v5M17 7v10M20 9.5v5M7 12h10"/></svg>Entrenar
   </button>
 </nav>
 
@@ -1175,7 +1167,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   $("open-setup").addEventListener("click", () => { openSheet("setup"); audio.init(); });
 
   // pestañas: se tocan abajo o se desliza de lado, fuera de la esfera y del carrusel
-  let tab = "train"; // la pantalla principal es Deporte
+  let tab = "calma";
   function showTab() {
     const train = mode === "home" && tab === "train";
     document.body.classList.toggle("tab-train", train);
@@ -1194,7 +1186,7 @@ input.num::-webkit-outer-spin-button, input.num::-webkit-inner-spin-button { -we
   addEventListener("pointerup", (e) => {
     if (!swipe) return;
     const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y; swipe = null;
-    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) setTab(dx < 0 ? "calma" : "train");
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) setTab(dx < 0 ? "train" : "calma");
   }, true);
   $("open-stats").addEventListener("click", () => { renderTally(); renderInsights(); openSheet("stats"); $("stats").scrollTop = 0; });
   $("start").addEventListener("click", () => { extended = false; startSession(minutes); });
