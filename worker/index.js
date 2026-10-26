@@ -79,7 +79,7 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === "/api/sync") {
       try { return await handleSync(request, env); }
-      catch (e) { return json({ error: "error del servidor" }, 500); }
+      catch (e) { return json({ error: "error del servidor", detail: String(e && e.message || e).slice(0, 200) }, 500); } // TEMPORAL: detalle para diagnosticar
     }
     if (url.pathname.startsWith("/api/")) return json({ error: "no existe" }, 404);
     return env.ASSETS.fetch(request);
