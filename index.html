@@ -2743,6 +2743,34 @@ body.tab-train .page { opacity: 1; transform: none; visibility: visible; transit
   $("e-cancel").addEventListener("click", closeSheets);
 
   // app instalable y sin conexión (solo cuando corre en su propio dominio)
+  // diagnóstico escondido: 5 toques seguidos en "Calma" muestran los tamaños que ve la app (sirve para depurar la ventana en iOS)
+  (function () {
+    const brand = document.querySelector(".brand");
+    if (!brand) return;
+    let taps = 0, last = 0, box = null, probe = null;
+    function read() {
+      probe = probe || Object.assign(document.createElement("div"), { style: "position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)" });
+      if (!probe.isConnected) document.body.appendChild(probe);
+      const c = getComputedStyle(probe), vv = window.visualViewport;
+      const sky = document.getElementById("sky").getBoundingClientRect(), tb = document.getElementById("tabs").getBoundingClientRect();
+      return ["inner " + innerWidth + "x" + innerHeight, "outer " + outerWidth + "x" + outerHeight, "screen " + screen.width + "x" + screen.height + " dpr " + devicePixelRatio,
+        "visualViewport " + (vv ? Math.round(vv.width) + "x" + Math.round(vv.height) : "n/a"), "html client " + document.documentElement.clientWidth + "x" + document.documentElement.clientHeight,
+        "safe t" + c.paddingTop + " r" + c.paddingRight + " b" + c.paddingBottom + " l" + c.paddingLeft, "sky bottom " + Math.round(sky.bottom) + " tabs bottom " + Math.round(tb.bottom),
+        "standalone " + navigator.standalone + " display-mode " + (["standalone", "fullscreen", "minimal-ui", "browser"].find((m) => matchMedia("(display-mode: " + m + ")").matches) || "?"), navigator.userAgent.replace(/^Mozilla\/5.0 /, "")].join("\n");
+    }
+    function paint() { if (box) box.textContent = read(); }
+    brand.addEventListener("click", () => {
+      const now = Date.now(); taps = now - last < 700 ? taps + 1 : 1; last = now;
+      if (taps < 5) return;
+      taps = 0;
+      if (box) { box.remove(); box = null; return; }
+      box = document.createElement("pre");
+      box.style.cssText = "position:fixed;left:8px;right:8px;top:90px;z-index:99;margin:0;padding:10px;border-radius:12px;background:rgba(0,0,0,0.86);color:#9ff;font:11px/1.35 ui-monospace,monospace;white-space:pre-wrap;word-break:break-all;pointer-events:none";
+      document.body.appendChild(box); paint();
+    });
+    addEventListener("resize", paint);
+  })();
+
   if ("serviceWorker" in navigator && location.protocol === "https:" && !/claude\.ai|claudeusercontent/.test(location.hostname)) {
     try { navigator.serviceWorker.register("sw.js").catch(() => {}); } catch {}
   }
