@@ -667,6 +667,9 @@ body.sport {
       <button class="icon-btn" id="sp-beat" aria-pressed="false" aria-label="Música con ritmo">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
       </button>
+      <button class="icon-btn" id="sp-mic" aria-pressed="false" aria-label="Escuchar la música del ambiente">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+      </button>
       <button class="icon-btn" id="open-data" aria-label="Ajustes y respaldo">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="3"/><circle cx="8" cy="17" r="3"/></svg>
       </button>
@@ -1209,7 +1212,7 @@ body.sport {
     $("page-train").inert = !train;
     $("tabs").querySelectorAll("button").forEach((b) => b.setAttribute("aria-selected", b.dataset.tab === tab ? "true" : "false"));
   }
-  function setTab(t) { if (t === tab) return; tab = t; if (mode === "home" && audio.on) toggleMusic(false); if (t === "train") { renderRoutines(); $("page-train").scrollTop = 0; } showTab(); buzz(8); }
+  function setTab(t) { if (t === tab) return; tab = t; if (mode === "home" && audio.on) toggleMusic(false); if (mode === "home" && audio.micOn) setMic(false); if (t === "train") { renderRoutines(); $("page-train").scrollTop = 0; } showTab(); buzz(8); }
   $("tabs").addEventListener("click", (e) => { const b = e.target.closest("[data-tab]"); if (b) { audio.init(); setTab(b.dataset.tab); } });
   let swipe = null;
   addEventListener("pointerdown", (e) => {
@@ -2887,11 +2890,16 @@ body.sport {
   const isArena = () => mode === "train" || mode === "tend" || (mode === "home" && tab === "train");
   const pulseEls = [$("tr-today"), $("tcard")];
   function readBass(dt, t, now) {
-    const A = arena, an = audio.an;
-    if (an && audio.on) {
+    const A = arena, mic = audio.micOn && audio.micAn, an = mic ? audio.micAn : audio.an, live = !!(mic || (an && audio.on));
+    if (live) {
       if (!A.freq) A.freq = new Uint8Array(an.frequencyBinCount);
       an.getByteFrequencyData(A.freq);
       const f = A.freq;
+      if (mic) { // el micrófono llega bajito: se normaliza contra el pico reciente para que el anillo se mueva con cualquier volumen
+        let pk = 0; for (let j = 1; j < 120; j++) if (f[j] > pk) pk = f[j];
+        A.peak = Math.max(pk, (A.peak || 0) * Math.exp(-dt * 0.35), 60);
+        const g = 200 / A.peak; for (let j = 0; j < 120; j++) f[j] = Math.min(255, f[j] * g);
+      }
       A.bass = Math.min(1, (f[1] + f[2] + f[3] + f[4] * 0.5) / (3.5 * 255));
       // bandas de graves a agudos (escala logarítmica, como se oye); los agudos se refuerzan porque suenan más suave
       const N = A.bands.length;
@@ -2906,7 +2914,7 @@ body.sport {
       for (let i = 0; i < A.bands.length; i++) A.bands[i] += (0.06 + 0.04 * Math.sin(t * 1.3 + i * 0.7) - A.bands[i]) * 0.08;
     }
     A.slow += (A.bass - A.slow) * Math.min(1, dt * 3);
-    if (audio.on && A.bass > A.slow + 0.1 && A.bass > 0.42 && now - A.lastKick > 180) {
+    if (live && A.bass > A.slow + 0.1 && A.bass > 0.42 && now - A.lastKick > 180) {
       A.kick = 1; A.lastKick = now;
     }
     A.kick *= Math.exp(-dt * 7);
@@ -3348,6 +3356,22 @@ body.sport {
       };
       this.chimeTimer = setTimeout(loop, 3000);
     },
+    async micStart() {
+      this.init(); if (!this.ctx) return false;
+      try {
+        this.ctx.resume();
+        this.micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+      } catch (e) { return false; }
+      const src = this.ctx.createMediaStreamSource(this.micStream);
+      this.micAn = this.ctx.createAnalyser(); this.micAn.fftSize = 1024; this.micAn.smoothingTimeConstant = 0.45;
+      src.connect(this.micAn); // solo se analiza, nunca se reproduce
+      this.micSrc = src; this.micOn = true; return true;
+    },
+    micStop() {
+      this.micOn = false;
+      if (this.micStream) this.micStream.getTracks().forEach((t) => t.stop());
+      this.micStream = null; this.micAn = null;
+    },
     stop() {
       if (!this.ctx) return; this.on = false;
       clearInterval(this.chordTimer); clearTimeout(this.chimeTimer); clearInterval(this.driveTimer);
@@ -3369,7 +3393,16 @@ body.sport {
     $("rain").setAttribute("aria-pressed", audio.rainOn ? "true" : "false");
   }
   $("music").addEventListener("click", () => toggleMusic());
-  $("sp-beat").addEventListener("click", () => { audio.init(); toggleMusic(); });
+  $("sp-beat").addEventListener("click", () => { if (audio.micOn) setMic(false); audio.init(); toggleMusic(); });
+  // modo escuchar: el anillo reacciona a la música que suena afuera (Spotify, parlante, etc.) usando el micrófono
+  async function setMic(on) {
+    if (on) {
+      if (audio.on) toggleMusic(false);
+      if (!(await audio.micStart())) { toast("No pude usar el micrófono. Revisa el permiso del navegador."); return; }
+    } else audio.micStop();
+    $("sp-mic").setAttribute("aria-pressed", audio.micOn ? "true" : "false");
+  }
+  $("sp-mic").addEventListener("click", () => setMic(!audio.micOn));
   $("rain").addEventListener("click", () => toggleRain());
 
   // deslizar hacia abajo para cerrar las hojas de elegir
@@ -3391,7 +3424,7 @@ body.sport {
   (function () {
     const brands = [document.querySelector(".brand"), document.getElementById("sp-title")].filter(Boolean);
     if (!brands.length) return;
-    const APP_VERSION = "calma-v29"; // igual que VERSION en sw.js
+    const APP_VERSION = "calma-v30"; // igual que VERSION en sw.js
     let taps = 0, last = 0, box = null, probe = null, cached = "…";
     (window.caches ? caches.keys() : Promise.resolve([])).then((k) => { cached = k.filter((n) => /^calma-v/.test(n)).join(", ") || "sin caché"; paint(); }).catch(() => {});
     function read() {
