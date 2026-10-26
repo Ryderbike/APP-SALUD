@@ -3,7 +3,11 @@
   "name": "app-salud",
   "main": "worker/index.js",
   "compatibility_date": "2026-10-01",
-  "previews": {},
+  "previews": {
+    "d1_databases": [
+      { "binding": "DB", "database_name": "app-salud-preview", "database_id": "5a85d77a-4e6d-4caf-bef7-5a068b5e34c2" }
+    ]
+  },
   "assets": {
     "directory": ".",
     "not_found_handling": "single-page-application",
